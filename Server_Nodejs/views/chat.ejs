@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>chat</title>
+    <script src="jquery.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+
+    <script>
+        var socket = io('http://localhost:3500');
+
+        socket.on('server-send-messengerText-chat-rooms', mesRooms => {
+            $('#ListMessenger').append("<div  class='msRooms'>" + mesRooms.un + ":" + mesRooms.ms + "<div>")
+        });
+
+        socket.on('server-send-romm', roomnhan => {
+            $('#roomhientai').html(roomhientai);
+        });
+        socket.on('server-send-danhsach-rooms', dsRooms => {
+            $('#dsRooms').html('');
+            dsRooms.forEach( i => {
+                $('#dsRooms').append("<div id='btndsRooms' class='dsroooms' >" + i + "</div>");
+                $(document).ready( () => {
+                    $('#btndsRooms').click( () => {
+                        alert('333333');
+                    })
+                })
+            });
+        });
+        socket.on('server-send-from-mesWeb-toAppWeb', mesW => {
+            alert(mesW.un);
+            $('#ListMessenger').append("<div class='msweb'>" + mesW.un + ":" + mesW.ms + "<div>");
+        })
+        socket.on('sever-send-username-thanhcong', (user_profile) => {
+            alert('dang-ky-user-thanh cong');
+            $('#currentUser').append("<span class='user1' >" + user_profile + "</span>");
+        });
+
+        socket.on('server-send-danhsach-Usernanme', mangUsername => {
+            // alert('dang cap nhat mang user');
+            $('#dsUser').html('');
+             mangUsername.forEach( i => {
+                 $('dsUser').append("<div class='userna'>" + i + "</div>");
+             });
+             
+
+             /*
+                $('#boxContent').html('');
+                data.forEach(i => {
+                    $('#boxContent').append("<div class='user'>" + i + "</div>");
+                });
+             */
+        });
+
+        socket.on('server-dangky-thatbai', () => {
+            alert(' username da duoc su dung');
+        })
+        //lang nghe app send messenger to app va web
+        socket.on('server-send-messenger-from-app-to-AppAndWeb', UnMs => {
+            alert(UnMs.ms);
+            $('#ListMessenger').append("<div class='ms'>" + UnMs.ms + "</div>")
+        });
+
+        //lang nghe app send image to app va web
+        socket.on('server-send-imagePK-fromApp-toAppWeb', imagePIK => {
+            // imagePIK = { uri: 'data:image/jpeg;base64,' + response.data }
+            // de lai duoc 'data:image/jpeg;base64,' + response.dat=imagePIK.uri
+            alert(imagePIK.uri);
+            $('#listMessageBase64').append("<div class=''>" + imagePIK.uri + "<div>");
+            $('#imag1').attr("src", imagePIK.uri);
+        });
+
+        //lang nghe web send upload image to app va web
+        socket.on('server-send-imageBase64-fromweb-toAppAndWeb', (imageWebBase64_new) => {
+            alert('11111');
+            $('#imag2').attr("src", "data:image/png;base64," + imageWebBase64_new.imageWebBase64); // hien thi image qua du lieu base84
+            $('#listMessageBase64_web_upload').append("<div class='ima'>" + imageWebBase64_new.imageWebBase64 + "</div>");
+        });
+
+        $(document).ready(() => {
+            $('#bntRegister').click(() => {
+                //alert('dang ky');
+                socket.emit('web-send-dang-ky-user', $('#txtUser').val());
+            });
+            $('#btnChat').click( () => {
+                socket.emit('web-send-messenger-text', $('#txtMessenger').val() );
+            });
+
+            //chat room
+            $('#btnchatromm').click( () => {
+                socket.emit('tao-room-web', $('#txtchatrom').val() );
+            });
+
+            //web send chat room
+            $('#btnChatRooms').click( () => {
+                socket.emit('web-send-messenger-chat-rooms', $('#txtMessenger').val() );
+            });
+
+            //click vao ten rooms 
+            $('#dsroooms').click( () => {
+                alert('1111111');
+            })
+        });
+
+    </script>
+    <link rel="stylesheet" type="text/css" href="chat.css">
+</head>
+
+<body>
+    <div id="wrapper">
+
+
+        <h1>chat web</h1>
+        <div id="left">
+            <div>
+                <input type="text" id="txtUser">
+                <input type="button" id="bntRegister" value="REGISTER">
+            </div>
+            <div>
+                <div id="userOnline">USERONLINE</div>
+                <div id="dsUser"></div>
+                <div id="dsRooms"></div>
+            </div>
+        </div>
+        <h4 id="roomhientai"></h4>
+        <div id="right">
+            <div id="sayhi">
+                hello <span id="currentUser"></span>
+                <input id="btnLogin" type="button" value="LOGIN">
+            </div>
+            <div id="boxContent"></div>
+            <div id="ListMessenger"></div>
+            <div id="send">
+                <input type="text" id="txtMessenger">
+                <input type="button" id="btnChat" value="Send-text">
+                <input type="button" id="btnBase64" value="send-base64">
+                <input type="button" id="btnChatRooms" value="Send-chat-room">
+            </div>
+            
+
+
+        </div>
+
+        <div>
+            <img width="400px" src="" id="imag1">
+            <img width="400px" src="" id="imag2">
+
+            <div id="listMessageBase64">
+            </div>
+
+        </div>
+        <div>
+            <input id="txtchatrom" type="text">
+            <input id="btnchatromm" type="button" value="tao-room">
+            <div id="ListMessengerRom"></div>
+        </div>
+
+        <div>
+            <form action="http://localhost:3500/photo" method="Post" enctype="multipart/form-data">
+                <input type="file" class="forn-control" id="uploadfile" name="fileUpload">
+                <input type="submit" value="upload">
+                <img width="400px" src="" id="imag3_upload">
+                <div id="listMessageBase64_web_upload"></div>
+
+        </div>
+
+     
+
+    </div>
+</body>
+
+</html>
