@@ -5,6 +5,8 @@ import TabNavigator from 'react-native-tab-navigator';
 import Home from './sreens/Home';
 import  Messenger  from './sreens/Messenger';
 
+
+
 export default class Main extends Component {
     constructor(props) {
         super(props);

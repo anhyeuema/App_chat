@@ -23,15 +23,18 @@ export default class App extends Component {
             timePassed: false,
         }
     }
+
+    /*
     componentDidMount() {
 
+        /*
         var time = 6000;
         //sau 1 khoang thoi gian vi du time = 60000(ms)=60(s) thi ap se lai  thuc hien ham refreshTokenApp(); 1 lan
         setInterval(() => {
            //cu sau time tinh bang miligiay  thi thuc hien ham refreshTokenApp()  lan
            refreshTokenApp();
         }, time);//tinh bang mili  giay (1000ms= 1s)
-
+        */
         
 
         /*
@@ -42,12 +45,13 @@ export default class App extends Component {
             refreshTokenApp();
         }, 10000);
         */
-        
+      /*  
     }
+    */
     render() {
         return (
             <NavigationExperimental.Navigator
-                initialRoute={{ name: 'AUTHENTICATION' }}
+                initialRoute={{ name: 'TRANG_CHU' }}
 
                 renderScene={(route, navigator) => {
                     switch (route.name) {

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, TextInput } from 'react-native';
+import { View, TouchableOpacity, Text, TextInput, StyleSheet } from 'react-native';
 import saveToken from '../../../api/saveToken';
 import getToken from '../../../api/getToken'
+import global from '../../../api/global';
 var e;
 export default class Authentication extends Component {
 
@@ -24,7 +25,7 @@ export default class Authentication extends Component {
     }
 
     DangKy() {
-        fetch('http://192.168.0.103:81/App_Chat_Web/chat/Register.php', {
+        fetch('http://192.168.0.101:81/App_Chat_Web/chat/Register.php', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -64,7 +65,7 @@ export default class Authentication extends Component {
 
 
     DangNhap() { //la DangNhap duoc fetch len Login.php
-        fetch('http://192.168.0.103:81/App_Chat_Web/chat/Login.php', { //(####)
+        fetch('http://192.168.0.101:81/App_Chat_Web/chat/Login.php', { //(####)
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -80,15 +81,26 @@ export default class Authentication extends Component {
             })
         })
             .then(res => {
-               // console.log('res::::', res); // res._bodyText trong o co chua gia tri ma server php gui tra
+                console.log('res::::', res); // res._bodyText trong o co chua gia tri ma server php gui tra
                 var a = JSON.parse(res._bodyText); // can JSON.parse no 
+                //  console.log('a:::',a);
                 var token1 = a.token;
                 var id1 = a.id;
                 var token_time_1 = a.token_time;
+                //    global.OnSignIn(a.Username); 
+                //    this.goBackToControlpanal();
+                var USER = a.Username;
+                //   var b = global.OnSignIn(usename_1);
+                //   console.log("b:::::",b);
+                //     global.OnSignIn(usename_1);
+                //  global.OnSignIn(a.Username);
+
+                console.log('a.Username:::', a.Username);
                 e.setState({ // setSate nghĩa là cập nhật giá trị mới khi muốn goi nó ở trong Component thì ta this.state. chấm tên biến cần gọi
                     id: id1,
                     token: token1,
-                    token_time: token_time_1
+                    token_time: token_time_1,
+                    username: a.Username,
                 });
                 saveToken("@token", this.state.token); //== saveToken("@token", token1)
                 getToken('@token')
@@ -96,12 +108,29 @@ export default class Authentication extends Component {
                         console.log('token_duoc-luu o saveToken - sau khi dang nhap la: ', token);
                     })
                     .catch(e => console.log(e));
-                saveToken("@token", token_time_1);
+                saveToken("@token_time", token_time_1);
                 getToken("@token_time")
                     .then(token_time_r => {
                         console.log('token_time duoc-luu o saveToken - sau khi dang nhap la: ', token_time_r);
                     })
                     .catch(e => console.log(e));
+                //sau kh dang nhap thanh cong nhay toi Component Trangchu.js
+
+                if (USER !== null) {
+                    //OnSignIn o Componet Controlpanal.js  muon dung no thi
+                    //o Controlpanal.js khai bao la global.OnSignIn = () => this.ten_ham_dung_no();
+                    // dung nho nhu dau ten_ham_dung_no(usename_new ){ this.setState({ username: username_1 })}
+                    // o day bie nay usename hung giatri  tu =a.Username truyn tu Compoent Authenticatio.js truyen sang
+                    // global.OnSignIn(a.Username); 
+                    console.log('aaasasasasasasasasasasas', a.Username);
+                    saveToken('@Users', a.Username);
+                    // global.OnSignIn(a.Users);
+                    global.OnSignIn(a.Username);
+                    this.goBackToControlpanal();
+                } else {
+                    console.log('loi dang nhap');
+                }
+
             })
             .catch(e => console.log(e));
 
@@ -124,7 +153,7 @@ export default class Authentication extends Component {
     checkLogin() { //checkLogin = checkToken
 
         const KieTraToken = async (varToken) => { // gui token voi ten token voi ten token la TOKEN
-            fetch('http://192.168.0.103:81/App_Chat_Web/chat/checkToken.php', {
+            fetch('http://192.168.0.101:81/App_Chat_Web/chat/checkToken.php', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -143,11 +172,11 @@ export default class Authentication extends Component {
                     //sau khi fetch token len server php thi
                     //sử lý token mới được NHẬN từ server php
                     //có the xử lý ở đây hoạc sử lý ở (*(***))
-                //    console.log("res_token_new_username", res);
+                    //    console.log("res_token_new_username", res);
 
 
                     var a = JSON.parse(res._bodyText);
-                    var username1 = a.username;
+                    var username1 = a.Username;
                     console.log('username::::', username1);
                     var token_time_1 = a.token_time;
 
@@ -186,7 +215,7 @@ export default class Authentication extends Component {
     refreshToken() {
 
         const RefreshToken_time = async (varToken_time) => {
-            fetch('http://192.168.0.103:81/App_Chat_Web/chat/refreshToken.php', {
+            fetch('http://192.168.0.101:81/App_Chat_Web/chat/refreshToken.php', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -199,7 +228,7 @@ export default class Authentication extends Component {
                 })
             })
                 .then(res => {
-                //    console.log(res);
+                    //    console.log(res);
                     var a = JSON.parse(res._bodyText);
                     var token_time_1 = a.token_time;
                     var time_thuc_1 = a.time_thuc;
@@ -232,8 +261,8 @@ export default class Authentication extends Component {
 
     goBackToControlpanal() {
         const { navigator } = this.props;
-        navigator.pop();
-        //navigator.push({ name: 'TRANG_CHU' });
+        // navigator.pop();
+        navigator.push({ name: 'TRANG_CHU' });
 
     }
 
@@ -250,9 +279,9 @@ export default class Authentication extends Component {
         console.log(a);
     }
     render() {
-
+        const { btnStyleDangNhap, btnStyleDangKyNgay } = styles;
         const Register = (
-            <View style={{ flex: 3, backgroundColor: '#6E97C8' }}>
+            <View style={{ flex: 4, backgroundColor: '#6E97C8', justifyContent: 'center', alignItems: 'center', }}>
                 <TextInput
                     onChangeText={text => this.setState({ username: text })}
                     value={this.state.username}
@@ -269,16 +298,21 @@ export default class Authentication extends Component {
                     placeholder={"nhap mật khâu đăng nhập"}
                 />
 
-                <TouchableOpacity onPress={() => this.DangKy()} style={{ width: 200, height: 100, justifyContent: 'center', alignContent: 'center' }}>
-                    <Text style={{ width: 200, height: 100, justifyContent: 'center', alignContent: 'center' }}>DangKy</Text>
+                <TouchableOpacity onPress={() => this.DangKy()} style={btnStyleDangNhap}>
+                    <Text style={{ justifyContent: 'center', alignItems: 'center' }}>DangKyNgay</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => this.setState({ isLogin: false })} style={btnStyleDangKyNgay}>
+                    <Text style={{ justifyContent: 'center', alignItems: 'center', }}>Truyen Man Hinh DangNhap</Text>
+                </TouchableOpacity>
+
                 <Text>{this.state.token}</Text>
 
             </View>
         );
 
         const login = (
-            <View style={{ flex: 3, backgroundColor: '#008BD8' }} >
+            <View style={{ flex: 4, backgroundColor: '#008BD8', justifyContent: 'center', alignItems: 'center', }} >
                 <Text>phan dang nhap</Text>
                 <TextInput
                     onchangeText={text => this.setState({ username: text })}
@@ -292,14 +326,15 @@ export default class Authentication extends Component {
                     placeholder={"vui long nhap username"}
                 />
 
-                <TouchableOpacity onPress={() => this.DangNhap()}>
-                    <Text>DANG NHAP</Text>
+                <TouchableOpacity onPress={() => this.DangNhap()} style={btnStyleDangNhap}>
+                    <Text style={{ justifyContent: 'center', alignItems: 'center', }}>DANG NHAP</Text>
                 </TouchableOpacity>
 
             </View>
         );
 
         const JSXmain = this.state.isLogin ? Register : login;
+
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }}>
                 <Text>Component Authentication</Text>
@@ -314,6 +349,8 @@ export default class Authentication extends Component {
                     <Text>refreshToken</Text>
                 </TouchableOpacity>
                 {JSXmain}
+
+
                 <View style={{ flex: 2, backgroundColor: '#8354A3' }}>
                     <Text>token :{this.state.token}</Text>
                     <Text style={{ justifyContent: 'center' }}>id: {this.state.id}</Text>
@@ -328,6 +365,26 @@ export default class Authentication extends Component {
     }
 }
 
+const styles = StyleSheet.create({
+    btnStyleDangNhap: {
+        width: 150, height: 30,
+        justifyContent: 'center', alignItems: 'center',
+        backgroundColor: '#95CF57',
+        borderTopLeftRadius: 20, borderTopRightRadius: 15,
+        borderBottomLeftRadius: 20, borderBottomRightRadius: 15,
+        marginTop: 10,
+
+    },
+    btnStyleDangKyNgay: {
+        width: 150, height: 30,
+        justifyContent: 'center', alignItems: 'center',
+        backgroundColor: '#95CF57',
+        borderTopLeftRadius: 20, borderTopRightRadius: 15,
+        borderBottomLeftRadius: 20, borderBottomRightRadius: 15,
+        marginTop: 10,
+    },
+
+});
 
 /*
         const KieTraToken = async(varToken, NameToken) => { // gui token voi ten token voi ten token la TOKEN
