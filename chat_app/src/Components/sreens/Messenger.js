@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, ListView, TextInput, Image, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, ListView, RefreshControl, TextInput, Image, StyleSheet } from 'react-native';
 
 import ImagePicker from 'react-native-image-picker'; //yarn add react-native-image-picker// react-native link react-native-image-picker
 import io from 'socket.io-client/dist/socket.io.js';
@@ -18,7 +18,10 @@ const options = {
 var e;
 const DATA = [
     { hoten: 'Mr.nam', namsinh: '1998' },
+    { hoten: 'Mr.yen', namsinh: '1999' },
     { hoten: 'Mr.yen', namsinh: '2000' },
+    { hoten: 'Mr.yen', namsinh: '2001' },
+    { hoten: 'Mr.yen', namsinh: '2002' },
     { hoten: 'Mr.hanh', namsinh: '2003' },
 ];
 export default class Messenger extends Component {
@@ -28,20 +31,29 @@ export default class Messenger extends Component {
         this.socket = io('http://192.168.0.103:3500', { jsonp: false });
         const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
+            resDATA: '',
             dataSource: ds.cloneWithRows(DATA),
             messengerText: '',
             username: '',
             messengerImage: null,
-            resDATA: '',
+
             id: '',
 
             ImagePk: null,
             ImageWebBase64: null,
             imgaAppWebDataBase_Receri: null,
+
+            page: 1,
+            refreshing: false,
         };
 
+        /*
+        const setStateImage = () => ({
+            ImagePk_1: this.state.ImagePk,
+            ImageWebBase64_1: this.state.ImageWebBase64,
+            imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri,
 
-
+        }); */
 
         this.socket.on('server-send-messenger-from-app-to-AppAndWeb', async (mesT) => {
             console.log('app dang nhan messenger text');
@@ -73,14 +85,26 @@ export default class Messenger extends Component {
             await e.setState({
                 ImagePk: imagePIK,
             });
+
+            /*
+            res = setStateImage();
+            console.log('res-------------------------------------:::::', res); */
+            
             res = await {
-                ImagePk_1: this.state.ImagePk
-            }
+                ImagePk_1: this.state.ImagePk,
+            } 
+
             await e.setState({
-                resDATA: '',
+                resDATA: res,
                 dataSource: ds.cloneWithRows(res),
             });
+
+
+
             console.log('this.state.ImagePk::::', this.state.ImagePk);
+            console.log('this.state.resDATA::::', this.state.resDATA);
+
+            console.log('this.state.dataSource::::', this.state.dataSource);
         });
 
         //app lang nghe su kien web gui imgae sang server va tu server ve app
@@ -92,15 +116,27 @@ export default class Messenger extends Component {
             e.setState({
                 ImageWebBase64: imageWebBase64_uri
             });
+
+            /*
+            res = setStateImage();
+            console.log('res-------------------------------------:::::', res); */
+            
             res = {
-                ImageWebBase64_1: this.state.ImageWebBase64
-            }
+            ImageWebBase64_1: this.state.ImageWebBase64,
+
+            } 
+
             e.setState({
                 resDATA: res,
                 dataSource: ds.cloneWithRows(res),
             });
             console.log('this.state.ImageWebBase64:::::', this.state.ImageWebBase64);
             console.log('this.state.ImageWebBase64.uri:::::', this.state.ImageWebBase64.uri);
+            console.log('this.state.resDATA::::', this.state.resDATA);
+            console.log('this.state.dataSource::::', this.state.dataSource);
+            console.log('this.state.dataSource._dataBlob.s1.ImageWebBase64_1::::', this.state.dataSource._dataBlob.s1.ImageWebBase64_1);
+
+
         });
 
 
@@ -111,9 +147,16 @@ export default class Messenger extends Component {
             e.setState({
                 imgaAppWebDataBase_Receri: imgaWebDataBase_Receri_uri
             });
+
+            /*
+            res = setStateImage();
+            console.log('res-------------------------------------:::::', res); */
+            
             res = {
-                imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri
-            }
+            
+                imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri,
+            } 
+
             e.setState({
                 resDATA: res,
                 dataSource: ds.cloneWithRows(res),
@@ -135,36 +178,50 @@ export default class Messenger extends Component {
         console.log('app dang gui image picker');
     }
 
+    
     taohang(property) {
+        this.arr = property;
 
-        /*
-        var receivetestbase64_1_Icon = property.receivetestbase64_1; //lay duoc o componentDidMount fetch...
-        var receiveAvatabase64_1_Icon = property.receiveAvatabase64_1; //;lay o ham showImagePicker
-        var base64Icon = property.convertJsonToBase64_1; // lay dulieu tu server nodejs dung readFile(__dirname+..)
-        */
+        console.log('property.ImageWebBase64_1:::::', property.ImageWebBase64_1);
+        //  console.log('property._dataBlob:::::',property._dataBlob);
 
-        const {styleImage } = styles;
+        const { styleImage, styleImage1, styleImage2, styleImage3, styleText } = styles;
+        //neu = null  thi == imageNull
+        const imageNull = <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
+
+
         //image = from-web-server-to-AppWeb
-        const ImageWebBase64_A_lv = property.ImageWebBase64_1 == null ? null : //lang nghe image gui tu web to server va server tra ve app va web
-            < Image source={property.ImageWebBase64} style={styleImage} />
+        // neu  property.ImageWebBase64_1 = null la true = imageNull
+        const ImageWebBase64_A_lv = property.ImageWebBase64_1 == null ? imageNull : //lang nghe image gui tu web to server va server tra ve app va web
+            < Image source={property.ImageWebBase64} style={{ width: 50, height: 60, backgroundColor: '#60B15D' }} />
         ////image = from-App-server-to-AppWeb
-        const ImagePk_A_lv = property.ImagePk_1 == null ? null : //;lay o ham showImagePicker //hien thi cai lang nghe duoc tu emit picker
-        <Image source={property.ImagePk_1} style={styleImage} />
+
+
+        const ImagePk_A_lv = property.ImagePk_1 == null ? imageNull : //;lay o ham showImagePicker //hien thi cai lang nghe duoc tu emit picker
+            <Image source={property.ImagePk_1} style={{ width: 50, height: 60, backgroundColor: '#F15A24' }} />
         //image = from-app-datatbase-server-to-AppWeb
-        const imgaAppWebDataBase_Receri_A_lv = property.imgaAppWebDataBase_Receri_1 == null ? null : //hien thi image tu app fetch len database va lay base64 emit server nodejs va verver tra ve cho AppWeb
-            <Image source={property.imgaAppWebDataBase_Receri_1} style={styleImage} />
+
+
+        const imgaAppWebDataBase_Receri_A_lv = property.imgaAppWebDataBase_Receri_1 == null ? imageNull : //hien thi image tu app fetch len database va lay base64 emit server nodejs va verver tra ve cho AppWeb
+            <Image source={property.imgaAppWebDataBase_Receri_1} style={{ width: 50, height: 60, backgroundColor: '#2C2255' }} />
 
         return (
-            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#D6ECF8' }}>
-                {/*<Text>{console.log(property.messengerText1)}</Text> */}
-                <Text>{property.username1 + ':'}{property.messengerText1}</Text>
-                <Text>{console.log(property.messengerText1)}</Text>
-                <Text>{property.ImageWebBase64_1}</Text>
-                <Text>{console.log(property.ImageWebBase64_1)}</Text>
-               {/* <Image source={property.ImagePk_1} style={{ width: 100, height: 100 }}/> */}
-                {ImageWebBase64_A_lv}
-                {ImagePk_A_lv}
-                {imgaAppWebDataBase_Receri_A_lv}
+            <View style={{ flex: 1, backgroundColor: '#D6ECF8' }}>
+                <View style={{ flex: 1, backgroundColor: '#24416B' }} >
+                    <Text>{property.namsinh}</Text>
+                    {/*<Text>{console.log(property.messengerText1)}</Text> */}
+                    <Text style={styleText}>{property.username1 + ':'}{property.messengerText1}</Text>
+                    <Text style={styleText} >{console.log(property.messengerText1)}</Text>
+                    <Text style={styleText} >{property.ImageWebBase64_1}</Text>
+                    <Text style={styleText} >{console.log(property.ImageWebBase64_1)}</Text>
+                </View>
+
+                <View style={{ flex: 3, flexDirection: 'row', backgroundColor: '#007ACC', justifyContent: 'center', alignItems: 'center' }} >
+                    {/* <Image source={property.ImagePk_1} style={{ width: 100, height: 100 }}/> */}
+                    {ImageWebBase64_A_lv}
+                    {ImagePk_A_lv}
+                    {imgaAppWebDataBase_Receri_A_lv}
+                </View>
             </View>
 
         );
@@ -247,7 +304,8 @@ export default class Messenger extends Component {
             })
     }
     render() {
-        const { btnStyle, styleTextInput, styleImage } = styles;
+
+        const { btnStyle, styleTextInput, styleImage, styleText } = styles;
         const ImagePk_A = this.state.ImagePk == null ? null : //hien thi cai lang nghe duoc tu emit picker
             <Image source={this.state.ImagePk} style={styleImage} />
         const ImageWebBase64_A = this.state.ImageWebBase64 == null ? null :
@@ -270,16 +328,16 @@ export default class Messenger extends Component {
                             style={styleTextInput}
                         />
                         <TouchableOpacity onPress={() => this.EmitText()} style={btnStyle}>
-                            <Text>Enter Text</Text>
+                            <Text style={styleText}>Enter Text</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => this.ShowImage_piker()} style={btnStyle} >
-                            <Text>ShowImage_piker</Text>
+                            <Text style={styleText}>ShowImage_piker</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => this.EmitImage()} style={btnStyle} >
-                            <Text>EmitImage</Text>
+                            <Text style={styleText}>EmitImage</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => this.EmitImageFromWebDatabase()} style={btnStyle} >
-                            <Text>EmitImageFromWebDatabase</Text>
+                            <Text style={styleText} >EmitImageFromWebDatabase</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -296,7 +354,29 @@ export default class Messenger extends Component {
                 <View style={{ flex: 1, backgroundColor: '#B6DFCA' }}>
                     <ListView
                         dataSource={this.state.dataSource}
+
+
                         renderRow={this.taohang}
+
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.refreshing}
+                                onRefresh={() => {
+                                    this.setState({ refreshing: true }); // refreshing = true  bat dau refreshing lai ban dau refreshing = flase
+                                    const newpage = this.state.page + 1;
+                                    this.taoHang(property, newpage)
+                                        .then(() => {
+                                            this.arr = property.concat(this.arr);
+                                            this.setState({ //refresh lai cai mang dua vao dataSource
+                                                dataSource: ds.cloneWithRows(this.state.resDATA),
+                                                refreshing: false,
+                                            })
+                                        }
+                                        )
+                                        .catch(e => console.log(e));
+                                }}
+                            />
+                        }
                     />
                 </View>
 
@@ -319,6 +399,21 @@ const styles = StyleSheet.create({
     },
     styleImage: {
         width: 50, height: 60
+    },
+    styleImage1: {
+        width: 50, height: 60, backgroundColor: '#60B15D'
+    },
+    styleImage2: {
+        width: 50, height: 60, backgroundColor: '#F15A24'
+    },
+    styleImage3: {
+        width: 50, height: 60, backgroundColor: '#2C2255'
+    },
+    styleText: {
+        // marginLeft:5,
+        fontSize: 8,
+        // width:5,
+        // alignSelf: 'center'
     }
 
 })
