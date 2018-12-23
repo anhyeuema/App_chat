@@ -158,11 +158,31 @@ export default class Controlpanal extends Component {
 
     render() {
         const { styleSignIn, txtSignInStyle, styleAvata, styleImage } = styles;
-       
+        //gia tri sau khi emit avatar len
+        //this.state.avatarSourceReceri sau ? = true = !null tuong ung gia tri <Image source={this.state.avatarSourceReceri} style={styleImage} />
+        //  : null= false la '' rong  tuong ung gia tri <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />
         const avatarSourceReceri_A = this.state.avatarSourceReceri ?
             // !null = true       //: null= false la '' rong
             <Image source={this.state.avatarSourceReceri} style={styleImage} /> : <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
 
+        {/*
+            //
+             const avatarSourceReceri_A = this.state.avatarSourceReceri ?
+            // !null = true       //: null= false la '' rong
+            // gai tri sau khi da emit                                           : // hien thi avatar ra 
+            <Image source={this.state.avatarSourceReceri} style={styleImage} /> : < Image source={this.state.avatarSource} style={{ width: 100, height: 100 }} />/>;
+
+          const avatarSourceReceri_A = this.state.avatarSourceReceri == null ? null :
+        < Image source={this.state.avatarSourceReceri} style={{ width: 100, height: 100 }} />
+
+        const avatarSourceReceri_A = this.state.avatarSourceReceri ? // sau dau ? la gai tri true= !null truoc  : sau do gia tri se la flase=null
+        // !null = true                                                      //: null= false la '' rong
+        <Image source={this.state.avatarSourceReceri} style={styleImage} /> : null;
+
+        const avatarSourceReceri_A = this.state.avatarSourceReceri ?
+            // !null = true       //: null= false la '' rong
+            <Image source={this.state.avatarSourceReceri} style={styleImage} /> : <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
+        */}
         const SignIn = (
             <View style={{ flex: 1, backgroundColor: '#E61A5F', justifyContent: 'center', alignItems: 'center', }}>
                 <Image
@@ -186,7 +206,7 @@ export default class Controlpanal extends Component {
                 </TouchableOpacity>
 
 
-                <TouchableOpacity onPress={() => this.ImagPicker()} style={styleAvata} >
+                <TouchableOpacity onPress={() => this.ImagPicker()} style={styleImage} >
                     {avatarSourceReceri_A}
 
                     {/*
@@ -217,14 +237,31 @@ export default class Controlpanal extends Component {
         //? true <=> !null : false <=> null
         const JXSControl = this.state.USERNAME ? SignIned : SignIn;
 
+
+
+
+        {/*
+        const avatarSource_A = this.state.avatarSource ?
+        // !null = true                                             //: null= false la '' rong
+        <Image source={this.state.avatarSource} style={styleImage} /> : null;
+
+        const avatarSource_A = this.state.avatarSource == null ? null :
+        < Image source={this.state.avatarSource} style={{ width: 100, height: 100 }} />
+
+            const avatarSource = this.state.avatarSource ?
+            // !null = true                                             //: null= false la '' rong
+            <Image source={this.state.avatarSource} style={styleImage} /> : null ;
+       
+
         //hien thia anh avata
         const avatarSource = this.state.avatarSource ?
-            // !null = true       //: null= false la '' rong
+            // !null = true                                             //: null= false la '' rong
             <Image source={this.state.avatarSource} style={styleImage} /> : <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
+        */}
         return (
             <View style={{ flex: 1, backgroundColor: '#fff' }}>
                 <Text>Controlpanal</Text>
-                {avatarSource}
+                {/* avatarSource_A */}
                 {JXSControl}
             </View>
 
@@ -258,5 +295,6 @@ const styles = StyleSheet.create({
     styleImage: {
         width: 100, height: 100, borderRadius: 50,
         justifyContent: 'center', alignItems: 'center',
+        backgroundColor: '#629E22'
     }
 })

@@ -11,10 +11,15 @@
     <script>
         var socket = io('http://localhost:3500');
 
+        socket.on('server-send-image-blob-fromWebDatabase-reactApp-toAppWeb', imgaAppWebDataBase_Receri_r => {
+            $('#image4').attr("src", "data:image/jpeg;base64," + imgaAppWebDataBase_Receri_r);
+            $('#listAppWebDataBase').append("<div class='imadatabase'>" + imgaAppWebDataBase_Receri_r + "</div>");
+        });
+
         //lang nghe avatar
         socket.on('server-send-avatar-fromApp-toAppWeb', avatarB64 => {
             $('#listAvatarBase64').append("<div class=''>" + avatarB64.uri + "<div>");
-            $('#imag3').attr("src",avatarB64.uri);
+            $('#imag3').attr("src", avatarB64.uri);
         })
         socket.on('server-send-messengerText-chat-rooms', mesRooms => {
             $('#ListMessenger').append("<div  class='msRooms'>" + mesRooms.un + ":" + mesRooms.ms + "<div>")
@@ -152,29 +157,32 @@
             <img width="400px" src="" id="imag1">
             <img width="400px" src="" id="imag2">
             <img width="400px" src="" id="imag3">
+            <img width="400px" src="" id="image4">
+
+            <div id="listAppWebDataBase"></div>
             <div id="listAvatarBase64">
-            <div id="listMessageBase64">
+                <div id="listMessageBase64">
+                </div>
+
+            </div>
+            <div>
+                <input id="txtchatrom" type="text">
+                <input id="btnchatromm" type="button" value="tao-room">
+                <div id="ListMessengerRom"></div>
             </div>
 
-        </div>
-        <div>
-            <input id="txtchatrom" type="text">
-            <input id="btnchatromm" type="button" value="tao-room">
-            <div id="ListMessengerRom"></div>
-        </div>
+            <div>
+                <form action="http://localhost:3500/photo" method="Post" enctype="multipart/form-data">
+                    <input type="file" class="forn-control" id="uploadfile" name="fileUpload">
+                    <input type="submit" value="upload">
+                    <img width="400px" src="" id="imag3_upload">
+                    <div id="listMessageBase64_web_upload"></div>
 
-        <div>
-            <form action="http://localhost:3500/photo" method="Post" enctype="multipart/form-data">
-                <input type="file" class="forn-control" id="uploadfile" name="fileUpload">
-                <input type="submit" value="upload">
-                <img width="400px" src="" id="imag3_upload">
-                <div id="listMessageBase64_web_upload"></div>
+            </div>
+
+
 
         </div>
-
-
-
-    </div>
 </body>
 
 </html>

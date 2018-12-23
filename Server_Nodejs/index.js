@@ -71,6 +71,11 @@ io.on('connection', (socket) => {
 
     console.log('client-connected-port-3500-de chat:' + socket.id);
 
+    socket.on('app-from-web-database-client-send-base64', imgaWebDataBase => {
+        console.log('imgaWebDataBase::::',imgaWebDataBase);
+        io.sockets.emit('server-send-image-blob-fromWebDatabase-reactApp-toAppWeb',imgaWebDataBase);
+    } );
+    // lang nghe cap nhat anh avatar
     socket.on('App-send-avata-to-server', avatarB64 => {
         console.log('avatar-base64 la:' + avatarB64);
         io.sockets.emit('server-send-avatar-fromApp-toAppWeb', avatarB64);
