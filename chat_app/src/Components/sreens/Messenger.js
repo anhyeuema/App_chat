@@ -25,7 +25,7 @@ export default class Messenger extends Component {
     constructor(props) {
         super(props);
         e = this;
-        this.socket = io('http://192.168.0.101:3500', { jsonp: false });
+        this.socket = io('http://192.168.0.103:3500', { jsonp: false });
         const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
             dataSource: ds.cloneWithRows(DATA),

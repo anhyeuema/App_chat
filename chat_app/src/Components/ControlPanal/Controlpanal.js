@@ -1,28 +1,63 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
+import io from 'socket.io-client/dist/socket.io.js';
 
 import global from '../../../api/global';
 import getToken from '../../../api/getToken';
+import saveToken from '../../../api/saveToken';
 import User from '../User/User';
+
+import ImagePicker from 'react-native-image-picker';
+
+// More info on all the options is below in the API Reference... just some common use cases shown here
+const options = {
+    title: 'Select Avatar',
+    customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+    storageOptions: {
+        skipBackup: true,
+        path: 'images',
+    },
+};
 
 export default class Controlpanal extends Component {
 
     constructor(props) {
         super(props);
+        this.socket = io('http://192.168.0.103:3500', { jsonp: false });
         this.state = {
-            isLogin: false,
+            // isLogin: null,
             //     username: null,
-            USER: null,
+            USERNAME: null,
+            avatarSourceReceri: null, //bien lang nghe khi co su thay doi avata
         };
         //   global.OnSignIn = this.OnSignIn.bind(this); //khai bao ham lobal.onSignIn = ham this.onSignIn.bind(this) o day
         // global.OnSignIn = () =>{ this.OnSignIn1()}; //khai bao ham lobal.onSignIn = ham this.onSignIn.bind(this) o day
         global.OnSignIn = this.OnSignIn1.bind(this);
+
+        //lang nghe khi co thay doi avatar
+        this.socket.on('server-send-avatar-fromApp-toAppWeb', avatarSourceReceriB64 => {
+            console.log(avatarSourceReceriB64.uri);
+            this.setState({
+                avatarSourceReceri: avatarSourceReceriB64
+            });
+            console.log('this.state.avatarSourceReceri:::', this.state.avatarSourceReceri);
+        });
     }
 
 
 
     OnSignIn1(Users) {
+        console.log('Users global COntrolpanal---::::', Users);
+        this.setState({
+            // USER = false na de y ham  JXSControl = this.state.USER ? SignIn : SignIned;
+            // co nghia la SignIned tuong uong voi USER = false nghia la se nhay vao ham SignIned
+            USERNAME: Users, // USER = username1 nghia la USER != null thi se nhay ham
+            //const JXSControl = this.state.USER ? SignIn : SignIned; tu ham nay ta se co SignIned
+            //  isLogin: true
+        });
+        console.log('this.state.USERNAME COntrolpanal::::', this.state.USERNAME);
+        /*
         getToken('@Users')
             .then(Users1 => {
                 console.log('Users:::::', Users1);
@@ -31,9 +66,9 @@ export default class Controlpanal extends Component {
                     // co nghia la SignIned tuong uong voi USER = false nghia la se nhay vao ham SignIned
                     USER: Users1, // USER = username1 nghia la USER != null thi se nhay ham
                     //const JXSControl = this.state.USER ? SignIn : SignIned; tu ham nay ta se co SignIned
-                    isLogin: true
+                  //  isLogin: true
                 });
-                console.log('this.state.USER::::', this.state.USER);
+                console.log('this.state.USER COntrolpanal::::', this.state.USER);
                 if (this.state.USER !== null) { //co username tra ve thi la da SignIned
                     // USER = false na de y ham  JXSControl = this.state.USER ? SignIn : SignIned;
                      // co nghia la SignIned tuong uong voi USER = false nghia la se nhay vao ham SignIned
@@ -41,8 +76,8 @@ export default class Controlpanal extends Component {
                       //  isLogin: true
                      });
                 } 
-                console.log('this.state.isLogin::::', this.state.isLogin);
-            });
+                console.log('this.state.isLogin COntrolpanal::::', this.state.isLogin);
+            }); */
 
         /*
         console.log('Username VE CHO THONG TIN NGUOI DUNG KHI DANG NHAP THANH CONG::::', Users);
@@ -68,20 +103,47 @@ export default class Controlpanal extends Component {
     }
 
     ImagPicker() {
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
 
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+                //const source = { uri: response.uri };
+
+                // You can also display the image using data:
+                const source = { uri: 'data:image/jpeg;base64,' + response.data };  // image da chuyen sang dang base64
+                console.log('source::::', source);
+                console.log('response.data::::', response.data);
+                this.setState({
+                    avatarSource: source,
+                });
+                this.socket.emit('App-send-avata-to-server', this.state.avatarSource);
+            }
+        });
     }
 
 
 
     LogOut() { //xoa token
-        this.setState({ username: mull });
-        saveToken('@token', '');
+        //  this.setState({ username: mull });
+        this.setState({ USERNAME: null });
+        saveToken('@token_time', '');
+
+        /*
         this.setState({
             // USER = false na de y ham  JXSControl = this.state.USER ? SignIn : SignIned;
             // co nghia la SignIned tuong uong voi USER = false nghia la se nhay vao ham SignIned
             USER: true,
 
-        });
+        }); */
+        getToken('@token_time')
+            .then(token_time_r => console.log('token_time_r sau khi logout controlpanal', token_time_r))
+            .catch(e => console.log(e));
     }
 
     gotoAuthentication() {
@@ -95,20 +157,23 @@ export default class Controlpanal extends Component {
     }
 
     render() {
-        const { styleSignIn, txtSignInStyle, styleAvata } = styles;
+        const { styleSignIn, txtSignInStyle, styleAvata, styleImage } = styles;
+       
+        const avatarSourceReceri_A = this.state.avatarSourceReceri ?
+            // !null = true       //: null= false la '' rong
+            <Image source={this.state.avatarSourceReceri} style={styleImage} /> : <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
+
         const SignIn = (
             <View style={{ flex: 1, backgroundColor: '#E61A5F', justifyContent: 'center', alignItems: 'center', }}>
                 <Image
-                    style={{ width: 100, height: 100, borderRadius: 50, justifyContent: 'center', alignItems: 'center', }}
+                    style={styleImage}
                     source={require('../../../public/imgaes/gaixinh.jpg')}
                 />
-
-
                 <TouchableOpacity onPress={() => this.gotoAuthentication()} style={styleSignIn}>
                     <Text style={txtSignInStyle}>SingIn</Text>
                 </TouchableOpacity>
 
-                <Text>nguyen anh{this.state.USER ? this.state.USER : ''}</Text>
+                <Text>nguyen{this.state.USERNAME ? this.state.USERNAME : ''}</Text>
 
             </View>
         );
@@ -117,12 +182,25 @@ export default class Controlpanal extends Component {
             <View style={{ flex: 1, backgroundColor: '#E61A5F', justifyContent: 'center', alignItems: 'center', }}>
                 <TouchableOpacity onPress={() => this.ImagPicker()} style={styleAvata} >
                     <Text>Doi Avata</Text>
+
                 </TouchableOpacity>
-                <Image
-                    style={{ width: 100, height: 100, borderRadius: 50, justifyContent: 'center', alignItems: 'center', }}
-                    source={require('../../../public/imgaes/gaixinh.jpg')}
-                />
-                <Text>nguyen van anh{this.state.username}</Text>
+
+
+                <TouchableOpacity onPress={() => this.ImagPicker()} style={styleAvata} >
+                    {avatarSourceReceri_A}
+
+                    {/*
+                    <Image
+                        style={styleImage}
+                        source={require('../../../public/imgaes/gaixinh.jpg')}
+                    />
+                    
+                    <Image source={this.state.avatarSourceReceri } style={styleImage} />
+                    */}
+                </TouchableOpacity>
+
+
+                <Text>nguyen{this.state.USERNAME ? this.state.USERNAME : ''}</Text>
                 <TouchableOpacity onPress={() => this.gotoUser()} style={styleSignIn} >
                     <Text>changInfo</Text>
                 </TouchableOpacity>
@@ -134,13 +212,19 @@ export default class Controlpanal extends Component {
         );
         //USER = null ? dung thi SignIn
         //USER != null ? dung thi SignIned
-       // const JXSControl = this.state.USER ? SignIned : SignIn;
-       // const JXSControl = this.state.isLogin ? SignIn : SignIned ;
-                                            //? true : false
-       const JXSControl = this.state.isLogin ? SignIned:SignIn;
+        // const JXSControl = this.state.USER ? SignIned : SignIn;
+        // const JXSControl = this.state.isLogin ? SignIn : SignIned ;
+        //? true <=> !null : false <=> null
+        const JXSControl = this.state.USERNAME ? SignIned : SignIn;
+
+        //hien thia anh avata
+        const avatarSource = this.state.avatarSource ?
+            // !null = true       //: null= false la '' rong
+            <Image source={this.state.avatarSource} style={styleImage} /> : <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
         return (
             <View style={{ flex: 1, backgroundColor: '#fff' }}>
-                <Text>Controlpanalfffff</Text>
+                <Text>Controlpanal</Text>
+                {avatarSource}
                 {JXSControl}
             </View>
 
@@ -170,5 +254,9 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20, borderTopRightRadius: 15,
         borderBottomLeftRadius: 20, borderBottomRightRadius: 15,
         marginBottom: 10,
+    },
+    styleImage: {
+        width: 100, height: 100, borderRadius: 50,
+        justifyContent: 'center', alignItems: 'center',
     }
 })

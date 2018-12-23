@@ -25,7 +25,7 @@ export default class Authentication extends Component {
     }
 
     DangKy() {
-        fetch('http://192.168.0.101:81/App_Chat_Web/chat/Register.php', {
+        fetch('http://192.168.0.103:81/App_Chat_Web/chat/Register.php', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -65,7 +65,7 @@ export default class Authentication extends Component {
 
 
     DangNhap() { //la DangNhap duoc fetch len Login.php
-        fetch('http://192.168.0.101:81/App_Chat_Web/chat/Login.php', { //(####)
+        fetch('http://192.168.0.103:81/App_Chat_Web/chat/Login.php', { //(####)
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -108,7 +108,7 @@ export default class Authentication extends Component {
                         console.log('token_duoc-luu o saveToken - sau khi dang nhap la: ', token);
                     })
                     .catch(e => console.log(e));
-                saveToken("@token_time", token_time_1);
+                saveToken("@token_time", token_time_1); //luu token_time de su dung khi mo App len thi vao trang chu ta set kiemtratokenApp de lay Username ve va dung global truyen cho Component Controlpanal
                 getToken("@token_time")
                     .then(token_time_r => {
                         console.log('token_time duoc-luu o saveToken - sau khi dang nhap la: ', token_time_r);
@@ -122,11 +122,12 @@ export default class Authentication extends Component {
                     // dung nho nhu dau ten_ham_dung_no(usename_new ){ this.setState({ username: username_1 })}
                     // o day bie nay usename hung giatri  tu =a.Username truyn tu Compoent Authenticatio.js truyen sang
                     // global.OnSignIn(a.Username); 
-                    console.log('aaasasasasasasasasasasas', a.Username);
+                    console.log('Username se truyen tu authentication bang global', a.Username);
                     saveToken('@Users', a.Username);
                     // global.OnSignIn(a.Users);
-                    global.OnSignIn(a.Username);
-                    this.goBackToControlpanal();
+                    console.log('bat daut tu Authentication truyen Username Bang ham global sang cho Conponent Controlpanal su ly ');
+                    global.OnSignIn(a.Username); // truyen gia tri Username = a.Username  cho conponent Controlpannal
+                    this.goBackToControlpanal();//truyen xong cho hay toi trang chu goi ham this.goBackToControlpanal trong conponent nay
                 } else {
                     console.log('loi dang nhap');
                 }
@@ -153,7 +154,7 @@ export default class Authentication extends Component {
     checkLogin() { //checkLogin = checkToken
 
         const KieTraToken = async (varToken) => { // gui token voi ten token voi ten token la TOKEN
-            fetch('http://192.168.0.101:81/App_Chat_Web/chat/checkToken.php', {
+            fetch('http://192.168.0.103:81/App_Chat_Web/chat/checkToken.php', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -215,7 +216,7 @@ export default class Authentication extends Component {
     refreshToken() {
 
         const RefreshToken_time = async (varToken_time) => {
-            fetch('http://192.168.0.101:81/App_Chat_Web/chat/refreshToken.php', {
+            fetch('http://192.168.0.103:81/App_Chat_Web/chat/refreshToken.php', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',

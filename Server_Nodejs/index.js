@@ -71,6 +71,11 @@ io.on('connection', (socket) => {
 
     console.log('client-connected-port-3500-de chat:' + socket.id);
 
+    socket.on('App-send-avata-to-server', avatarB64 => {
+        console.log('avatar-base64 la:' + avatarB64);
+        io.sockets.emit('server-send-avatar-fromApp-toAppWeb', avatarB64);
+    });
+
     socket.on('web-send-messenger-chat-rooms', mesRooms => {
         console.log('messenger Rooms : ' + mesRooms);
         io.sockets.in(socket.phong).emit('server-send-messengerText-chat-rooms',{ms: mesRooms, un: socket.Username} )

@@ -24,9 +24,15 @@ export default class Trangchu extends Component {
                         var a = JSON.parse(res._bodyText);
                         //  var a = res;
                         var username1 = a.Username;
-
-
-                        global.OnSignIn(a.Username);
+                        console.log('username trang chu::::', username1);
+                        if ( username1 !== null ) {
+                            console.log('bat dau tu trang chu truyen Username bang ham global sang cho Conponent Controlpanal su ly ');
+                            global.OnSignIn(a.Username);
+                        } else {
+                            console.log('bat dau truyen Username rong [] tu ham global sang cho Conponent Controlpanal su ly ');
+                       
+                        }
+                       // global.OnSignIn(a.Username);
                         //global.OnSignIn(a.username) 
                         //truyen gia tri username1 = a.username qua global bang module.exports {onSignIn: null}
                         // ban dau co  ham (OnSignIn = null). 
@@ -37,27 +43,28 @@ export default class Trangchu extends Component {
                         //va can import vao componet chua OnsignIn thu module import global from '../global' 
 
 
-                        console.log('username::::', username1);
+                       
                         var token_time_1 = a.token_time;
                         var token_new1 = a.token;
-                        console.log('token_new1::::', token_new1);
+                        console.log('token_new1_ trang  chu::::', token_new1);
                         // e.setState({tokenNew: token_new1,token_time: token_new1,});
                         //  saveToken('@token', this.state.tokenNew);  
                         saveToken('@token', token_new1);
                         getToken('@token')
                             .then(token => {
-                                console.log('token_new:::::', token);
+                                console.log('token_new trang chu:::::', token);
                             }).catch(e => console.log(e));
                         saveToken('@token_time', token_time_1);
                         getToken('@token_time')
                             .then(token => {
-                                console.log('token_time:::::', token);
+                                console.log('token_time  trang chu:::::', token);
                             }).catch(e => console.log(e));
 
                     })
             })
     }
 
+    
     closeControlPanel = () => {
         this._drawer.close()
     };
@@ -65,9 +72,10 @@ export default class Trangchu extends Component {
         this._drawer.open()
     };
 
+    /*
     componentDidMount() {
         this._drawer.open()
-    }
+    } */
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }}>
