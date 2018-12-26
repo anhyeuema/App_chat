@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, ListView, RefreshControl, TextInput, Image, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, RefreshControl, TextInput, Image, StyleSheet, FlatList } from 'react-native';
 
 import ImagePicker from 'react-native-image-picker'; //yarn add react-native-image-picker// react-native link react-native-image-picker
 import io from 'socket.io-client/dist/socket.io.js';
@@ -28,11 +28,11 @@ export default class Messenger extends Component {
     constructor(props) {
         super(props);
         e = this;
-        this.socket = io('http://192.168.0.103:3500', { jsonp: false });
-        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+        this.socket = io('http://192.168.0.106:3500', { jsonp: false });
+        //   const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
-            resDATA: '',
-            dataSource: ds.cloneWithRows(DATA),
+            resDATA: [],
+            //    dataSource: ds.cloneWithRows(DATA),
             messengerText: '',
             username: '',
             messengerImage: null,
@@ -45,8 +45,21 @@ export default class Messenger extends Component {
 
             page: 1,
             refreshing: false,
+
+            avatarSourceUpLoadBase64: null, // upload Image to server nodejs
+
+            mang: [
+                { key: '1', ten: 'nam' },
+                { key: '2', ten: 'nam' },
+                { key: '3', ten: 'nam' },
+                { key: '4', ten: 'nam' },
+            ],
+            ima: '', //hung image 
         };
 
+       // var i=1;
+
+        this.arr = [];
         /*
         const setStateImage = () => ({
             ImagePk_1: this.state.ImagePk,
@@ -55,6 +68,8 @@ export default class Messenger extends Component {
 
         }); */
 
+
+        
         this.socket.on('server-send-messenger-from-app-to-AppAndWeb', async (mesT) => {
             console.log('app dang nhan messenger text');
             await e.setState({
@@ -66,17 +81,18 @@ export default class Messenger extends Component {
                 messengerText1: this.state.messengerText,
                 username1: this.state.username,
             };
+
+            this.arr = res;
             await e.setState({
                 resDATA: res,
-                dataSource: ds.cloneWithRows(res),
+                dataSource: ds.cloneWithRows(this.arr),
             });
 
             console.log('this.state.messengerText::', this.state.messengerText);
             console.log('this.state.username:::', this.state.username);
-            console.log('this.state.dataSource:::', this.state.dataSource);
             console.log('this.state.resDATA:::', this.state.resDATA);
         });
-
+        
 
         //lang nghe su kien app send messengerImage to server nodejs va tu server nodejs tra ve App va web
         this.socket.on('server-send-imagePK-fromApp-toAppWeb', async (imagePIK) => { // messengerImage
@@ -87,16 +103,29 @@ export default class Messenger extends Component {
             });
 
             /*
-            res = setStateImage();
-            console.log('res-------------------------------------:::::', res); */
+            res = [
+                { key: '1', ImagePk_1: this.state.ImagePk },
+                { key: '2', ImageWebBase64_1: this.state.ImageWebBase64 },
+                { key: '3', imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri },
+            ]; 
             
-            res = await {
-                ImagePk_1: this.state.ImagePk,
-            } 
+            res = [
+                { key: "1", ima: this.state.ImagePk },
+                { key: "2", ima: this.state.ImageWebBase64 },
+                { key: "3", ima: this.state.imgaAppWebDataBase_Receri },
+            ];*/
 
+            
+            var res = [
+                { key: "1", ima: this.state.ImagePk },
+                { key: "2", ima: this.state.ImageWebBase64 },
+                { key: "3", ima: this.state.imgaAppWebDataBase_Receri },
+            ];
+
+            this.arr = res;
             await e.setState({
                 resDATA: res,
-                dataSource: ds.cloneWithRows(res),
+                //     dataSource: ds.cloneWithRows(this.arr),
             });
 
 
@@ -118,23 +147,32 @@ export default class Messenger extends Component {
             });
 
             /*
-            res = setStateImage();
-            console.log('res-------------------------------------:::::', res); */
-            
-            res = {
-            ImageWebBase64_1: this.state.ImageWebBase64,
+             res = [
+                { key: '2', ImageWebBase64_1: this.state.ImageWebBase64 },
+                { key: '1', ImagePk_1: this.state.ImagePk },
+                { key: '3', imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri },
+            ];
+             res = [
+                { key: "1", ima: this.state.ImagePk },
+                { key: "2", ima: this.state.ImageWebBase64 },
+                { key: "3", ima: this.state.imgaAppWebDataBase_Receri },
+            ]; */
 
-            } 
+            var res = [
+                { key: "1", ima: this.state.ImagePk },
+                { key: "2", ima: this.state.ImageWebBase64 },
+                { key: "3", ima: this.state.imgaAppWebDataBase_Receri },
+            ];
+
+            this.arr = res;
 
             e.setState({
                 resDATA: res,
-                dataSource: ds.cloneWithRows(res),
+                //      dataSource: ds.cloneWithRows(this.arr),
             });
             console.log('this.state.ImageWebBase64:::::', this.state.ImageWebBase64);
             console.log('this.state.ImageWebBase64.uri:::::', this.state.ImageWebBase64.uri);
             console.log('this.state.resDATA::::', this.state.resDATA);
-            console.log('this.state.dataSource::::', this.state.dataSource);
-            console.log('this.state.dataSource._dataBlob.s1.ImageWebBase64_1::::', this.state.dataSource._dataBlob.s1.ImageWebBase64_1);
 
 
         });
@@ -149,17 +187,27 @@ export default class Messenger extends Component {
             });
 
             /*
-            res = setStateImage();
-            console.log('res-------------------------------------:::::', res); */
-            
-            res = {
-            
-                imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri,
-            } 
+            res = [
+                { key: '2', ImageWebBase64_1: this.state.ImageWebBase64 },
+                { key: '1', ImagePk_1: this.state.ImagePk },
+                { key: '3', imgaAppWebDataBase_Receri_1: this.state.imgaAppWebDataBase_Receri }
+            ];
+             res = [
+                { key: "1", ima: this.state.ImagePk },
+                { key: "2", ima: this.state.ImageWebBase64 },
+                { key: "3", ima: this.state.imgaAppWebDataBase_Receri },
+            ]; */
 
+            var res = [
+                { key: "1", ima: this.state.ImagePk },
+                { key: "2", ima: this.state.ImageWebBase64 },
+                { key: "3", ima: this.state.imgaAppWebDataBase_Receri },
+            ];
+
+            this.arr = res;
             e.setState({
                 resDATA: res,
-                dataSource: ds.cloneWithRows(res),
+                //     dataSource: ds.cloneWithRows(this.arr),
             })
         });
 
@@ -178,7 +226,8 @@ export default class Messenger extends Component {
         console.log('app dang gui image picker');
     }
 
-    
+
+
     taohang(property) {
         this.arr = property;
 
@@ -247,6 +296,7 @@ export default class Messenger extends Component {
                 const sourceBase64 = { uri: 'data:image/jpeg;base64,' + response.data };// uri de hien thi tran web nhang ta the hien ca o web nen chi chuyen base64
                 console.log(sourceBase64);
                 this.setState({
+                    avatarSourceUpLoadBase64: response.data,
                     avatarSource: source,
                     messengerImage: sourceBase64,
 
@@ -256,13 +306,13 @@ export default class Messenger extends Component {
     }
 
     uploadToServer() {
-        RNFetchBlob.fetch('POST', 'http://192.168.0.103:1500/reactNative/Upload', {
+        RNFetchBlob.fetch('POST', 'http://192.168.0.106:1500/reactNative/Upload', {
             Authorization: "Bearer access-token",
             otherHeader: "foo",
             'Content-Type': 'multipart/form-data',
         }, [
                 // element with property `filename` will be transformed into `file` in form data
-                { name: 'avatar', filename: 'avatar.png', data: this.state.messengerImage },
+                { name: 'avatar', filename: 'avatar.png', data: this.state.avatarSourceUpLoadBase64 },
                 // custom content type
                 //    { name: 'avatar-png', filename: 'avatar-png.png', type: 'image/png', data: binaryDataInBase64 },
                 // part file from storage
@@ -278,12 +328,12 @@ export default class Messenger extends Component {
             ]).then((resp) => {
                 // ...
             }).catch((err) => {
-                // ...
+                console.log(err);
             })
     }
 
     EmitImageFromWebDatabase() {
-        RNFetchBlob.fetch('GET', 'http://192.168.0.103:81/api/images/product/56.jpg', {
+        RNFetchBlob.fetch('GET', 'http://192.168.0.106:81/api/images/product/56.jpg', {
             Authorization: 'Bearer access-token...',
             // more headers  ..
         })
@@ -304,8 +354,8 @@ export default class Messenger extends Component {
             })
     }
     render() {
+        const { btnStyle, styleTextInput, styleImage, styleText, styleImage1, styleImage2, styleImage3 } = styles;
 
-        const { btnStyle, styleTextInput, styleImage, styleText } = styles;
         const ImagePk_A = this.state.ImagePk == null ? null : //hien thi cai lang nghe duoc tu emit picker
             <Image source={this.state.ImagePk} style={styleImage} />
         const ImageWebBase64_A = this.state.ImageWebBase64 == null ? null :
@@ -316,10 +366,35 @@ export default class Messenger extends Component {
 
         const imgaAppWebDataBase_Receri_A = this.state.imgaAppWebDataBase_Receri == null ? null : //hien thi image tu app fetch len database va lay base64 emit server nodejs va verver tra ve cho AppWeb
             <Image source={this.state.imgaAppWebDataBase_Receri} style={styleImage} />
+
+
+
+        /*
+        //neu = null  thi == imageNull
+        const imageNull = <Image source={require('../../../public/imgaes/gaixinh.jpg')} style={styleImage} />;
+
+        //image = from-web-server-to-AppWeb
+        // neu  property.ImageWebBase64_1 = null la true = imageNull
+        const ImageWebBase64_A_lv = property.ImageWebBase64_1 == null ? imageNull : //lang nghe image gui tu web to server va server tra ve app va web
+            < Image source={property.ImageWebBase64} style={{ width: 50, height: 60, backgroundColor: '#60B15D' }} />
+        ////image = from-App-server-to-AppWeb
+
+        const ImagePk_A_lv = property.ImagePk_1 == null ? imageNull : //;lay o ham showImagePicker //hien thi cai lang nghe duoc tu emit picker
+            <Image source={property.ImagePk_1} style={{ width: 50, height: 60, backgroundColor: '#F15A24' }} />
+        //image = from-app-datatbase-server-to-AppWeb
+        const imgaAppWebDataBase_Receri_A_lv = property.imgaAppWebDataBase_Receri_1 == null ? imageNull : //hien thi image tu app fetch len database va lay base64 emit server nodejs va verver tra ve cho AppWeb
+            <Image source={property.imgaAppWebDataBase_Receri_1} style={{ width: 50, height: 60, backgroundColor: '#2C2255' }} />
+        */
+
+
+
         return (
             <View style={{ flex: 1, backgroundColor: '#FFFF' }}>
+                <TouchableOpacity onPress={() => this.uploadToServer()} style={btnStyle} >
+                    <Text>uploadToServer</Text>
+                </TouchableOpacity>
                 <Text>Component Messenger</Text>
-                <View style={{ flex: 1, backgroundColor: '#766F82' }}>
+                <View style={{ flex: 2, backgroundColor: '#766F82' }}>
                     <View style={{ flex: 2, backgroundColor: '#1C82CD', justifyContent: 'center', alignItems: 'center' }}>
                         <TextInput
                             onChangeText={text => this.setState({ messengerText: Text })}
@@ -351,13 +426,12 @@ export default class Messenger extends Component {
                     </View>
 
                 </View>
-                <View style={{ flex: 1, backgroundColor: '#B6DFCA' }}>
+                <View style={{ flex: 1, backgroundColor: '#A3DE64' }}>
+
+                    {/*
                     <ListView
                         dataSource={this.state.dataSource}
-
-
                         renderRow={this.taohang}
-
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.state.refreshing}
@@ -366,11 +440,12 @@ export default class Messenger extends Component {
                                     const newpage = this.state.page + 1;
                                     this.taoHang(property, newpage)
                                         .then(() => {
-                                            this.arr = property.concat(this.arr);
+                                            this.arr = this.arr.concat(property); //pust mang no vao
                                             this.setState({ //refresh lai cai mang dua vao dataSource
-                                                dataSource: ds.cloneWithRows(this.state.resDATA),
+                                                dataSource: ds.cloneWithRows(this.arr),
                                                 refreshing: false,
-                                            })
+                                            });
+                                           
                                         }
                                         )
                                         .catch(e => console.log(e));
@@ -378,6 +453,34 @@ export default class Messenger extends Component {
                             />
                         }
                     />
+                    */}
+
+                    <FlatList
+                        data={this.state.resDATA}
+                        renderItem={({ item }) =>
+
+                            <View style={styles.dong}>
+
+                                <View style={styles.bentrai}>
+                                    <Image source={item.ima} style={styleImage} />
+                                     {/* 
+                                    <Text>{item.ten}</Text>
+                                     <Image source={item.ImageWebBase64_1} style={styleImage} />
+                                    <Image source={item.ImagePk_1} style={styleImage} />
+                                    <Image source={item.imgaAppWebDataBase_Receri_1} style={styleImage} />
+                                   */}
+                                </View>
+
+                                <View style={styles.bentrai}>
+                                    <Text>{item.key}</Text>
+
+                                </View>
+
+                            </View>
+
+                        }
+                    />
+
                 </View>
 
             </View>
@@ -386,6 +489,15 @@ export default class Messenger extends Component {
 }
 
 const styles = StyleSheet.create({
+    dong: {
+        flex: 1, borderBottomWidth: 1, padding: 50, backgroundColor: '#ffff', flexDirection: 'row'
+    },
+    bentrai: {
+        flex: 1, backgroundColor: '#243D1E'
+    },
+    bentrai: {
+        flex: 4, backgroundColor: '#375EED'
+    },
     btnStyle: {
         width: 100, height: 16,
         justifyContent: 'center', alignItems: 'center',
@@ -398,7 +510,7 @@ const styles = StyleSheet.create({
         height: 10, borderWidth: 1, borderColor: '#E61A5F'
     },
     styleImage: {
-        width: 50, height: 60
+        width: 80, height: 90
     },
     styleImage1: {
         width: 50, height: 60, backgroundColor: '#60B15D'

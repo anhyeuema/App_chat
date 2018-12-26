@@ -1,11 +1,12 @@
 var express = require('express');
 var app = express();
-
+var path = require('path');
 var Formidable = require('express-formidable');
 
 var server = require('http').Server(app);
 
 app.use(express.static('public'));// khai bao thu vien cho file duoi .js trong file ejs
+app.use(express.static(path.join(__dirname, 'upload'))); //thu muc de chua thu vien cho anh trong file ejs hoac html
 
 app.set('view engine', 'ejs'); //khai bao su dung ejs khi res.render
 app.set('views', './views');
@@ -72,17 +73,17 @@ io.on('connection', (socket) => {
     console.log('client-connected-port-3500-de chat:' + socket.id);
 
     socket.on('app-from-web-database-client-send-base64', imgaWebDataBase => {
-        console.log('imgaWebDataBase::::',imgaWebDataBase);
+     //   console.log('imgaWebDataBase::::',imgaWebDataBase);
         io.sockets.emit('server-send-image-blob-fromWebDatabase-reactApp-toAppWeb',imgaWebDataBase);
     } );
     // lang nghe cap nhat anh avatar
     socket.on('App-send-avata-to-server', avatarB64 => {
-        console.log('avatar-base64 la:' + avatarB64);
+      //  console.log('avatar-base64 la:' + avatarB64);
         io.sockets.emit('server-send-avatar-fromApp-toAppWeb', avatarB64);
     });
 
     socket.on('web-send-messenger-chat-rooms', mesRooms => {
-        console.log('messenger Rooms : ' + mesRooms);
+     //   console.log('messenger Rooms : ' + mesRooms);
         io.sockets.in(socket.phong).emit('server-send-messengerText-chat-rooms',{ms: mesRooms, un: socket.Username} )
     });
     socket.on('tao-room-web', nameRoom => {
@@ -104,12 +105,12 @@ io.on('connection', (socket) => {
 
     socket.on('app-send-image-picker', imagePicker => {
         // imagePicker = {uri: 'data:image/jpeg;base64,' + base64}
-        console.log("imagePicker::::" + imagePicker);
+     //   console.log("imagePicker::::" + imagePicker);
         io.sockets.emit('server-send-imagePK-fromApp-toAppWeb', imagePicker);
 
     })
     socket.on('app-send-messenger-text', MS => {
-        console.log('messenger la : ' + MS);
+      //  console.log('messenger la : ' + MS);
         io.sockets.emit('server-send-messenger-from-app-to-AppAndWeb', { un: socket.id, ms: MS })
     })
     socket.on('web-send-messenger', (mstext) => {
@@ -131,7 +132,7 @@ io.on('connection', (socket) => {
         
     });
     socket.on('web-send-messenger-text', mesWeb => {
-        console.log('messenger Web: ' + mesWeb);
+     //   console.log('messenger Web: ' + mesWeb);
         io.sockets.emit('server-send-from-mesWeb-toAppWeb', {ms: mesWeb, un: socket.Username});
     }) ;
 });
@@ -183,6 +184,8 @@ var express = require('express');
 var app2  = express();
 app2.listen(1500, console.log('app2-start-port 1500-upload-image-From-app-to-web'))
 
+app2.use('/', express.static(path.join(__dirname, 'public')));
+
 var Formidable = require('express-formidable');
 app2.use(Formidable({
     uploadDir: './public/upload',
@@ -190,9 +193,10 @@ app2.use(Formidable({
 }));
 
 app2.post('/reactNative/Upload', (req, res) => {
-    console.log('req.fields::::', req.fields);
+    console.log('req.fields::::', req.fields); //truong l phai image hoac file 
     console.log('req.files::::', req.files);
-    res.send('hello server http://192.168.0.103:1500/reactNative/Upload')
+    console.log('req.files.path::::', req.files.path);
+    res.send('hello server http://192.168.0.106:1500/reactNative/Upload')
 });
 
 
