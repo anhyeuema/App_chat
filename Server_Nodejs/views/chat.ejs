@@ -11,6 +11,16 @@
     <script>
         var socket = io('http://localhost:3500');
 
+        //server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
+        socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', socketUsrieng => {
+            alert(socketUsrieng);
+        });
+
+        //lang nghe  socketID chat rieng
+        socket.on('server-send-socketID-Rieng', socketIDrIENG => {
+            alert(socketIDrIENG);
+        });
+
         socket.on('server-send-image-blob-fromWebDatabase-reactApp-toAppWeb', imgaAppWebDataBase_Receri_r => {
             $('#image4').attr("src", "data:image/jpeg;base64," + imgaAppWebDataBase_Receri_r);
             $('#listAppWebDataBase').append("<div class='imadatabase'>" + imgaAppWebDataBase_Receri_r + "</div>");

@@ -9,6 +9,8 @@ import io from 'socket.io-client/dist/socket.io.js';
 import ImagePicker from 'react-native-image-picker'; //yarn add react-native-image-picker// react-native link react-native-image-picker
 import RNFetchBlob from 'react-native-fetch-blob'; //yarn add react-native-fetch-blob//react-native link
 
+import global from '../../../api/global';
+
 const options = {
     title: 'Select Avatar',
     customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
@@ -24,7 +26,7 @@ export default class Status extends Component {
 
     constructor(props) {
         super(props);
-        this.socket = io('http://192.169.0.103:3500', { jsonp: false });
+        this.socket = io('http://192.168.0.101:3500', { jsonp: false });
         this.state = {
             mang: [
                 { key: '1', tuoi: 19, ten: 'nguyennam' },
@@ -38,12 +40,77 @@ export default class Status extends Component {
             avatarSourceUpLoadBase64: null,
             page: 1,
             txt: 'hello',
-        }
+
+            dsmangSocketID: null,
+
+            Username: null,
+
+            dsSoketUsername: null,
+        };
+
+        global.OnSignIn = this.LayRaUsername.bind(this);
+
+        // global.OnSignIn = () => {this.LayRaUsername()};
+
+
+        //server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
+        this.socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', socketUsrieng => {
+            alert(socketUsrieng);
+        })
+
+        // lang nghe mang danh sach socket.Username //server-send-socket.Username
+        this.socket.on('server-send-socket.Username', dsSoketUs => {
+            console.log('danh sach socket.username', dsSoketUs);
+            this.setState({
+                dsSoketUsername: dsSoketUs
+            });
+            console.log('this.state.dsSoketUsername:::', this.state.dsSoketUsername);
+        });
+
+        //lang nghe server send socketID rieng sau khi nha TouchableOpacity de emit tu app qua server va lai ve app
+        this.socket.on('server-send-socketID-Rieng', socketIDrieng => {
+            alert(socketIDrieng);
+        });
+
+        //lag nghe server gui danh sanh socketID len App
+        this.socket.on('server-send-danhsach-socketID', mangSoketID => {
+            console.log('mangSocketID:::', mangSoketID);
+            this.setState({
+                dsmangSocketID: mangSoketID
+            });
+            console.log('this.state.dsmangSocketID:::', this.state.dsmangSocketID);
+        });
+
+        //ban than soketID cua app la gi 
+        this.socket.on('socketid-cua-ca-nhan-app-do-la-gi', socketIDapp => {
+            console.log('socket-id-cua-app-nay-la socketIDapp =: ' + socketIDapp);
+        });
+
+    }
+
+    LayRaUsername(username) {
+        this.setState({
+            Username: username,
+        });
+        console.log('this.state.Username StatusZZZZZZZ::::', this.state.Username);
+        this.socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', this.state.Username);
+        console.log('App dang-send-Username-ca-nhan trong coment Status::::');
     }
 
     componentDidMount() {
-        var uri = 'http://192.168.216.2:81/App_Chat_Web/DemoFlatList/DemoFlat2.php?trang=1';
-        var uri1 = 'http://192.168.216.2:81/App_Chat_Web/DemoFlatList/DemoFlat.php';
+
+        const LayRaUsername = (username) =>{
+            this.setState({
+                Username: username,
+            });
+            console.log('this.state.Username StatusZZZZZZZ::::', this.state.Username);
+            this.socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', this.state.Username);
+            console.log('App dang-send-Username-ca-nhan trong coment Status::::');
+        };
+        LayRaUsername();
+
+        var uri = 'http://192.168.0.101:81/App_Chat_Web/DemoFlatList/DemoFlat2.php?trang=1';
+        var uri1 = 'http://192.168.0.101:81/App_Chat_Web/DemoFlatList/DemoFlat.php';
         this.setState({ refresh: true });
         fetch(uri)
             .then(res => {
@@ -92,7 +159,7 @@ export default class Status extends Component {
     }
 
     uploadToServer() {
-        RNFetchBlob.fetch('POST', 'http://192.168.216.2:81/App_Chat_Web/DemoFlatList/upload.php', {
+        RNFetchBlob.fetch('POST', 'http://192.168.0.101:81/App_Chat_Web/DemoFlatList/upload.php', {
             Authorization: "Bearer access-token",
             otherHeader: "foo",
             'Content-Type': 'multipart/form-data',
@@ -112,8 +179,8 @@ export default class Status extends Component {
                     })
                 },
             ]).then((resp) => {
-                console.log("resp:::::",resp);
-                console.log("resp.path:::::",resp.path);
+                console.log("resp:::::", resp);
+                console.log("resp.path:::::", resp.path);
             }).catch((err) => {
                 console.log(err);
             })
@@ -128,8 +195,13 @@ export default class Status extends Component {
 
     }
 
+    chatCaNhan() {
+        const { navigator } = this.props;
+        navigator.push({ name: 'Chat_Ca_Nhan' });
+    }
+
     Refresh() {
-        fetch('http://192.168.216.2:81/App_Chat_Web/DemoFlatList/DemoFlat1.php')
+        fetch('http://192.168.0.101:81/App_Chat_Web/DemoFlatList/DemoFlat1.php')
             .then(res => {
                 // console.log('res::', res);
                 var a = JSON.parse(res._bodyInit);
@@ -147,10 +219,14 @@ export default class Status extends Component {
         return (
             <View style={styles.styleStatus}>
                 <Text>Component Status</Text>
+                <TouchableOpacity onPress={() => this.chatCaNhan()}>
+                    <Text> chatCaNhan </Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => {
                     this.refs.danhsach.scrollToEnd()
-                }}>  
-                 <Text>{this.state.txt}</Text>
+                }}>
+                    <Text>{this.state.txt}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => this.ShowImage_piker()}>
@@ -162,7 +238,35 @@ export default class Status extends Component {
                 {imagpicker}
 
                 <FlatList
+                    data={this.state.dsSoketUsername}
+                    renderItem={({ item }) => {
+                        <TouchableOpacity onPress={() => {
+                            alert(item.key);
+                            this.socket.emit('app-send-socket.username-va-messenger', item.UsSoket);
+                            console.log('server dang send socket.usernam va messenger ca nhan', item.UsSoket);
 
+                        }}>
+                            <Text>{item.key}</Text>
+                            <Text>{item.UsSoket}</Text>
+                        </TouchableOpacity>
+                    }}
+                />
+
+                <FlatList
+                    data={this.state.dsmangSocketID}
+                    renderItem={({ item }) =>
+                        <TouchableOpacity onPress={() => {
+                            alert(item.key);
+                            this.socket.emit('App-send-socketID-ca-nhan', item.skID);
+                            console.log('dang emit socketid:::', item.skID);
+                        }}>
+                            <Text>{item.key}</Text>
+                            <Text>{item.skID}</Text>
+                        </TouchableOpacity>
+                    }
+                />
+
+                <FlatList
                     ref="danhsach"
                     onEndReachedThreshold={0.3}
                     onEndReached={() => {

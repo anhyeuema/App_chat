@@ -28,7 +28,7 @@ export default class Messenger extends Component {
     constructor(props) {
         super(props);
         e = this;
-        this.socket = io('http://192.168.216.2:3500', { jsonp: false });
+        this.socket = io('http://192.168.0.101:3500', { jsonp: false });
         //   const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
             resDATA: [],
@@ -306,7 +306,7 @@ export default class Messenger extends Component {
     }
 
     uploadToServer() {
-        RNFetchBlob.fetch('POST', 'http://192.168.216.2:1500/reactNative/Upload', {
+        RNFetchBlob.fetch('POST', 'http://192.168.0.101:1500/reactNative/Upload', {
             Authorization: "Bearer access-token",
             otherHeader: "foo",
             'Content-Type': 'multipart/form-data',
@@ -333,7 +333,7 @@ export default class Messenger extends Component {
     }
 
     EmitImageFromWebDatabase() {
-        RNFetchBlob.fetch('GET', 'http://192.168.216.2:81/api/images/product/56.jpg', {
+        RNFetchBlob.fetch('GET', 'http://192.168.0.101:81/api/images/product/56.jpg', {
             Authorization: 'Bearer access-token...',
             // more headers  ..
         })

@@ -46,72 +46,111 @@ var upload = multer({ storage: storage }).single('fileUpload'); // cau hinh uplo
 
 app.post('/photo', urlencodedParser, (req, res) => {
 
-  //console.log('req::::::',req.file);
-  upload(req, res, function (err) {
-    if (err !== null) {
-      // An unknown error occurred when uploading.
-      // res.send('oke- da upload file');
-      console.log('req.file::::::', req.file);
-      console.log('req.file.filename:::', req.file.filename);
-      console.log('req.file.buffer::::::', req.file.buffer);
-      console.log('req.file.buffer.toStringbase64::', req.file.buffer.toString('base64'));//  req.file.buffer la dang buffer
-      io.sockets.emit('server-send-imageBase64-fromweb-toAppAndWeb', { imageWebBase64: req.file.buffer.toString('base64') });//chuyen sang base64 dung  req.file.buffer.toString('base64') 
-      res.render('chat'); // load lai ejs chatSocketIO thi ben nay se k hen anh nhung doi tuong App va ng khac se nhan duoc base64
-    } else {
+    //console.log('req::::::',req.file);
+    upload(req, res, function (err) {
+        if (err !== null) {
+            // An unknown error occurred when uploading.
+            // res.send('oke- da upload file');
+            console.log('req.file::::::', req.file);
+            console.log('req.file.filename:::', req.file.filename);
+            console.log('req.file.buffer::::::', req.file.buffer);
+            console.log('req.file.buffer.toStringbase64::', req.file.buffer.toString('base64'));//  req.file.buffer la dang buffer
+            io.sockets.emit('server-send-imageBase64-fromweb-toAppAndWeb', { imageWebBase64: req.file.buffer.toString('base64') });//chuyen sang base64 dung  req.file.buffer.toString('base64') 
+            res.render('chat'); // load lai ejs chatSocketIO thi ben nay se k hen anh nhung doi tuong App va ng khac se nhan duoc base64
+        } else {
 
-      // A Multer error occurred when uploading.
-      res.send('loi');
-    }
-    // Everything went fine.
-  })
+            // A Multer error occurred when uploading.
+            res.send('loi');
+        }
+        // Everything went fine.
+    })
 });
 
 var mangUsername = [];
 var mangSoketID = [];
+var i = 0;
+
+var mangUsSocket = [];
+var j=0;
+
 //lang nghe
 io.on('connection', (socket) => {
 
     console.log('client-connected-port-3500-de chat:' + socket.id);
+    
+
+    //lang nghe app-send-socket.username-va-messenger
+    socket.on('app-send-socket.username-va-messenger', UsSoketApp => {
+        console.log('ca nhan UsSoketApp la socket.Username', UsSoketApp);
+        io.to(UsSoketApp).emit('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native',UsSoketApp);
+    });
+    //tao mang hung usename tu tap thuoc tinh socket.username
+    socket.on('App-send-Username-dai-dien-socket.Username-ca-nhan',us => {
+        console.log('us:::::::::');
+        console.log('us:::::::::',us);
+        socket.us=us;
+        mangUsSocket.push({ key: j = j + 1, UsSoket: us });
+        io.sockets.emit('server-send-socket.Username', mangUsSocket);
+        console.log('mang socket.Username la:::::::::', mangUsSocket);
+    });
+
+
+    //lang nghe app nhan vao danh sach soketID 
+    socket.on('App-send-socketID-ca-nhan', socketIDrieng => {
+        console.log('socketID rieng la: ' + socketIDrieng);
+        //emit chi ti cai socket.id da duoc nhan tren react-native app
+        io.to(socketIDrieng).emit('server-send-socketID-Rieng', socketIDrieng);
+    });
+
+    //tao mang hung socketid
+    mangSoketID.push({ key: i = i + 1, skID: socket.id });
+    console.log('mangsocktID::::', mangSoketID);
+    //emit danh sach soket.ID
+    io.sockets.emit('server-send-danhsach-socketID', mangSoketID);
+
+    //emit socketid cua ban than cai app do co soket gi
+    socket.emit('socketid-cua-ca-nhan-app-do-la-gi', socket.id);
+
 
     socket.on('app-from-web-database-client-send-base64', imgaWebDataBase => {
-     //   console.log('imgaWebDataBase::::',imgaWebDataBase);
-        io.sockets.emit('server-send-image-blob-fromWebDatabase-reactApp-toAppWeb',imgaWebDataBase);
-    } );
+        //   console.log('imgaWebDataBase::::',imgaWebDataBase);
+        io.sockets.emit('server-send-image-blob-fromWebDatabase-reactApp-toAppWeb', imgaWebDataBase);
+    });
     // lang nghe cap nhat anh avatar
     socket.on('App-send-avata-to-server', avatarB64 => {
-      //  console.log('avatar-base64 la:' + avatarB64);
+        //  console.log('avatar-base64 la:' + avatarB64);
         io.sockets.emit('server-send-avatar-fromApp-toAppWeb', avatarB64);
     });
 
     socket.on('web-send-messenger-chat-rooms', mesRooms => {
-     //   console.log('messenger Rooms : ' + mesRooms);
-        io.sockets.in(socket.phong).emit('server-send-messengerText-chat-rooms',{ms: mesRooms, un: socket.Username} )
+        //   console.log('messenger Rooms : ' + mesRooms);
+        io.sockets.in(socket.phong).emit('server-send-messengerText-chat-rooms', { ms: mesRooms, un: socket.Username })
     });
     socket.on('tao-room-web', nameRoom => {
         var mang = [];
-      //  console.log('Room::::',socket.adapter);
-      //  console.log('Room::::',socket.adapter.rooms);
+        //  console.log('Room::::',socket.adapter);
+        //  console.log('Room::::',socket.adapter.rooms);
         socket.phong = nameRoom;
         socket.Username = nameRoom;
         socket.join(nameRoom);
-        for( r in socket.adapter.rooms) {
+        for (r in socket.adapter.rooms) {
             mang.push(r);
-            console.log('r:::::',r);
+            console.log('r:::::', r);
         }
-        console.log('mang:::::',mang);
-        io.sockets.emit('server-send-danhsach-rooms',mang);
+        console.log('mang:::::', mang);
+        io.sockets.emit('server-send-danhsach-rooms', mang);
         socket.emit('server-send-romm', socket.phong);
 
     })
 
     socket.on('app-send-image-picker', imagePicker => {
         // imagePicker = {uri: 'data:image/jpeg;base64,' + base64}
-     //   console.log("imagePicker::::" + imagePicker);
+        //   console.log("imagePicker::::" + imagePicker);
         io.sockets.emit('server-send-imagePK-fromApp-toAppWeb', imagePicker);
 
     })
     socket.on('app-send-messenger-text', MS => {
-      //  console.log('messenger la : ' + MS);
+        //  console.log('messenger la : ' + MS);
         io.sockets.emit('server-send-messenger-from-app-to-AppAndWeb', { un: socket.id, ms: MS })
     })
     socket.on('web-send-messenger', (mstext) => {
@@ -120,22 +159,22 @@ io.on('connection', (socket) => {
 
     socket.on('web-send-dang-ky-user', user => {
         console.log('useename is: ' + user);
-        if(mangUsername.indexOf(user)>= 0) {
+        if (mangUsername.indexOf(user) >= 0) {
             socket.emit('server-dangky-thatbai');
         } else {
             mangUsername.push(user);
             socket.Username = user;
             socket.emit('sever-send-username-thanhcong', user);
-            console.log('socket.Username::::',socket.Username);
-            console.log('mangUsername::::',mangUsername);
+            console.log('socket.Username::::', socket.Username);
+            console.log('mangUsername::::', mangUsername);
             io.sockets.emit('server-send-danhsach-Usernanme', mangUsername);
         }
-        
+
     });
     socket.on('web-send-messenger-text', mesWeb => {
-     //   console.log('messenger Web: ' + mesWeb);
-        io.sockets.emit('server-send-from-mesWeb-toAppWeb', {ms: mesWeb, un: socket.Username});
-    }) ;
+        //   console.log('messenger Web: ' + mesWeb);
+        io.sockets.emit('server-send-from-mesWeb-toAppWeb', { ms: mesWeb, un: socket.Username });
+    });
 });
 
 /*
@@ -182,7 +221,7 @@ app.post('/photo',urlencodedParser, (req, res) => {
 
 //upload file tu App len server nodejs va to web
 var express = require('express');
-var app2  = express();
+var app2 = express();
 app2.listen(1500, console.log('app2-start-port 1500-upload-image-From-app-to-web'))
 
 app2.use('/', express.static(path.join(__dirname, 'public')));
@@ -197,7 +236,7 @@ app2.post('/reactNative/Upload', (req, res) => {
     console.log('req.fields::::', req.fields); //truong l phai image hoac file 
     console.log('req.files::::', req.files);
     console.log('req.files.path::::', req.files.path);
-    res.send('hello server http://192.168.216.2:1500/reactNative/Upload')
+    res.send('hello server http://192.168.0.101:1500/reactNative/Upload')
 });
 
 
