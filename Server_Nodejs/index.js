@@ -67,6 +67,7 @@ app.post('/photo', urlencodedParser, (req, res) => {
 });
 
 var mangUsername = [];
+var mangSoketID = [];
 //lang nghe
 io.on('connection', (socket) => {
 
@@ -196,7 +197,7 @@ app2.post('/reactNative/Upload', (req, res) => {
     console.log('req.fields::::', req.fields); //truong l phai image hoac file 
     console.log('req.files::::', req.files);
     console.log('req.files.path::::', req.files.path);
-    res.send('hello server http://192.168.0.106:1500/reactNative/Upload')
+    res.send('hello server http://192.168.216.2:1500/reactNative/Upload')
 });
 
 

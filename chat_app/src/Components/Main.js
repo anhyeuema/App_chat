@@ -4,6 +4,7 @@ import TabNavigator from 'react-native-tab-navigator';
 
 import Home from './sreens/Home';
 import  Messenger  from './sreens/Messenger';
+import Status from './sreens/Status';
 
 
 
@@ -11,7 +12,7 @@ export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: 'messenger'
+            selectedTab: 'status'
         };
     }
 
@@ -40,7 +41,7 @@ export default class Main extends Component {
                             title="Home"
                             //  renderIcon={() => <Image source={...} />}
                             //  renderSelectedIcon={() => <Image source={...} />}
-                            badgeText="1"
+                         //   badgeText="1"
                             onPress={() => this.setState({ selectedTab: 'home' })}>
                             <Home />
                         </TabNavigator.Item>
@@ -52,6 +53,16 @@ export default class Main extends Component {
                             //  renderBadge={() => <CustomBadgeView />}
                             onPress={() => this.setState({ selectedTab: 'messenger' })}>
                             <Messenger />
+                        </TabNavigator.Item>
+
+                         <TabNavigator.Item
+                            selected={this.state.selectedTab === 'status'}
+                            title="Status"
+                            //  renderIcon={() => <Image source={...} />}
+                            //  renderSelectedIcon={() => <Image source={...} />}
+                            //badgeText="1"
+                            onPress={() => this.setState({ selectedTab: 'status' })}>
+                            <Status />
                         </TabNavigator.Item>
                     </TabNavigator>
                 </View>

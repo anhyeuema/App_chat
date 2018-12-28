@@ -13,6 +13,8 @@ import Trangchu from './Trangchu';
 import Authentication from './Authentication/Authentication';
 import User from './User/User';
 
+
+
 import refreshTokenApp from '../../api/refreshTokenApp'; //kiem tra token 
 
 
@@ -56,8 +58,9 @@ export default class App extends Component {
                 renderScene={(route, navigator) => {
                     switch (route.name) {
                         case 'TRANG_CHU': return <Trangchu navigator={navigator} />;
-                        case 'AUTHENTICATION': return <Authentication navigator={navigator} />
-                        default: return <User navigator={navigator} />
+                        case 'AUTHENTICATION': return <Authentication navigator={navigator} />;
+                        default: return <User navigator={navigator} />;
+                    
                     }
                 }}
             />
