@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Drawer from 'react-native-drawer';
 import ControlPanel from './ControlPanal/Controlpanal';
 import Main from './Main';
@@ -24,6 +24,7 @@ export default class Trangchu extends Component {
                         var a = JSON.parse(res._bodyText);
                         //  var a = res;
                         var username1 = a.Username;
+                        saveToken('@Username', username1);
                         console.log('username trang chu::::', username1);
                         if ( username1 !== null ) {
                             console.log('bat dau tu trang chu truyen Username bang ham global sang cho Conponent Controlpanal su ly ');
@@ -79,7 +80,7 @@ export default class Trangchu extends Component {
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }}>
-                <Text>Trangchu</Text>
+                <Text style={styles.styleText}> Trangchu</Text>
                 <Drawer
 
                     tapToClose={true} //hien controlra cho tapToClose={true}
@@ -94,3 +95,9 @@ export default class Trangchu extends Component {
         );
     }
 }
+
+styles = StyleSheet.create({
+    styleText: {
+        fontSize: 6,
+    },
+});

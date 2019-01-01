@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 
 import Home from './sreens/Home';
@@ -27,9 +27,9 @@ export default class Main extends Component {
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }}>
                 <View style={{ flex: 1, backgroundColor: '#F2F2F2' }} >
-                <Text>Main</Text>
+                <Text style={styles.styleText} >Main</Text>
                 <TouchableOpacity onPress={() =>this.OnContolPanal()}>
-                    <Text>GOTO OnControl</Text>
+                    <Text style={styles.styleText}>GOTO OnControl</Text>
                 </TouchableOpacity>
                 </View>
                 
@@ -71,3 +71,9 @@ export default class Main extends Component {
         );
     }
 }
+
+styles = StyleSheet.create({
+    styleText: {
+        fontSize: 6,
+    },
+});

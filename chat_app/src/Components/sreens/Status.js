@@ -4,11 +4,18 @@ import NavigationExperimental from 'react-native-deprecated-custom-components';
 import React, { Component } from 'react';
 
 
-import chatCaNhan from './chatCaNhan';
+import ChatCaNhan from '../chat/chatCaNhan';
+
+import ChatSocketID from '../chat/ChatSocketID';
+import ChatSocketUsername from '../chat/ChatSocketUsername';
+import ChatSocketPhong from '../chat/ChatSocketPhong'
 
 import StatusView from './StatusView';
 import Messenger from './Messenger';
-import thongbao from './thongbao';
+import Thongbao from './thongbao';
+
+
+
 
 export default class Status extends Component {
     render() {
@@ -19,8 +26,10 @@ export default class Status extends Component {
                     switch (route.name) {
                         case 'MESSENGER': return <Messenger navigator={navigator} />;
                         case 'STATUS': return <StatusView navigator={navigator} />;
-                        case 'CHATCANHAN': return <chatCaNhan navigator={navigator} />;
-                        case 'THONGBAO': return <thongbao navigator={navigator} />;
+                        case 'Chat_Ca_Nhan': return <ChatCaNhan navigator={navigator} />;
+                        case 'Chat_Socket_ID' : return <ChatSocketID navigator={navigator} itemskID={route.itemskID}  />
+                        case 'Chat_Socket_Username' : return <ChatSocketUsername navigator={navigator} />
+                        case 'Chat_Socket_Phong' : return <ChatSocketPhong navigator={navigator} />
                        // default: return <chatCaNhan navigator={navigator} />;
                     }
                 }}

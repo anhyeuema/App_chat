@@ -2,7 +2,7 @@
 const KieTraToken = async (varToken) => { //hay la checkToken gui token voi ten token voi ten token la TOKEN
 
     try {
-        const a = fetch('http://192.168.0.101:81/App_Chat_Web/chat/checkToken.php', {
+        const a = fetch('http://192.168.216.2:81/App_Chat_Web/chat/checkToken.php', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',

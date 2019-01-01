@@ -68,21 +68,48 @@ app.post('/photo', urlencodedParser, (req, res) => {
 
 var mangUsername = [];
 var mangSoketID = [];
-var i = 0;
+var i = 30;
 
 var mangUsSocket = [];
-var j=0;
+var j=60;
 
+var mangDSUsernamePhong = [];
+var k=90;
+
+var l = 0;
 //lang nghe
+
+var n = 0;
 io.on('connection', (socket) => {
 
     console.log('client-connected-port-3500-de chat:' + socket.id);
     
+  
+   
+    socket.on('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan',usernamephong => {
+        console.log('socket.adapter.rooms::',socket.adapter.rooms); 
+        socket.phong=usernamephong;
+        socket.join(usernamephong);
+     //   console.log('join(usernamephong):::',socket.join(usernamephong));
+        for (r in socket.adapter.rooms) {
+            mangDSUsernamePhong.push({key: k=k+1,phong: r});
+            console.log('r;;;;',r);
+            console.log('mangDSUsernamePhong',mangDSUsernamePhong);
+        }
+        io.sockets.emit('server-send-danhsach-usernamephong',mangDSUsernamePhong);
+    });
+     //lang nghe app nhan TouableOpacity app-send-socket.phong-ca-nhan
+     socket.on('app-send-socket.phong-ca-nhan', phongCaNhan => {
+        console.log('phongcanhan là', phongCaNhan);
+        io.sockets.in(socket.phong).emit('server-send-phong-ca-nhan',phongCaNhan);
+    });
+
+
 
     //lang nghe app-send-socket.username-va-messenger
     socket.on('app-send-socket.username-va-messenger', UsSoketApp => {
         console.log('ca nhan UsSoketApp la socket.Username', UsSoketApp);
-        io.to(UsSoketApp).emit('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native',UsSoketApp);
+        io.to(UsSoketApp.UsSoket).emit('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native',UsSoketApp);
     });
     //tao mang hung usename tu tap thuoc tinh socket.username
     socket.on('App-send-Username-dai-dien-socket.Username-ca-nhan',us => {
@@ -95,11 +122,23 @@ io.on('connection', (socket) => {
     });
 
 
+      //lang nghe app send link uri image app-chatSocketID-send-uri-image
+      socket.on('app-chatSocketID-send-uri-image',uriSkID => {
+        console.log('uri tu image picker tren app send xuong::',uriSkID);
+        
+        socket.emit('server-tra-lai-uri-cho-app', [{key: 2*n+1, skidApp: socket.id, source: uriSkID.source1 }]); //truyen socket.id cua app tra lai anhr cho App
+        console.log('mang uri tu image picker tren app send xuong::',[{key: 2*n+1, skidApp: socket.id, source: uriSkID.source1 }]);
+        io.to(uriSkID.skID1).emit('server-send-uri-image', uriSkID);
+    });
     //lang nghe app nhan vao danh sach soketID 
     socket.on('App-send-socketID-ca-nhan', socketIDrieng => {
+        //emit lat chinh cai app da emit socketID ca nhan de App do nhan duoc chinh cai tin nhan cua chinh socketid cua app do
+        socket.emit('server-tra-ve-tin-nhan-cho-chinh-nguoi-gui',[{key: l+2, skidApp: socket.id, ms: socketIDrieng.messengerT}]);
         console.log('socketID rieng la: ' + socketIDrieng);
+        console.log('socketIDrieng.skID1 rieng la: ' + socketIDrieng.skID1);
+        console.log('socketIDrieng.messengerT rieng la: ' + socketIDrieng.messengerT);
         //emit chi ti cai socket.id da duoc nhan tren react-native app
-        io.to(socketIDrieng).emit('server-send-socketID-Rieng', socketIDrieng);
+        io.to(socketIDrieng.skID1).emit('server-send-socketID-Rieng', socketIDrieng);
     });
 
     //tao mang hung socketid
@@ -122,6 +161,7 @@ io.on('connection', (socket) => {
         io.sockets.emit('server-send-avatar-fromApp-toAppWeb', avatarB64);
     });
 
+    /*
     socket.on('web-send-messenger-chat-rooms', mesRooms => {
         //   console.log('messenger Rooms : ' + mesRooms);
         io.sockets.in(socket.phong).emit('server-send-messengerText-chat-rooms', { ms: mesRooms, un: socket.Username })
@@ -141,7 +181,7 @@ io.on('connection', (socket) => {
         io.sockets.emit('server-send-danhsach-rooms', mang);
         socket.emit('server-send-romm', socket.phong);
 
-    })
+    }); */
 
     socket.on('app-send-image-picker', imagePicker => {
         // imagePicker = {uri: 'data:image/jpeg;base64,' + base64}
@@ -236,7 +276,7 @@ app2.post('/reactNative/Upload', (req, res) => {
     console.log('req.fields::::', req.fields); //truong l phai image hoac file 
     console.log('req.files::::', req.files);
     console.log('req.files.path::::', req.files.path);
-    res.send('hello server http://192.168.0.101:1500/reactNative/Upload')
+    res.send('hello server http://192.168.216.2:1500/reactNative/Upload')
 });
 
 
