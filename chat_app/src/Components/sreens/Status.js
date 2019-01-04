@@ -27,8 +27,8 @@ export default class Status extends Component {
                         case 'MESSENGER': return <Messenger navigator={navigator} />;
                         case 'STATUS': return <StatusView navigator={navigator} />;
                         case 'Chat_Ca_Nhan': return <ChatCaNhan navigator={navigator} />;
-                        case 'Chat_Socket_ID' : return <ChatSocketID navigator={navigator} itemskID={route.itemskID}  />
-                        case 'Chat_Socket_Username' : return <ChatSocketUsername navigator={navigator} />
+                        case 'Chat_Socket_ID' : return <ChatSocketID navigator={navigator} itemskID={route.itemskID} />
+                        case 'Chat_Socket_Username' : return <ChatSocketUsername navigator={navigator} itemskID={route.itemskID} dsSoketUsername={route.dsSoketUsername} Username={route.Username} key1={route.key1} />
                         case 'Chat_Socket_Phong' : return <ChatSocketPhong navigator={navigator} />
                        // default: return <chatCaNhan navigator={navigator} />;
                     }

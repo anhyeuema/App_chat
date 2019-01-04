@@ -1,0 +1,59 @@
+<%
+     if(dangxem <= 1) { 
+        truoc=1;
+     } 
+     else{
+        truoc=dangxem -1;
+     }
+
+    
+        var sau = parseInt(dangxem) + 1;
+     
+     
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+   //di ve goc khong phai public
+    <base href="http://localhost:2400/" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hot girls</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="layoutHotgirls.css" />
+    <script src="jquery.js"></script>
+
+    <script>
+        $(document).ready( function() {
+            $('#like').click(function() {
+                var id  = $(this).attr("hinh");
+                // alert(id);
+                $.get("http://localhost:2400/like/" + id, function(data){
+                    alert(data);
+                });
+            });
+
+             $('#dislike').click(function() {
+                var id  = $(this).attr("hinh");
+                // alert(id);
+                $.get("http://localhost:2400/dislike/" + id, function(data){
+                    alert(data);
+                });
+            });
+        })
+    </script>
+</head>
+<body>
+    <div id="hotgirls">
+    <a id="truoc" href="./hotgirls/<%= truoc%>">Truoc</a>
+    <a id="sau" href="./hotgirls/<%= sau%>">Sau</a>
+    <div class="block"></div>
+    <img id='hinhHG' src="hotgirls/<%=hinh%>" />
+    <div class="block"></div>
+   
+    <img id="like" hinh="<%= dangxem%>" src="hotgirls/like.png" />
+    <img id="dislike" hinh="<%= dangxem%>" src="hotgirls/dislike.png" />
+    </div>
+</body>
+</html>

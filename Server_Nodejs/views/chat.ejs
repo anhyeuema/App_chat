@@ -10,63 +10,100 @@
 
     <script>
         var socket = io('http://localhost:3500');
-            //khi mo web len thi web=app-send-Username-dai-dien-socket.Username-ca-nhan
-            this.socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', 'Username_r');
-         //socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val() );
+        //khi mo web len thi web=app-send-Username-dai-dien-socket.Username-ca-nhan
+        this.socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', 'Username_r');
+        //socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val() );
 
-         //LANG NGHE server-send-phong-ca-nhan
-         socket.on('server-send-phong-ca-nhan',phongCaNhan => {
-             alert(phongCaNhan.phong1 + ":" + phongCaNhan.msText);
-         });
-       
-        
-         //lang nghe server gui danh sach phong server-send-danhsach-usernamephong
-         socket.on('server-send-danhsach-usernamephong', mangDSUsernamePhong => {
-             $('#dsSocket_PHONG').html('');
-             $('#dsSocket_PHONG').append("DANH SACH SOCKET.PHONG:");
-             mangDSUsernamePhong.map( i => {
-                 $('#dsSocket_PHONG').append("<div class='dssocketPhong'>" +  i.key + ":" + i.phong + "</div>");
-             });
-         });
+        //LANG NGHE server-send-phong-ca-nhan
+        socket.on('server-send-phong-ca-nhan', phongCaNhan => {
+            alert(phongCaNhan.phong1 + ":" + phongCaNhan.msText);
+        });
 
-         //lang nghe server send uri tu app image picker//io.to(uriSkID.skID1).emit('server-send-uri-image', uriSkID);
-         socket.on('server-send-uri-image', sourceUri => {
-             alert(sourceUri.skidApp + ":" + sourceUri.source1)
-         });
-         
-         // lang nghe server-send-socketID-Rieng
+
+        //lang nghe server gui danh sach phong server-send-danhsach-usernamephong
+        socket.on('server-send-danhsach-usernamephong', mangDSUsernamePhong => {
+            $('#dsSocket_PHONG').html('');
+            $('#dsSocket_PHONG').append("DANH SACH SOCKET________________________________.PHONG:");
+            mangDSUsernamePhong.map(i => {
+                $('#dsSocket_PHONG').append("<div class='dssocketPhong'>" + i.key + ":" + i.phong + "</div>");
+            });
+        });
+
+
+        //hien thi socketID cua tab web nay la 
+        socket.on('socketid-cua-ca-nhan-app-do-la-gi', socketID => {
+            // alert(socketID);
+            $('#soketID_CaNhan').append("SOCKET.ID_________________WEB");
+            $('#soketID_CaNhan').append("<div class='skIDCN'>" + socketID + "<div>");
+        });
+
+        //lang nghe server send uri tu app image picker//io.to(uriSkID.skID1).emit('server-send-uri-image', ManguriSkID);
+        socket.on('server-send-uri-image', ManguriSkID => {
+            alert('ManguriSkID');
+
+            ManguriSkID.forEach(i => {
+                alert(i.skID1 + " key=" + i.key + ": " + i.source1.uri);
+                $('#listMessageSourceUri').append("<div class='maguriSk'>" + i.skID1 + " key=" + i.key + ": " + i.source1.uri + "</div>");
+                $('#image5').attr("src", i.source1.uri);
+
+            });
+        });
+
+        // lang nghe server-send-socketID-Rieng
         socket.on('server-send-socketID-Rieng', socketIDriengA => {
-            alert(socketIDriengA.skID1 + ":" +  socketIDriengA.messengerT);
+            alert(socketIDriengA.skID1 + ":" + socketIDriengA.messengerT);
+
 
         });
 
         //lang nghe danh sach socket.ID
         socket.on('server-send-danhsach-socketID', DSsocketID => {
             $('#dsSocketID').html('');
-            $('#dsSocketID').append("<div class='dsskID'>" + "DANH SACH SOCKET.ID: " + "</div>")
-            DSsocketID.map( i => {
-               
-                $('#dsSocketID').append("<div class='dsskID'>" + i.key+ ":" + i.skID + "</div>")
+            $('#dsSocketID').append("<div class='dsskID'>" + "DANH SACH SOCKET_____________________________.ID: " + "</div>")
+            DSsocketID.map(i => {
+
+                $('#dsSocketID').append("<div class='dsskID'>" + i.key + ":" + i.skID + "</div>")
+            });
+        });
+
+
+        //lang nghe server send uri tu Component chatsocketUsername.js xuong server va gio lang nghe tu server ve web
+        socket.on('server-send-URI-IMAGE-picker-Cho-client-co-CungUsername-socket.id.Username', ManguriSkID => {
+            alert('server-send-URI-IMAGE-picker-Cho-client-co-CungUsername-socket.id.Username');
+            ManguriSkID.forEach(i => {
+                alert(i.skID1 + ": key =" + i.key + ": " + i.Username + ": " + i.source1.uri);
+                $('#listMessageSourceUriChatSoscketUsername').append("<div class='uriima' >" + i.skID1 + ": key =" + i.key + ": " + i.Username + ": " + i.source1.uri + "</div>")
+                $('#image6').attr("src", i.source1);
             });
         });
 
         // app == web server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
         socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', UsSoketApp => {
-           // alert('1');
+            alert('1');
             alert(UsSoketApp.msText);
         });
         //lang nghe server send danh sach socket.Username
-        socket.on('server-send-socket.Username', mangUsSk => {
-            
-          //  alert(mangUsSk);
+        socket.on('server-send-socket.Username', mangUsSocket => {
+            //  alert(mangUsSk);
             $('#dsSocketUsername').html('');
-            $('#dsSocketUsername').append("<h4 class='dsmangsocketUs'>"+ "DANH SACH SOCKET.USERNAME:" + "</h4>");
-            mangUsSk.forEach( i => {
-             $('#dsSocketUsername').append("<h4 class='dsmangsocketUs'>" + i.key + ":" + i.UsSoket + "</h4>");
+            $('#dsSocketUsername').append("<h4 class='dsmangsocketUs'>" + "DANH SACH SOCKET.________________________USERNAME:" + "</h4>");
+            mangUsSocket.forEach(i => {
+                $('#dsSocketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.key + ":" + i.UsSoket + "</h4>");
+                $('#dsSocketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.Username + "</h4>");
+                
+                $(document).ready(function () {
+                    $('.dsmangsocketUs').click(() => {
+                        alert(i.UsSoket);
+                        socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
+                    });
+                });
+
             });
         });
 
-    
+
+
+
         //server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
         socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', socketUsrieng => {
             alert(socketUsrieng);
@@ -101,7 +138,7 @@
                 $(document).ready(() => {
                     $('#btndsRooms').click(() => {
                         alert('333333');
-                    })
+                    });
                 })
             });
         });
@@ -180,21 +217,23 @@
             });
 
             //click vao web send socket.username
-            $('#bntSocketUsername').click( () =>{
+            $('#bntSocketUsername').click(() => {
                 alert('1');
-                socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val() );
-             //   socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', {skID1: $('#txtUser').val(), messengerT: $('$txtMessenger').val() } );
+                socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val());
+                //   socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', {skID1: $('#txtUser').val(), messengerT: $('$txtMessenger').val() } );
             });
 
-            $('#giaLapSendFromTuDanhSachSocketUsername').click( () => {
-                socket.emit('app-send-socket.username-va-messenger', {skID1: $('#txtUser').val(), messengerT: $('$txtMessenger').val() } );
+            $('#giaLapSendFromTuDanhSachSocketUsername').click(() => {
+                socket.emit('app-send-socket.username-va-messenger', { skID1: $('#txtUser').val(), messengerT: $('$txtMessenger').val() });
             });
 
 
             //web == app  App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan
-            $('#btnchatromm').click( () => {
-                socket.emit('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan', $('#txtchatrom').val() );
-            })
+            $('#btnchatromm').click(() => {
+                socket.emit('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan', $('#txtchatrom').val());
+            });
+
+
         });
 
     </script>
@@ -212,8 +251,8 @@
                 <input type="button" id="bntRegister" value="REGISTER">
                 <input type="button" id="bntSocketUsername" value="Socket.Username">
                 <input type="button" id="giaLapSendFromTuDanhSachSocketUsername" value="send.from.danh.sach.Socket.Username">
-                
-                
+
+
             </div>
             <div>
                 <div id="userOnline">USERONLINE</div>
@@ -222,6 +261,7 @@
                 <div id="dsSocketUsername"></div>
                 <div id="dsSocketID"></div>
                 <div id="dsSocket_PHONG"></div>
+                <div id="soketID_CaNhan"></div>
             </div>
         </div>
         <h4 id="roomhientai"></h4>
@@ -248,13 +288,18 @@
             <img width="400px" src="" id="imag2">
             <img width="400px" src="" id="imag3">
             <img width="400px" src="" id="image4">
+            <img width="200px" src="http://localhost:81/App_Chat_Web/DemoFlatList/upload/images/31537_1546318072.jpeg">
+            <img width="400px" src="" id="image5">
+            <img width="400px" src="" id="image6">
+
 
             <div id="listAppWebDataBase"></div>
-            <div id="listAvatarBase64">
-                <div id="listMessageBase64">
-                </div>
+            <div id="listAvatarBase64"> </div>
+            <div id="listMessageBase64"></div>
+            <div id="listMessageSourceUri"></div>
+            <div id="listMessageSourceUriChatSoscketUsername"></div>
 
-            </div>
+
             <div>
                 <input id="txtchatrom" type="text">
                 <input id="btnchatromm" type="button" value="tao-room">

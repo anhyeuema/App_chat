@@ -66,15 +66,30 @@ app.post('/photo', urlencodedParser, (req, res) => {
     })
 });
 
+var des = "toidicode là trang web chuyên chia sẻ các tutorials về lập trình toidicode";
+var position = des.indexOf('toidicode');
+console.log('Vị trí của chuỗi toidicode trong des là: ' + position);  //tra ve 0 nghia la ton tai khi tu trong mang hoac chuoi
+
+var mang1 = ["Học", "lập", "trình", "tại", "freetuts.net"];
+ // Lấy phần tử  "freetuts.net"
+var mang_moi = mang1.slice(4, 5);
+console.log('mang_moi:::', mang_moi);
+
+
+//filter :Tạo một mảng mới dựa trên các items từ bảng cũ qua một số điều kiện lọc nhất định:
+// const studentsAge = [17, 16, 18, 19, 21, 17];
+// const ableToDrink = studentsAge.filter( age => age > 18 );
+// ableToDrink will be equal to [19, 21]
+
 var mangUsername = [];
 var mangSoketID = [];
 var i = 30;
 
 var mangUsSocket = [];
-var j=60;
+var j = 60;
 
 var mangDSUsernamePhong = [];
-var k=90;
+var k = 90;
 
 var l = 0;
 //lang nghe
@@ -83,57 +98,161 @@ var n = 0;
 io.on('connection', (socket) => {
 
     console.log('client-connected-port-3500-de chat:' + socket.id);
-    
-  
-   
-    socket.on('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan',usernamephong => {
-        console.log('socket.adapter.rooms::',socket.adapter.rooms); 
-        socket.phong=usernamephong;
+
+
+
+    socket.on('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan', usernamephong => {
+        console.log('socket.adapter.rooms::', socket.adapter.rooms);
+        socket.phong = usernamephong;
         socket.join(usernamephong);
-     //   console.log('join(usernamephong):::',socket.join(usernamephong));
+        //   console.log('join(usernamephong):::',socket.join(usernamephong));
         for (r in socket.adapter.rooms) {
-            mangDSUsernamePhong.push({key: k=k+1,phong: r});
-            console.log('r;;;;',r);
-            console.log('mangDSUsernamePhong',mangDSUsernamePhong);
+            mangDSUsernamePhong.push({ key: k = k + 1, phong: r });
+            //  console.log('r;;;;',r);
+            console.log('mangDSUsernamePhong', mangDSUsernamePhong);
         }
-        io.sockets.emit('server-send-danhsach-usernamephong',mangDSUsernamePhong);
+        io.sockets.emit('server-send-danhsach-usernamephong', mangDSUsernamePhong);
     });
-     //lang nghe app nhan TouableOpacity app-send-socket.phong-ca-nhan
-     socket.on('app-send-socket.phong-ca-nhan', phongCaNhan => {
+    //lang nghe app nhan TouableOpacity app-send-socket.phong-ca-nhan
+    socket.on('app-send-socket.phong-ca-nhan', phongCaNhan => {
         console.log('phongcanhan là', phongCaNhan);
-        io.sockets.in(socket.phong).emit('server-send-phong-ca-nhan',phongCaNhan);
+        io.sockets.in(socket.phong).emit('server-send-phong-ca-nhan', phongCaNhan);
     });
 
+    
+    //lang nghe app send link uri image app-chatSocketID-send-uri-image
+    socket.on('app-chatSocketUsername-send-uri-image', uriSkID => {
+        console.log('uri tu image picker tren app send xuong::', uriSkID);
+        //source1: source, socketUs: this.props.itemskID, dsSoketUsername: this.props.dsSoketUsername, Username: this.props.Username
+        var ManguriSkID = [{ key: 2 * n + 3, source1: uriSkID.source1, skID1: uriSkID.socketUs, Username: uriSkID.Username }];
+        socket.emit('server-tra-lai-uri-cho-app', [{ key: 2 * n + 1, skidApp: socket.id, source1: uriSkID.source1 }]); //truyen socket.id cua app tra lai anhr cho App
+        console.log('mang uri tu image picker tren app send xuong::', [{ key: 2 * n + 1, skidApp: socket.id, source1: uriSkID.source1 }]);
 
+
+        // indexOf() -Phương thức này trả về vị trí của từ xuất hiện đầu tiên trong chuỗi,
+        // nếu trong chuỗi không có từ cần tìm thì nó sẽ trả về -1.
+        /*
+        var des = "toidicode là trang web chuyên chia sẻ các tutorials về lập trình toidicode";
+        var position = des.indexOf('toidicode');
+        alert('Vị trí của chuỗi toidicode trong des là: ' + position) = 0;
+        */
+
+        mangThoanManCoCungSocketUsername= [];
+        uriSkID.dsSoketUsername.forEach(i => {
+            // i.UsSoket = tung phan tu socket.id.Username  va uriSkID.Username = Username
+            // indexOf la trong tung phan tu soket.id.Username thi cai phan tu Username co trong phan tu scket.id.Username thi =0 khong co thi =-1
+            if ((i.UsSoket).indexOf(uriSkID.Username) > -1) { //  neu lon hon -1 tuc la =0 nghia la co phan tu thoa man maw trong socket.id.Username
+                //kho do ta tach Username ra khoi socket.id.Username
+                //bang cach dung replace 
+                var UssocketID = i.UsSoket.replace(uriSkID.Username,'');
+                //emit toi tat ca cac socket.id co cung 1 Username
+                io.to(UssocketID).emit('server-send-URI-IMAGE-picker-Cho-client-co-CungUsername-socket.id.Username',ManguriSkID);
+                console.log('ManguriSkID::::',ManguriSkID);
+                mangThoanManCoCungSocketUsername.push(UssocketID);
+                console.log('mangThoanManCoCungSocketUsername::::', mangThoanManCoCungSocketUsername);
+            }
+        });
+
+        console.log('uriSkID.socketUs::::', uriSkID.socketUs);
+        io.to(uriSkID.socketUs).emit('server-send-uri-image', ManguriSkID);
+        console.log('ManguriSkID emit len web::::', ManguriSkID);
+    });
 
     //lang nghe app-send-socket.username-va-messenger
     socket.on('app-send-socket.username-va-messenger', UsSoketApp => {
         console.log('ca nhan UsSoketApp la socket.Username', UsSoketApp);
-        io.to(UsSoketApp.UsSoket).emit('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native',UsSoketApp);
+        console.log('UsSoketApp.Username', UsSoketApp.Username);
+        socket.emit('server-tra-ve-tin-nhan-cho-chinh-nguoi-gui',UsSoketApp);
+
+        var xxxx = UsSoketApp.socketUs; // Xóa đi y ký tự bắt đầu tại vị trí x.
+        var dsSoketUsername = UsSoketApp.dsSoketUsername;
+        console.log('dsSoketUsername::::', dsSoketUsername);//hien thi dsSoketUsername co ca key va socketID
+        var phantu1 = dsSoketUsername.slice(2, 3);//mang moi cua dsSoketUsername chi chua phan tu thu 2 
+
+        mangUs = [];
+        dsSoketUsername.forEach(i => {
+            var UsSoket1 = i.UsSoket; //lay từng pân tử chưa UsSocket
+            if (UsSoket1.indexOf(UsSoketApp.Username) > -1) {// thay the UsSoketApp.Username = Username_r//lây từng phân tử trong dsUsSoket1 mà có tồn tại ky tự Username_r
+                // if( UsSoket1.indexOf('Username_r')>-1){ //lây từng phân tử trong dsUsSoket1 mà có tồn tại ky tự Username_r
+                //nghia la se tra ve ket qua la 0 va > -1 thi phan tu do la duoc vao { su ly phan tử đó}
+                //mangUs.push(UsSoket1);/ co the push ngay phan tu thoa mãn đó vao mảng 
+                var UsSoket2 = UsSoket1.replace(UsSoketApp.Username, ''); //sủa từng phần tử thoản mãn bằng UsSoket1.replace(chuoicantim,chuoithaythe) ;
+                //emit tới từng UsSocket emit lần lượt tới từng socketID có đuôi la Username_r
+                io.to(UsSoket2).emit('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', UsSoketApp);
+                //push vao nhung mang có chưa SocketID có chứa Username_r vi du IpKhij-X7JzSoPTDAAACUsername_r
+                mangUs.push(UsSoket2);
+            }
+
+            console.log('mangUs:::::', mangUs);
+        });
+
+        //let arr = [1, 2, 3, 4, 5, 6] //<=> mangUs
+        let even = []
+        for (var i = 0; i < mangUs.length; i++) {
+            if (mangUs[i] === 'IpKhij-X7JzSoPTDAAAClan') //mangUs[i] la 1 phan tu trong mang la 1 chuoi
+                //can tach tiep tung ky tu trong chuoi ra so sanh tung ky tu do voi tuong ky tu trong chu
+                //Uername_r co giong chu nao khong giong thi lay phan tu mang do va tao mang moi 
+
+                even.push(mangUs[i])
+        }
+        console.log('even:::', even);
+
+        let even1 = mangUs.filter(item => { //item la tung phan tu trong mangUS
+            return item === 'IpKhij-X7JzSoPTDAAAClan'; //kirem tra tung phan tu neu co phan tu nao giong 'IpKhij-X7JzSoPTDAAAClan' thi lay phan tu do cho vao mang
+        });
+        console.log('even1:::', even1);
+
+
+
+        const mangThoanMan = mangUs.filter(age => age = 'IpKhij-X7JzSoPTDAAAClan');
+        console.log('mangthoanam:::', mangThoanMan);
+
+        console.log('phantu1::::', phantu1);
+
+
+        var y = xxxx.replace('Username_r', ''); //
+        console.log('y::::', y);
+        console.log('xxxx.length::::', y.length);
+        io.to(UsSoketApp.socketUs.replace('Username_r', '')).emit('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', UsSoketApp);
+        console.log('UsSoketApp.socketUs.replace', UsSoketApp.socketUs.replace('Username_r', ''));
     });
     //tao mang hung usename tu tap thuoc tinh socket.username
-    socket.on('App-send-Username-dai-dien-socket.Username-ca-nhan',us => {
-        console.log('us:::::::::');
-        console.log('us:::::::::',us);
-        socket.us=us;
-        mangUsSocket.push({ key: j = j + 1, UsSoket: us });
+    socket.on('App-send-Username-dai-dien-socket.Username-ca-nhan', us => {
+        console.log('socket:::::::::', socket);
+        console.log('socket.handshake.headers.cookie:::::::::', socket.handshake.headers.cookie);
+        console.log('socket.nsp.sockets:::::::::', socket.nsp.sockets);
+
+        var mangSockets = [];
+        for (r in socket.nsp.sockets) {
+            mangSockets.push(r);
+            console.log('r:::::::', r);
+            console.log('mangSockets:::::', mangSockets);
+        }
+        console.log('socket._events:::::::::', socket._events);
+
+        console.log('us:::::::::', us);
+        socket.us = us;
+        console.log('socket.us:::::::::', socket.us);
+        mangUsSocket.push({ key: j = j + 1, UsSoket: socket.id + socket.us, Username: socket.us });
         io.sockets.emit('server-send-socket.Username', mangUsSocket);
         console.log('mang socket.Username la:::::::::', mangUsSocket);
     });
 
 
-      //lang nghe app send link uri image app-chatSocketID-send-uri-image
-      socket.on('app-chatSocketID-send-uri-image',uriSkID => {
-        console.log('uri tu image picker tren app send xuong::',uriSkID);
-        
-        socket.emit('server-tra-lai-uri-cho-app', [{key: 2*n+1, skidApp: socket.id, source: uriSkID.source1 }]); //truyen socket.id cua app tra lai anhr cho App
-        console.log('mang uri tu image picker tren app send xuong::',[{key: 2*n+1, skidApp: socket.id, source: uriSkID.source1 }]);
-        io.to(uriSkID.skID1).emit('server-send-uri-image', uriSkID);
+    //lang nghe app send link uri image app-chatSocketID-send-uri-image
+    socket.on('app-chatSocketID-send-uri-image', uriSkID => {
+        console.log('uri tu image picker tren app send xuong::', uriSkID);
+        var ManguriSkID = [{ key: 2 * n + 3, source1: uriSkID.source1, skID1: uriSkID.skID1 }];
+        socket.emit('server-tra-lai-uri-cho-app', [{ key: 2 * n + 1, skidApp: socket.id, source1: uriSkID.source1 }]); //truyen socket.id cua app tra lai anhr cho App
+        console.log('mang uri tu image picker tren app send xuong::', [{ key: 2 * n + 1, skidApp: socket.id, source1: uriSkID.source1 }]);
+        console.log('uriSkID.skID1::::', uriSkID.skID1);
+        io.to(uriSkID.skID1).emit('server-send-uri-image', ManguriSkID);
+        console.log('ManguriSkID emit len web::::', ManguriSkID);
     });
     //lang nghe app nhan vao danh sach soketID 
     socket.on('App-send-socketID-ca-nhan', socketIDrieng => {
         //emit lat chinh cai app da emit socketID ca nhan de App do nhan duoc chinh cai tin nhan cua chinh socketid cua app do
-        socket.emit('server-tra-ve-tin-nhan-cho-chinh-nguoi-gui',[{key: l+2, skidApp: socket.id, ms: socketIDrieng.messengerT}]);
+        socket.emit('server-tra-ve-tin-nhan-cho-chinh-nguoi-gui', [{ key: l + 2, skidApp: socket.id, ms: socketIDrieng.messengerT }]);
         console.log('socketID rieng la: ' + socketIDrieng);
         console.log('socketIDrieng.skID1 rieng la: ' + socketIDrieng.skID1);
         console.log('socketIDrieng.messengerT rieng la: ' + socketIDrieng.messengerT);
@@ -142,12 +261,14 @@ io.on('connection', (socket) => {
     });
 
     //tao mang hung socketid
+    // mangSoketID.push({ key: i = i + 1, skID: socket.id });
     mangSoketID.push({ key: i = i + 1, skID: socket.id });
+    // console.log('socket::::', socket);
     console.log('mangsocktID::::', mangSoketID);
     //emit danh sach soket.ID
     io.sockets.emit('server-send-danhsach-socketID', mangSoketID);
 
-    //emit socketid cua ban than cai app do co soket gi
+    //socket.emit chi emit toi cai socket.id nao ket noi voi no emit socketid cua ban than cai app do co soket gi
     socket.emit('socketid-cua-ca-nhan-app-do-la-gi', socket.id);
 
 
@@ -279,6 +400,109 @@ app2.post('/reactNative/Upload', (req, res) => {
     res.send('hello server http://192.168.216.2:1500/reactNative/Upload')
 });
 
+
+var express = require('express');
+var app3 = express();
+ app3.use(express.static("public"));
+ app3.set('view engine','ejs');
+ app3.set('views','./views');
+ app3.listen(2400, console.log('app-lang-nghe-port-2400-hotGirls'));
+var pg = require('pg');
+
+var config = {
+    user: 'postgres',
+    host: 'localhost',
+    database: 'hotgirls',
+    password: 'Postgres09898',
+    port: 5432,
+    max: 10,
+    idletTimeoutMillis: 30000,
+};
+
+var pool = new pg.Pool(config)
+
+//chay truy van 
+
+app3.get('/dislike/:id',(req,res)=> {
+    var id = req.params.id;
+
+      //chay truy van moc trong database lay ra hinh
+      pool.connect(function(err, client, done){
+        if(err){
+            return console.log('error fetching lient from pool', err);
+        }
+
+        var qr = 'UPDATE "hotgrilscollection" SET "Dislike"="Dislike"+1 WHERE "id" =' + id;
+        console.log('qr::', qr);
+        client.query(qr, function(err, result) {
+            done();
+            if(err) {
+                return console.log('error running query', err);
+            }
+            console.log('UPLOAD Dislike succeffully');
+
+            //lay duoc hinh thi render hinh ra 
+           // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
+        });
+
+        res.send('UPLOAD Dislike succeffully');
+    });
+
+});
+
+app3.get('/like/:id',(req,res)=> {
+    var id = req.params.id;
+
+      //chay truy van moc trong database lay ra hinh
+      pool.connect(function(err, client, done){
+        if(err){
+            return console.log('error fetching lient from pool', err);
+        }
+
+        var qr = 'UPDATE "hotgrilscollection" SET "Like"="Like"+1 WHERE "id" =' + id;
+        console.log('qr::', qr);
+        client.query(qr, function(err, result) {
+            done();
+            if(err) {
+                return console.log('error running query', err);
+            }
+            console.log('UPLOAD like succeffully');
+
+            //lay duoc hinh thi render hinh ra 
+           // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
+        });
+
+        res.send('UPLOAD like succeffully');
+    });
+
+});
+
+ app3.get('/hotgirls/:id', (req, res) => {
+     var id = req.params.id;
+    
+     //chay truy van moc trong database lay ra hinh
+    pool.connect(function(err, client, done){
+        if(err){
+            return console.log('error fetching lient from pool', err);
+        }
+
+        var qr = 'SELECT * FROM "hotgrilscollection" WHERE "id" =' + id;
+        console.log('qr::', qr);
+        client.query(qr, function(err, result) {
+            done();
+            if(err) {
+                return console.log('error running query', err);
+            }
+            console.log(result.rows[0].Hinh);
+
+            //lay duoc hinh thi render hinh ra 
+            res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
+        });
+    })
+
+
+
+ })
 
 
 

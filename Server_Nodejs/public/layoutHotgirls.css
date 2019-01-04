@@ -1,0 +1,16 @@
+body{background-color: black}
+#hotgirls{width: 500px; margin: auto }
+#hinhHG{ width: 500px; }
+.block{display: block; width: 100%; clear: both;}
+a{color: yellow; 
+    text-emphasis: none;
+    padding: 10px;
+    
+}
+a:hover{color: white}
+#truoc{ float: left;}
+#sau{ float: right}
+
+#like,#dislike{ width: 50px}
+#like{float: left}
+#dislike{float: right;}

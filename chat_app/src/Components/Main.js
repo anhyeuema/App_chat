@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 
 import Home from './sreens/Home';
-import  Messenger  from './sreens/Messenger';
+import Messenger from './sreens/Messenger';
 import Status from './sreens/Status';
 
 
@@ -17,31 +17,31 @@ export default class Main extends Component {
     }
 
 
-    
+
     OnContolPanal() {
         const OnControl = this.props.OnControl; // khai bao bien OnControl de huong gia tri tu Tranhcu.js truyen sang OnControl ={() => this.openControlPanel()
         OnControl();
     }
-    
+
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }}>
-                <View style={{ flex: 1, backgroundColor: '#F2F2F2' }} >
-                <Text style={styles.styleText} >Main</Text>
-                <TouchableOpacity onPress={() =>this.OnContolPanal()}>
-                    <Text style={styles.styleText}>GOTO OnControl</Text>
-                </TouchableOpacity>
+                <View style={{ flex: 1, backgroundColor: '#F2F2F2', flexDirection: 'row' }} >
+                    <Text style={styles.styleText} >Main</Text>
+                    <TouchableOpacity onPress={() => this.OnContolPanal()} style={styles.btnStyle} >
+                        <Text  style={styles.styleText} > OnContolPanal</Text>
+                        <Image source={require('../../api/Images/BackIcon.png')} style={styles.styleIcon} />
+                    </TouchableOpacity>
                 </View>
-                
 
-                <View style={{ flex: 10, backgroundColor: '#ffff' }}>
+                <View style={{ flex: 12, backgroundColor: '#ffff' }} >
                     <TabNavigator>
                         <TabNavigator.Item
                             selected={this.state.selectedTab === 'home'}
                             title="Home"
                             //  renderIcon={() => <Image source={...} />}
                             //  renderSelectedIcon={() => <Image source={...} />}
-                         //   badgeText="1"
+                            //   badgeText="1"
                             onPress={() => this.setState({ selectedTab: 'home' })}>
                             <Home />
                         </TabNavigator.Item>
@@ -55,7 +55,7 @@ export default class Main extends Component {
                             <Messenger />
                         </TabNavigator.Item>
 
-                         <TabNavigator.Item
+                        <TabNavigator.Item
                             selected={this.state.selectedTab === 'status'}
                             title="Status"
                             //  renderIcon={() => <Image source={...} />}
@@ -76,4 +76,17 @@ styles = StyleSheet.create({
     styleText: {
         fontSize: 6,
     },
+    styleIcon: {
+        width: 20,
+        height: 20,
+        backgroundColor: '#81B945'
+    },
+    btnStyle: {
+        width: 100, height: 16,
+        justifyContent: 'center', alignItems: 'center',
+        backgroundColor: '#95CF57',
+        borderTopLeftRadius: 8, borderTopRightRadius: 8,
+        borderBottomLeftRadius: 8, borderBottomRightRadius: 8,
+        marginTop: 8,
+    }
 });

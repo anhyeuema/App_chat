@@ -56,6 +56,8 @@ export default class Status extends Component {
             danhsachPhongUsername: null,
 
             itemskID: null,
+
+            key1: 1,
         };
 
         //   global.OnSignIn = this.LayRaUsername.bind(this);
@@ -78,7 +80,7 @@ export default class Status extends Component {
             });
         })
 
-
+        //server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
         //server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
         this.socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', socketUsrieng => {
             alert(socketUsrieng.msText);
@@ -90,7 +92,7 @@ export default class Status extends Component {
             this.setState({
                 dsSoketUsername: dsSoketUs
             });
-         //   console.log('this.state.dsSoketUsername:::', this.state.dsSoketUsername);
+            console.log('this.state.dsSoketUsername:::', this.state.dsSoketUsername);
         });
 
         //lang nghe server send socketID rieng sau khi nha TouchableOpacity de emit tu app qua server va lai ve app
@@ -245,8 +247,12 @@ export default class Status extends Component {
     }
 
     chatSocketUsername() {
+        console.log('this.state.itemskID tai Compoment Status::::::',this.state.itemskID);
+        console.log('this.state.key tai Compoment Status::::::',this.state.key);
+        const { itemskID, dsSoketUsername, Username, key1 } = this.state;
+        console.log('itemskID2 tai Compoment Status::::::',itemskID);
         const { navigator } = this.props;
-        navigator.push({ name: 'Chat_Socket_Username' });
+        navigator.push({ name: 'Chat_Socket_Username', itemskID, dsSoketUsername, Username, key1 });
     }
 
     chatSocketPhong() {
@@ -320,7 +326,7 @@ export default class Status extends Component {
                     <TouchableOpacity onPress={() => this.chatCaNhan()}>
                         <Text style={styles.styleText} > chatCaNhan </Text>
                     </TouchableOpacity>
-
+            
                     <TouchableOpacity onPress={() => {
                         this.refs.danhsach.scrollToEnd()
                     }}>
@@ -363,8 +369,8 @@ export default class Status extends Component {
                         renderItem={({ item }) =>
                             <TouchableOpacity onPress={() => {
                                // alert(item.key);
-                                this.socket.emit('app-send-socket.phong-ca-nhan', { phong1: item.phong, msText: this.state.messengerText });
-                                console.log('app dang  bat dau -send-socket.phong-ca-nhan', item.phong);
+                                this.socket.emit('app-send-socket.phong-ca-nhan', { phong1: item.phong, msText: this.state.messengerText});
+                                console.log('app dang  bat dau -send-socket.phong-ca-nhan',{ phong1: item.phong, msText: this.state.messengerText });
 
                             }}>
                                 <Text style={styles.styleText} >{item.key}</Text>
@@ -375,21 +381,36 @@ export default class Status extends Component {
                 </View>
 
 
-
-
                 <View style={styles.styleFlatlist}>
                     <Text style={styles.styleText} >danh sach socket.Username</Text>
                     <FlatList
                         data={this.state.dsSoketUsername}
                         renderItem={({ item }) =>
                             <TouchableOpacity onPress={() => {
-                                alert(item.key);
-                                this.socket.emit('app-send-socket.username-va-messenger', { socketUs: item.UsSoket, msText: this.state.messengerText });
-                                console.log('server dang send socket.usernam va messenger ca nhan', item.UsSoket);
+                                var itemskID1 = item.UsSoket; 
+                                console.log('itemskID1 FlatList tai Compoment Status::::::',itemskID1);
+                                e.setState({
+                                    itemskID: itemskID1,
+                                    Username: item.Username,
+                                    key1: item.key,
+                                });
+                                console.log('key1::::',this.state.key1);
+                                console.log('this.state.itemskID FlatList tai Compoment Status::::::   11111',this.state.itemskID);
+                                
+                                var dk = this.state.itemskID !== null && this.state.Username !==null && this.state.dsSoketUsername !==null && this.state.key1 !==null;
+                                if (dk) {
+                                    this.chatSocketUsername();
+                                }
+
+
+                               // alert(item.key);
+                               // this.socket.emit('app-send-socket.username-va-messenger', { socketUs: item.UsSoket, msText: this.state.messengerText, dsSoketUsername: this.state.dsSoketUsername, Username: item.Username });
+                               // console.log('server dang send socket.usernam va messenger ca nhan', { socketUs: item.UsSoket, msText: this.state.messengerText, dsSoketUsername: this.state.dsSoketUsername, Username: item.Username });
 
                             }}>
                                 <Text style={styles.styleText} >{item.key}</Text>
                                 <Text style={styles.styleText} >{item.UsSoket}</Text>
+                                <Text style={styles.styleText} >{item.Username}</Text>
                             </TouchableOpacity>
                         }
                     />

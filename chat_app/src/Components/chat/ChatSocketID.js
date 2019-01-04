@@ -34,14 +34,20 @@ export default class ChatSocketID extends Component {
             uriTraVeApp: [], //mang tra lai cho chinh cai app da emit uri xuong co chua uri
 
             avatarSource: null,
+            uriTouch: [], //bien hung mang duoc chon tu touchableOpacity  this.socket.emit('App-send-socketID-ca-nhan', { skID1: this.props.itemskID, messengerT: this.state.messengerText });
+
         };
 
         global.OnSocketID = this.OnSocketID1.bind(this);; // ham OnSocketID1 se nhan socketID tu Componet Status qua global
 
+        //lang nghe server emit tu socket.id duoc chon trong ToucableOpacity server-send-uri-image //io.to(uriSkID.skID1).emit('server-send-uri-image', uriSkID);
+        this.socket.on('server-send-uri-image', uriTouch1 => {
+            this.setState({ uriTouch: uriTouch1 });
+        });
 
         //lang nghe server tra lai uri cho app server-tra-lai-uri-cho-app
         this.socket.on('server-tra-lai-uri-cho-app', uriTraVeApp => {
-            alert(uriTraVeApp);
+            // alert(uriTraVeApp);
             console.log('uriTraVeApp::::', uriTraVeApp);
             e.setState({
                 uriTraVeApp: uriTraVeApp,
@@ -53,7 +59,10 @@ export default class ChatSocketID extends Component {
             console.log('MessengerTraLai::::', tinnhanTL);
             e.setState({ MessengerTraLai: tinnhanTL });
             console.log('this.state.MessengerTraLai::::', this.state.MessengerTraLai);
-        })
+        });
+
+
+   
 
         //lang nghe server send socketID rieng sau khi nha TouchableOpacity de emit tu app qua server va lai ve app
         this.socket.on('server-send-socketID-Rieng', socketIDrieng => {
@@ -146,7 +155,7 @@ export default class ChatSocketID extends Component {
 
     componentDidMount() {
         //test messenger
-        e.setState({ messengerText: 'anh yeu em lam' });
+      //  e.setState({ messengerText: 'anh yeu em lam' });
         // this.test();
     }
 
@@ -187,7 +196,6 @@ export default class ChatSocketID extends Component {
                         <Image source={require('../../../api/Images/sendIcon.png')} style={styles.styleIcon} />
                     </TouchableOpacity>
 
-
                 </View>
 
 
@@ -203,7 +211,22 @@ export default class ChatSocketID extends Component {
                                     <Text style={styles.styleText} >{item.key}</Text>
                                 </View>
                                 <View style={styles.phai}>
-                                    <Image source={item.source} style={{ width: 100, height: 100 }} />
+                                    <Image source={item.source1} style={{ width: 100, height: 100 }} />
+                                </View>
+                            </View>
+                        }
+                    />
+
+                    <FlatList
+                        data={this.state.uriTouch}
+                        renderItem={({ item }) =>
+                            <View style={styles.giaodien}>
+                                <View style={styles.trai}>
+                                    <Text style={styles.styleText} > {item.skID1 = null ? null : item.skID1}</Text>
+                                    <Text style={styles.styleText} >{item.key}</Text>
+                                </View>
+                                <View style={styles.phai}>
+                                    <Image source={item.source1} style={{ width: 100, height: 100 }} />
                                 </View>
                             </View>
                         }
