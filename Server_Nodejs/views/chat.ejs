@@ -79,8 +79,11 @@
 
         // app == web server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
         socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', UsSoketApp => {
-            alert('1');
-            alert(UsSoketApp.msText);
+           alert('1');
+            UsSoketApp.forEach(i => {
+                $('#listMessagChatSoscketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.key1 + ":" + i.socketUs + "</h4>");
+                $('#listMessagChatSoscketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.Username + ": " + i.msText + "</h4>");
+            });
         });
         //lang nghe server send danh sach socket.Username
         socket.on('server-send-socket.Username', mangUsSocket => {
@@ -88,14 +91,20 @@
             $('#dsSocketUsername').html('');
             $('#dsSocketUsername').append("<h4 class='dsmangsocketUs'>" + "DANH SACH SOCKET.________________________USERNAME:" + "</h4>");
             mangUsSocket.forEach(i => {
-                $('#dsSocketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.key + ":" + i.UsSoket + "</h4>");
-                $('#dsSocketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.Username + "</h4>");
+                $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + i.key + ":" + i.UsSoket + "</h4>");
+                $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + i.Username + "</h4>");
                 
                 $(document).ready(function () {
-                    $('.dsmangsocketUs').click(() => {
-                        alert(i.UsSoket);
-                        socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
+                    $("h4").click( ()=> {
+                        alert(i.key);
                     });
+
+                    /*
+                    $('.dsmangsocketUs').click(() => {
+                      //  alert(i.UsSoket);
+                        socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
+                    }); */
+
                 });
 
             });
@@ -298,6 +307,8 @@
             <div id="listMessageBase64"></div>
             <div id="listMessageSourceUri"></div>
             <div id="listMessageSourceUriChatSoscketUsername"></div>
+            <div id="listMessagChatSoscketUsername"></div>
+
 
 
             <div>

@@ -119,7 +119,7 @@ io.on('connection', (socket) => {
         io.sockets.in(socket.phong).emit('server-send-phong-ca-nhan', phongCaNhan);
     });
 
-    
+
     //lang nghe app send link uri image app-chatSocketID-send-uri-image
     socket.on('app-chatSocketUsername-send-uri-image', uriSkID => {
         console.log('uri tu image picker tren app send xuong::', uriSkID);
@@ -137,17 +137,17 @@ io.on('connection', (socket) => {
         alert('Vị trí của chuỗi toidicode trong des là: ' + position) = 0;
         */
 
-        mangThoanManCoCungSocketUsername= [];
+        mangThoanManCoCungSocketUsername = [];
         uriSkID.dsSoketUsername.forEach(i => {
             // i.UsSoket = tung phan tu socket.id.Username  va uriSkID.Username = Username
             // indexOf la trong tung phan tu soket.id.Username thi cai phan tu Username co trong phan tu scket.id.Username thi =0 khong co thi =-1
             if ((i.UsSoket).indexOf(uriSkID.Username) > -1) { //  neu lon hon -1 tuc la =0 nghia la co phan tu thoa man maw trong socket.id.Username
                 //kho do ta tach Username ra khoi socket.id.Username
                 //bang cach dung replace 
-                var UssocketID = i.UsSoket.replace(uriSkID.Username,'');
+                var UssocketID = i.UsSoket.replace(uriSkID.Username, '');
                 //emit toi tat ca cac socket.id co cung 1 Username
-                io.to(UssocketID).emit('server-send-URI-IMAGE-picker-Cho-client-co-CungUsername-socket.id.Username',ManguriSkID);
-                console.log('ManguriSkID::::',ManguriSkID);
+                io.to(UssocketID).emit('server-send-URI-IMAGE-picker-Cho-client-co-CungUsername-socket.id.Username', ManguriSkID);
+                console.log('ManguriSkID::::', ManguriSkID);
                 mangThoanManCoCungSocketUsername.push(UssocketID);
                 console.log('mangThoanManCoCungSocketUsername::::', mangThoanManCoCungSocketUsername);
             }
@@ -158,11 +158,13 @@ io.on('connection', (socket) => {
         console.log('ManguriSkID emit len web::::', ManguriSkID);
     });
 
+    socket
+
     //lang nghe app-send-socket.username-va-messenger
     socket.on('app-send-socket.username-va-messenger', UsSoketApp => {
         console.log('ca nhan UsSoketApp la socket.Username', UsSoketApp);
         console.log('UsSoketApp.Username', UsSoketApp.Username);
-        socket.emit('server-tra-ve-tin-nhan-cho-chinh-nguoi-gui',UsSoketApp);
+        socket.emit('server-tra-ve-tin-nhan-cho-chinh-nguoi-gui', UsSoketApp);
 
         var xxxx = UsSoketApp.socketUs; // Xóa đi y ký tự bắt đầu tại vị trí x.
         var dsSoketUsername = UsSoketApp.dsSoketUsername;
@@ -193,7 +195,7 @@ io.on('connection', (socket) => {
                 //can tach tiep tung ky tu trong chuoi ra so sanh tung ky tu do voi tuong ky tu trong chu
                 //Uername_r co giong chu nao khong giong thi lay phan tu mang do va tao mang moi 
 
-                even.push(mangUs[i])
+                even.push(mangUs[i]);
         }
         console.log('even:::', even);
 
@@ -218,9 +220,10 @@ io.on('connection', (socket) => {
     });
     //tao mang hung usename tu tap thuoc tinh socket.username
     socket.on('App-send-Username-dai-dien-socket.Username-ca-nhan', us => {
-        console.log('socket:::::::::', socket);
-        console.log('socket.handshake.headers.cookie:::::::::', socket.handshake.headers.cookie);
-        console.log('socket.nsp.sockets:::::::::', socket.nsp.sockets);
+
+        //   console.log('socket:::::::::', socket);
+        //   console.log('socket.handshake.headers.cookie:::::::::', socket.handshake.headers.cookie);
+        //   console.log('socket.nsp.sockets:::::::::', socket.nsp.sockets);
 
         var mangSockets = [];
         for (r in socket.nsp.sockets) {
@@ -403,10 +406,10 @@ app2.post('/reactNative/Upload', (req, res) => {
 
 var express = require('express');
 var app3 = express();
- app3.use(express.static("public"));
- app3.set('view engine','ejs');
- app3.set('views','./views');
- app3.listen(2400, console.log('app-lang-nghe-port-2400-hotGirls'));
+app3.use(express.static("public"));
+app3.set('view engine', 'ejs');
+app3.set('views', './views');
+app3.listen(2400, console.log('app-lang-nghe-port-2400-hotGirls'));
 var pg = require('pg');
 
 var config = {
@@ -423,26 +426,63 @@ var pool = new pg.Pool(config)
 
 //chay truy van 
 
-app3.get('/dislike/:id',(req,res)=> {
+
+
+app3.get('/fetchData/:id/:ima', (req, res) => {
+    var id = req.params.id;
+    var ima = req.params.ima;
+    pool.connect(function (err, client, done) {
+        if (err) {
+            return console.log('error fetching lient from pool', err);
+        } //nue khong err
+      //  var qr = 'INSERT INTO hotgrilscollection(id, "Hinh", "Like", "Dislike") VALUES(6, 6.jpg, 0, 0)';
+
+        var qr = {
+            text: 'INSERT INTO hotgrilscollection(id, "Hinh", "Like", "Dislike") VALUES($1, $2, $3, $4)',
+            values: [id, ima, '0', '0'],
+        }
+          
+        console.log('qr::', qr);
+        client.query(qr, function (err, result) {
+            done();
+            if (err) {
+                return console.log('error running query', err);
+            }
+            console.log('INSERT INTO succeffully');
+            //console.log(result.rows[0].Hinh);
+
+            //lay duoc hinh thi render hinh ra 
+            // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
+        });
+
+       // res.send('INSERT INTO succeffully');
+     //  res.render('fetchData',{ idnew: id, ima1: ima});
+    
+   
+    });
+    res.render('chat');
+});
+
+app3.get('/dislike/:id', (req, res) => {
     var id = req.params.id;
 
-      //chay truy van moc trong database lay ra hinh
-      pool.connect(function(err, client, done){
-        if(err){
+    //chay truy van moc trong database lay ra hinh
+    pool.connect(function (err, client, done) {
+        if (err) {
             return console.log('error fetching lient from pool', err);
         }
 
         var qr = 'UPDATE "hotgrilscollection" SET "Dislike"="Dislike"+1 WHERE "id" =' + id;
         console.log('qr::', qr);
-        client.query(qr, function(err, result) {
+        client.query(qr, function (err, result) {
             done();
-            if(err) {
+            if (err) {
                 return console.log('error running query', err);
             }
             console.log('UPLOAD Dislike succeffully');
 
             //lay duoc hinh thi render hinh ra 
-           // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
+            // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
         });
 
         res.send('UPLOAD Dislike succeffully');
@@ -450,26 +490,26 @@ app3.get('/dislike/:id',(req,res)=> {
 
 });
 
-app3.get('/like/:id',(req,res)=> {
+app3.get('/like/:id', (req, res) => {
     var id = req.params.id;
 
-      //chay truy van moc trong database lay ra hinh
-      pool.connect(function(err, client, done){
-        if(err){
+    //chay truy van moc trong database lay ra hinh
+    pool.connect(function (err, client, done) {
+        if (err) {
             return console.log('error fetching lient from pool', err);
         }
 
         var qr = 'UPDATE "hotgrilscollection" SET "Like"="Like"+1 WHERE "id" =' + id;
         console.log('qr::', qr);
-        client.query(qr, function(err, result) {
+        client.query(qr, function (err, result) {
             done();
-            if(err) {
+            if (err) {
                 return console.log('error running query', err);
             }
             console.log('UPLOAD like succeffully');
 
             //lay duoc hinh thi render hinh ra 
-           // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
+            // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
         });
 
         res.send('UPLOAD like succeffully');
@@ -477,32 +517,27 @@ app3.get('/like/:id',(req,res)=> {
 
 });
 
- app3.get('/hotgirls/:id', (req, res) => {
-     var id = req.params.id;
-    
-     //chay truy van moc trong database lay ra hinh
-    pool.connect(function(err, client, done){
-        if(err){
+
+app3.get('/hotgirls/:id', (req, res) => {
+    var id = req.params.id;
+    //chay truy van moc trong database lay ra hinh
+    pool.connect(function (err, client, done) {
+        if (err) {
             return console.log('error fetching lient from pool', err);
         }
-
         var qr = 'SELECT * FROM "hotgrilscollection" WHERE "id" =' + id;
         console.log('qr::', qr);
-        client.query(qr, function(err, result) {
+        client.query(qr, function (err, result) {
             done();
-            if(err) {
+            if (err) {
                 return console.log('error running query', err);
             }
             console.log(result.rows[0].Hinh);
-
             //lay duoc hinh thi render hinh ra 
             res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
         });
-    })
-
-
-
- })
+    });
+})
 
 
 

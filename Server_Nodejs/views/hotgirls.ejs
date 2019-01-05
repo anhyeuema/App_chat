@@ -12,6 +12,10 @@
      
 %>
 
+
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,18 +38,44 @@
                 });
             });
 
-             $('#dislike').click(function() {
+            $('#dislike').click(function() {
                 var id  = $(this).attr("hinh");
                 // alert(id);
                 $.get("http://localhost:2400/dislike/" + id, function(data){
                     alert(data);
                 });
             });
+
+            $('#insert_into').click( function() {
+               // alert('1');
+                var id = $('#idFetch').val();
+                var ima =$('#imageText').val();
+               // alert(id);
+               // alert(ima);
+                $.get("http://localhost:2400/fetchData/" + id + "/"+ ima, function(data){
+                    alert('222222');
+                    alert(data);
+                });
+            })
+
+            //chuyen sang trang 
+            $('#chat_canhan').click( function() {
+                alert('chat');
+                render('http://localhost:3500/chat');
+            });
         })
     </script>
 </head>
 <body>
     <div id="hotgirls">
+    <div>
+            <input type="button" id="chat_canhan" value="chat-socket" />
+        
+        <input type="text" id="idFetch" placeholder="id fetch" />
+        <input type="text" id="imageText" placeholder="name image" />
+        <input type="button" id="insert_into" value="insert-into" />
+        
+    </div>
     <a id="truoc" href="./hotgirls/<%= truoc%>">Truoc</a>
     <a id="sau" href="./hotgirls/<%= sau%>">Sau</a>
     <div class="block"></div>

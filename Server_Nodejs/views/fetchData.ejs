@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+   //di ve goc khong phai public
+    <base href="http://localhost:2400/" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hot girls</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="layoutHotgirls.css" />
+    <script src="jquery.js"></script>
+
+    <script>
+        $(document).ready( function() {
+            $('#insert_into').click( ()=> {
+                var id1 = $(this).attr("idnew1");
+                var ima1 =$(this).attr("ima1");
+                $.get("http://localhost:2400/fetchData/" + id1 + ima1, function(data){
+                    alert(data);
+                });
+            })
+        })
+    </script>
+</head>
+<body>
+    <div id="hotgirls">
+    <div>
+        <input type="button" idnew1="<%=idnew%>" ima1="<%=ima1 %>" id="insert_into" value="insert-into" />
+    </div>
+    
+    <div class="block"></div>
+   
+    <img id="like"  src="hotgirls/like.png" />
+    <img id="dislike"  src="hotgirls/dislike.png" />
+    </div>
+
+    <div>
+        <h1><%=idnew %></h1>
+        <h1><%=ima1 %></h1>
+    </div>
+</body>
+</html>
