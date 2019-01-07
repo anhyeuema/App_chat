@@ -5,7 +5,7 @@ var Formidable = require('express-formidable');
 
 var server = require('http').Server(app);
 
-app.use(express.static('public'));// khai bao thu vien cho file duoi .js trong file ejs
+app.use(express.static('public')); // khai bao thu vien cho file duoi .js trong file ejs
 app.use(express.static(path.join(__dirname, 'upload'))); //thu muc de chua thu vien cho anh trong file ejs hoac html
 
 app.set('view engine', 'ejs'); //khai bao su dung ejs khi res.render
@@ -54,8 +54,8 @@ app.post('/photo', urlencodedParser, (req, res) => {
             console.log('req.file::::::', req.file);
             console.log('req.file.filename:::', req.file.filename);
             console.log('req.file.buffer::::::', req.file.buffer);
-            console.log('req.file.buffer.toStringbase64::', req.file.buffer.toString('base64'));//  req.file.buffer la dang buffer
-            io.sockets.emit('server-send-imageBase64-fromweb-toAppAndWeb', { imageWebBase64: req.file.buffer.toString('base64') });//chuyen sang base64 dung  req.file.buffer.toString('base64') 
+            console.log('req.file.buffer.toStringbase64::', req.file.buffer.toString('base64')); //  req.file.buffer la dang buffer
+            io.sockets.emit('server-send-imageBase64-fromweb-toAppAndWeb', { imageWebBase64: req.file.buffer.toString('base64') }); //chuyen sang base64 dung  req.file.buffer.toString('base64') 
             res.render('chat'); // load lai ejs chatSocketIO thi ben nay se k hen anh nhung doi tuong App va ng khac se nhan duoc base64
         } else {
 
@@ -68,10 +68,9 @@ app.post('/photo', urlencodedParser, (req, res) => {
 
 var des = "toidicode là trang web chuyên chia sẻ các tutorials về lập trình toidicode";
 var position = des.indexOf('toidicode');
-console.log('Vị trí của chuỗi toidicode trong des là: ' + position);  //tra ve 0 nghia la ton tai khi tu trong mang hoac chuoi
+console.log('Vị trí của chuỗi toidicode trong des là: ' + position); //tra ve 0 nghia la ton tai khi tu trong mang hoac chuoi
 
-var mang1 = ["Học", "lập", "trình", "tại", "freetuts.net"];
- // Lấy phần tử  "freetuts.net"
+var mang1 = ["Học", "lập", "trình", "tại", "freetuts.net"];  // Lấy phần tử  "freetuts.net"
 var mang_moi = mang1.slice(4, 5);
 console.log('mang_moi:::', mang_moi);
 
@@ -168,13 +167,13 @@ io.on('connection', (socket) => {
 
         var xxxx = UsSoketApp.socketUs; // Xóa đi y ký tự bắt đầu tại vị trí x.
         var dsSoketUsername = UsSoketApp.dsSoketUsername;
-        console.log('dsSoketUsername::::', dsSoketUsername);//hien thi dsSoketUsername co ca key va socketID
-        var phantu1 = dsSoketUsername.slice(2, 3);//mang moi cua dsSoketUsername chi chua phan tu thu 2 
+        console.log('dsSoketUsername::::', dsSoketUsername); //hien thi dsSoketUsername co ca key va socketID
+        var phantu1 = dsSoketUsername.slice(2, 3); //mang moi cua dsSoketUsername chi chua phan tu thu 2 
 
         mangUs = [];
         dsSoketUsername.forEach(i => {
             var UsSoket1 = i.UsSoket; //lay từng pân tử chưa UsSocket
-            if (UsSoket1.indexOf(UsSoketApp.Username) > -1) {// thay the UsSoketApp.Username = Username_r//lây từng phân tử trong dsUsSoket1 mà có tồn tại ky tự Username_r
+            if (UsSoket1.indexOf(UsSoketApp.Username) > -1) { // thay the UsSoketApp.Username = Username_r//lây từng phân tử trong dsUsSoket1 mà có tồn tại ky tự Username_r
                 // if( UsSoket1.indexOf('Username_r')>-1){ //lây từng phân tử trong dsUsSoket1 mà có tồn tại ky tự Username_r
                 //nghia la se tra ve ket qua la 0 va > -1 thi phan tu do la duoc vao { su ly phan tử đó}
                 //mangUs.push(UsSoket1);/ co the push ngay phan tu thoa mãn đó vao mảng 
@@ -406,6 +405,8 @@ app2.post('/reactNative/Upload', (req, res) => {
 
 var express = require('express');
 var app3 = express();
+var fs = require('fs');
+var jwt = require('jsonwebtoken');
 app3.use(express.static("public"));
 app3.set('view engine', 'ejs');
 app3.set('views', './views');
@@ -428,22 +429,106 @@ var pool = new pg.Pool(config)
 
 
 
-app3.get('/fetchData/:id/:ima', (req, res) => {
+
+app3.get('/', (req, res) => {
+    res.render('login');
+});
+
+app3.get('/dangnhap', (req, res) => {
+    res.render('dangnhap');
+});
+
+
+
+app3.get('/login/:Username/:Password', (req, res) => {
+    var id = req.params.id;
+    var Username = req.params.Username;
+    var Password = req.params.Password;
+
+    pool.connect(function (err, client, done) {
+        if (err) {
+            return console.log('error login lient from pool', err);
+        }
+
+        var qr1 = 'SELECT id FROM "hotgrilscollection" WHERE "id"=' + id;
+
+        //  var qr = {
+        //      text: ' SELECT * FROM hotgrilscollection(id, "Hinh", "Like", "Dislike","Username","Passwrod") WHERE "Username" = $1 AND "Password" = $2 ',
+        //      values: [17,'17.jpg','0','0',username, password],
+        //  }
+
+
+        /*
+          var qr = {
+              text: ' SELECT * FROM hotgrilscollection WHERE "Username" = $1 AND "Password" = $2 ',
+              values: [username, password],
+          } */
+        var qr2 = 'SELECT * FROM "hotgrilscollection" WHERE "id" =' + id;
+
+        var qr3 = {
+            text: ' SELECT * FROM "hotgrilscollection" WHERE "id" = $1',
+            values: [id],
+        }
+
+        var qr4 = {
+            text: ' SELECT * FROM "hotgrilscollection" WHERE "Username" = $1',
+            values: [Username],
+        }
+
+        var qr5 = {
+            text: ' SELECT * FROM "hotgrilscollection" WHERE "Username" = $1 AND "Password" =$2 ',
+            values: [Username, Password],
+        }
+
+        console.log('qr:::', qr5);
+        client.query(qr5, function (err, result) {
+            console.log(result);
+            console.log('result.rows:::::', result.rows);
+            var dataJSONstringify = JSON.stringify(result.rows);
+            console.log('JSON.stringify(result.rows):::', dataJSONstringify);
+
+            done();
+            if (err) {
+                return console.log('error running query', err);
+            }
+            console.log('login succuffuly');
+            //  res.render('chat');
+           // res.end(dataJSONstringify);
+
+            
+
+
+            //  res.render('hotgirls', {dataJSONstringify});
+            //console.log(result.rows[0].Username);
+
+            
+           // if (result.rows[0]) {
+             //   console.log(result.rows[0]);
+              //  req.flash('warning', "This email address is already registered. < a href ='/login'>Log in!</a >");
+              //  res.redirect('/join');
+          //  } 
+        });
+    });
+});
+
+app3.get('/fetchData/:id/:ima/:username/:password', (req, res) => {
+
     var id = req.params.id;
     var ima = req.params.ima;
+    var username = req.params.username;
+    var password = req.params.password;
     pool.connect(function (err, client, done) {
         if (err) {
             return console.log('error fetching lient from pool', err);
         } //nue khong err
-      //  var qr = 'INSERT INTO hotgrilscollection(id, "Hinh", "Like", "Dislike") VALUES(6, 6.jpg, 0, 0)';
-
+        //  var qr = 'INSERT INTO hotgrilscollection(id, "Hinh", "Like", "Dislike") VALUES(6, 6.jpg, 0, 0)';
         var qr = {
-            text: 'INSERT INTO hotgrilscollection(id, "Hinh", "Like", "Dislike") VALUES($1, $2, $3, $4)',
-            values: [id, ima, '0', '0'],
+            text: 'INSERT INTO hotgrilscollection(id, "Hinh", "Like", "Dislike", "Username","Password") VALUES($1, $2, $3, $4, $5, $6)',
+            values: [id, ima, '0', '0', username, password],
         }
-          
         console.log('qr::', qr);
         client.query(qr, function (err, result) {
+            console.log('result::', result);
             done();
             if (err) {
                 return console.log('error running query', err);
@@ -455,12 +540,16 @@ app3.get('/fetchData/:id/:ima', (req, res) => {
             // res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
         });
 
-       // res.send('INSERT INTO succeffully');
-     //  res.render('fetchData',{ idnew: id, ima1: ima});
-    
-   
+        // console.log(result);
+
+        // res.send('INSERT INTO succeffully');
+        //  res.render('fetchData',{ idnew: id, ima1: ima});
+
+        //res.end('insert succeffuly');
+        res.render('login');
+
     });
-    res.render('chat');
+    //  res.render('chat');
 });
 
 app3.get('/dislike/:id', (req, res) => {
@@ -472,7 +561,11 @@ app3.get('/dislike/:id', (req, res) => {
             return console.log('error fetching lient from pool', err);
         }
 
-        var qr = 'UPDATE "hotgrilscollection" SET "Dislike"="Dislike"+1 WHERE "id" =' + id;
+        // var qr = 'UPDATE "hotgrilscollection" SET "Dislike"="Dislike"+1 WHERE "id" =' + id;
+        var qr = {
+            text: 'UPDATE "hotgirlscollection" SET "Dislike"="Dislike"+1 WHERE "id" = $1',
+            values: [id]
+        }
         console.log('qr::', qr);
         client.query(qr, function (err, result) {
             done();
@@ -528,6 +621,7 @@ app3.get('/hotgirls/:id', (req, res) => {
         var qr = 'SELECT * FROM "hotgrilscollection" WHERE "id" =' + id;
         console.log('qr::', qr);
         client.query(qr, function (err, result) {
+            console.log(result);
             done();
             if (err) {
                 return console.log('error running query', err);
@@ -537,10 +631,239 @@ app3.get('/hotgirls/:id', (req, res) => {
             res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
         });
     });
-})
+});
+
+var express = require('express');
+var fs = require('fs');
+var jwt = require('jsonwebtoken');
+var app4 = express();
+
+app4.listen(2600, console.log('connect-port 2600 text jsonwentken'));
+
+app4.get('/api', (req, res) => {
+    var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiVXNlcm5hbWUiOiJsYW4iLCJQYXNzd29yZCI6IjEyMyIsImVtYWlsIjoidGVvQCIsImlhdCI6MTU0Njg2NjczMywiZXhwIjoxNTQ2ODcwMzMzfQ.z_FrgjZaQoq82CA-4apD8BUbco9ZePsJCm30qBoCOKg';
+    var key = 'cert';
+    jwt.verify(token, key, function (err, decoded) {
+        res.json({
+            user: decoded,
+        })
+    });
+});
+//FOMAT OF TOKEN
+//Verify Token
+function verifyToken(req, res, next) {
+    //get auth geader value
+    const bearerHeader = req.headers['authorization'];
+
+    //check if bearer is undefined
+    if (typeof bearerHeader !== 'undefined') {
+        //split at the space
+        console.log('bearerHeader:::',bearerHeader);
+        const bearer = bearerHeader.split(' ');
+        console.log('bearer::',bearer);
+        //get token to array
+        const bearerToken = bearer[1]; //chon mang so thu thu la 1 thi co token so thu 0 la 'Bearer' 
+        console.log('bearerToken::',bearerToken);
+        
+        //set the token 
+        req.token = bearerToken; // co bearerToken=token nen gui len req.token = bearerToken
+        console.log('req.token = bearerToken::',req.token = bearerToken);
+        
+        //next middleware;
+        next();
+        console.log('next', next);
+    } else {
+        res.sendStatus(403);
+    }
+}
+
+app4.post('/api/posts', verifyToken, (req, res) => {
+
+    jwt.verify(req.token, 'cert', (err, AuthDta) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            res.json({
+               AuthDta
+            });
+        }
+    })
+
+
+});
+
+app4.post('/api/login', (req, res) => {
+    // var cert = fs.readFileSync('key');
+    var user = { id: 1, Username: 'lan', Password: '123', email: 'teo@' };
+    var key = 'cert';
+    jwt.sign(user, key, { expiresIn: 60 * 60 }, function (err, token1) {
+        res.json({
+            messenger: "create token",
+            token: token1,
+        });
+
+    });
+});
+
+/*
+app4.get('/api', (req, res) => {
+    var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJVc2VybmFtZSI6ImxhbiIsIlBhc3N3b3JkIjoiMTIzIiwiZW1haWwiOiJ0ZW9AIn0sImlhdCI6MTU0Njg2NjU5NSwiZXhwIjoxNTQ2ODcwMTk1fQ.9V_mRDKRq5AnUWTuAGCtpZqSVEFjMK_0hXyaSl60c70';
+    var decoded = jwt.verify(token, 'cert');
+    console.log(decoded)
+    res.json({
+        messenger: "hello test",
+        decodeToken: decoded,
+    
+});
+
+app4.post('/api/posts', (req, res) => {
+
+     var token1 = jwt.sign(
+         {id: 1,Username: 'lan', Password: '123', email: 'teo@'},
+         'cert', 
+         { expiresIn: 60 * 60  }
+     );
+       
+      res.json({
+          messenger: "create token",
+          token: token1,
+      }); 
+});
+
+*/
+
+
+/*
+
+var config = {
+    user: 'postgres',
+    host: 'localhost',
+    database: 'Users',
+    password: 'Postgres09898',
+    port: 5432,
+    max: 10,
+    idletTimeoutMillis: 30000,
+};
+
+app3.get('/login/:Username/:Password', (req, res) => {
+    var id = req.params.id;
+    var Username = req.params.Username;
+    var Password = req.params.Password;
+
+    pool.connect(function (err, client, done) {
+        if (err) {
+            return console.log('error login lient from pool', err);
+        }
+        var qr1 = 'SELECT id FROM "DanhSachUsers" WHERE "id"=' + id;
+
+        //  var qr = {
+        //      text: ' SELECT * FROM hotgrilscollection(id, "Hinh", "Like", "Dislike","Username","Passwrod") WHERE "Username" = $1 AND "Password" = $2 ',
+        //      values: [17,'17.jpg','0','0',username, password],
+        //  }
+
+          var qr3 = {
+            text: ' SELECT * FROM "DanhSachUsers" WHERE "id" = $1',
+            values: [id],
+        }
+
+        var qr4 = {
+            text: ' SELECT * FROM "DanhSachUsers" WHERE "Username" = $1',
+            values: [Username],
+        }
+
+        var qr5 = {
+            text: ' SELECT * FROM "DanhSachUsers" WHERE "Username" = $1 AND "Password" =$2 ',
+            values: [Username, Password],
+        }
+
+        var qr2 = 'SELECT * FROM "DanhSachUsers" WHERE "id" =' + id;
+
+        console.log('qr:::', qr2);
+        client.query(qr5, function (err, result) {
+            console.log(result);
+            console.log('result.rows:::::', result.rows);
+            var dataJSONstringify = JSON.stringify(result.rows);
+            console.log('JSON.stringify(result.rows):::',dataJSONstringify );
+
+            done();
+            if (err) {
+                return console.log('error running query', err);
+            }
+            console.log('login succuffuly');
+
+            res.end(dataJSONstringify);
+          //  res.render('hotgirls', {dataJSONstringify});
+            //console.log(result.rows[0].Username);
+        })
+    });
+});
+
+*/
 
 
 
+/*
+// home
+app3.get('/', function (req, res, next) {
+    res.render('index', {
+        title: "Home",
+        userData: req.user,
+        messages: {
+            danger: req.flash('danger'),
+            warning: req.flash('warning'),
+            success: req.flash('success')
+        }
+    });
+
+    console.log(req.user);
+});
+
+//join
+app3.get('/join', function (req, res, next) {
+    res.render('join', {
+        title: 'Join',
+        userData: req.user, 
+        messages: {
+            danger: req.flash('danger'),
+            warning: req.flash('warning'),
+            success: req.flash(success)
+        }
+
+    });
+});
 
 
+app3.post('/join', async function (req, res) {
+
+    try {
+        const client = await pool.connect()
+        await client.query('BEGIN')
+        var pwd = await bcrypt.hash(req.body.password, 5);
+        await JSON.stringify(client.query('SELECT id FROM "users" WHERE "email"=$1', [req.body.username], function (err, result) {
+            if (result.rows[0]) {
+                req.flash('warning', "This email address is already registered. < a href ='/login'>Log in!</a >");
+                res.redirect('/join');
+            }
+            else {
+                client.query('INSERT INTO users(id, "firstName", "lastName", email, password) VALUES($1, $2, $3, $4, $5) ', [uuidv4(), req.body.firstName, req.body.lastName, req.body.username, pwd], function (err, result) {
+                    if (err) { console.log(err); }
+                    else {
+
+                        client.query('COMMIT')
+                        console.log(result)
+                        req.flash('success', 'User created.')
+                        res.redirect('/login');
+                        return;
+                    }
+                });
+
+
+            }
+
+        }));
+        client.release();
+    }
+    catch (e) { throw (e) }
+});
+*/
 

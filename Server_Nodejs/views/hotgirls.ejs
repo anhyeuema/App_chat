@@ -18,9 +18,10 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
-   //di ve goc khong phai public
+    //di ve goc khong phai public
     <base href="http://localhost:2400/" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Hot girls</title>
@@ -28,62 +29,163 @@
     <link rel="stylesheet" type="text/css" media="screen" href="layoutHotgirls.css" />
     <script src="jquery.js"></script>
 
+    <style>
+        #menu{ width: 150px; margin-bottom: 1px; padding: 5px }
+        a:link,a:visited{ 
+            background-color: darkgreen;
+            color: #000;
+            clear: both;
+            display: block;
+            text-decoration: none; 
+            padding: 5px;
+            margin-bottom: 2px;
+        }
+        a:hover{ background-color: cornsilk}
+  
+        div{
+            background-color: yellow;
+            color:black;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-decoration: underline;
+      
+            border: solid 2px blue;
+
+        }
+        
+        body{
+            background-image: url(http://localhost:81/html/images/ly_mac_sau.jpg);
+            background-repeat: repeat;
+        }
+
+        #loginID{
+            background-color: aliceblue;
+            color: #000;
+            display: block;
+            clear: both;
+            padding: 5px;
+            margin-right: 2px;
+            border: solid 2px blue;
+        }
+    </style>
     <script>
-        $(document).ready( function() {
-            $('#like').click(function() {
-                var id  = $(this).attr("hinh");
+        $(document).ready(function () {
+
+            $('#loginID').hide(); //an login di
+            $('#Register').show(); //show hien dang ky
+
+            $('#like').click(function () {
+                var id = $(this).attr("hinh");
                 // alert(id);
-                $.get("http://localhost:2400/like/" + id, function(data){
+                $.get("http://localhost:2400/like/" + id, function (data) {
                     alert(data);
                 });
             });
 
-            $('#dislike').click(function() {
-                var id  = $(this).attr("hinh");
+            $('#dislike').click(function () {
+                var id = $(this).attr("hinh");
                 // alert(id);
-                $.get("http://localhost:2400/dislike/" + id, function(data){
+                $.get("http://localhost:2400/dislike/" + id, function (data) {
                     alert(data);
                 });
             });
 
-            $('#insert_into').click( function() {
-               // alert('1');
+            $('#insert_into').click(function () {
+                // alert('1');
+
+
                 var id = $('#idFetch').val();
-                var ima =$('#imageText').val();
-               // alert(id);
-               // alert(ima);
-                $.get("http://localhost:2400/fetchData/" + id + "/"+ ima, function(data){
-                    alert('222222');
+                var ima = $('#imageText').val();
+                var us = $('#usernametxt').val();
+                var pa = $('#passwordtxt').val();
+                // alert(id);
+                // alert(ima);
+                $.get("http://localhost:2400/fetchData/" + id + "/" + ima + "/" + us + "/" + pa, function (data) {
+
                     alert(data);
+                    $('#noidung').html(data);
+
+                    $('#loginID').show(); //sau khi dang ky xong thi hien login
+                    $('#Register').hide(); //sau khi dang ky xong thi an dang ky di
                 });
-            })
+            });
+
+            $('#login').click(function () {
+                var us = $('#username').val();
+                var pa = $('#password').val();
+                $.get("http://localhost:2400/login/" + us + "/" + pa, function (data) {
+                    alert('0000');
+                    $('#noidung').html(data);
+                    alert(data);
+                })
+            });
+
 
             //chuyen sang trang 
-            $('#chat_canhan').click( function() {
+            $('#chatSocket').click(function () {
                 alert('chat');
-                render('http://localhost:3500/chat');
+                //render('http://localhost:3500/chat');
             });
-        })
+
+            //ajaxt
+            $('#noidung').load("http://localhost:3500/chat");
+        });
+
+      
+        $('#chatttt').click(function () {
+            alert('1');
+        });
+
     </script>
 </head>
+
 <body>
+
+
+
+    <a href="http://localhost:3500/chat">
+        <button type="button" name="chat">chat</button>
+    </a>
+    <div id="noidung">.....</div>
     <div id="hotgirls">
-    <div>
-            <input type="button" id="chat_canhan" value="chat-socket" />
-        
-        <input type="text" id="idFetch" placeholder="id fetch" />
-        <input type="text" id="imageText" placeholder="name image" />
-        <input type="button" id="insert_into" value="insert-into" />
-        
+        <div id="thuoctinhcss">
+
+        </div>
+
+
+
+        <div id="menu">
+            <a id="chatSocket" href="http://localhost:3500/chat">chat</a>
+            <a href="http://localhost:3500/chat">trangchu</a>
+            <a href="http://localhost:3500/chat">trangchu</a>
+            <a href="http://localhost:3500/chat">trangchu</a>
+        </div>
+        <div id="loginID">
+            <input type="text" id="username" placeholder="username" />
+            <input type="text" id="password" placeholder="password" />
+            <button type="button" id="login" aria-placeholder="login">login</button>
+        </div>
+        <div id="RegisterID">
+
+            <input type="text" id="idFetch" placeholder="id fetch" />
+            <input type="text" id="imageText" placeholder="name image" />
+            <input type="text" id="usernametxt" placeholder="username" />
+            <input type="text" id="passwordtxt" placeholder="password" />
+            <input type="button" id="insert_into" value="insert-usename" />
+
+        </div>
+        <div class="block"></div>
+        <a id="truoc" href="./hotgirls/<%= truoc%>">Truoc</a>
+        <a id="sau" href="./hotgirls/<%= sau%>">Sau</a>
+        <div class="block"></div>
+        <img id='hinhHG' src="hotgirls/<%=hinh%>" />
+        <div class="block"></div>
+
+        <img id="like" hinh="<%= dangxem%>" src="hotgirls/like.png" />
+        <img id="dislike" hinh="<%= dangxem%>" src="hotgirls/dislike.png" />
     </div>
-    <a id="truoc" href="./hotgirls/<%= truoc%>">Truoc</a>
-    <a id="sau" href="./hotgirls/<%= sau%>">Sau</a>
-    <div class="block"></div>
-    <img id='hinhHG' src="hotgirls/<%=hinh%>" />
-    <div class="block"></div>
-   
-    <img id="like" hinh="<%= dangxem%>" src="hotgirls/like.png" />
-    <img id="dislike" hinh="<%= dangxem%>" src="hotgirls/dislike.png" />
-    </div>
+
+    <iframe scrolling="no" width="640" height="180" src="https://mp3.zing.vn/embed/video/ZW696W8D?start=true" frameborder="0" allowfullscreen="true"></iframe>
+    
 </body>
+
 </html>

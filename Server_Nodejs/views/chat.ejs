@@ -79,7 +79,7 @@
 
         // app == web server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native
         socket.on('server-send-socket.Username-rieng-da-TouchableOpacity-trong-appReact-native', UsSoketApp => {
-           alert('1');
+            alert('1');
             UsSoketApp.forEach(i => {
                 $('#listMessagChatSoscketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.key1 + ":" + i.socketUs + "</h4>");
                 $('#listMessagChatSoscketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.Username + ": " + i.msText + "</h4>");
@@ -93,9 +93,9 @@
             mangUsSocket.forEach(i => {
                 $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + i.key + ":" + i.UsSoket + "</h4>");
                 $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + i.Username + "</h4>");
-                
-                $(document).ready(function () {
-                    $("h4").click( ()=> {
+
+                $(document).ready(function() {
+                    $("h4").click(() => {
                         alert(i.key);
                     });
 
@@ -177,9 +177,9 @@
         });
 
         socket.on('server-dangky-thatbai', () => {
-            alert(' username da duoc su dung');
-        })
-        //lang nghe app send messenger to app va web
+                alert(' username da duoc su dung');
+            })
+            //lang nghe app send messenger to app va web
         socket.on('server-send-messenger-from-app-to-AppAndWeb', UnMs => {
             alert(UnMs.ms);
             $('#ListMessenger').append("<div class='ms'>" + UnMs.ms + "</div>")
@@ -233,7 +233,10 @@
             });
 
             $('#giaLapSendFromTuDanhSachSocketUsername').click(() => {
-                socket.emit('app-send-socket.username-va-messenger', { skID1: $('#txtUser').val(), messengerT: $('$txtMessenger').val() });
+                socket.emit('app-send-socket.username-va-messenger', {
+                    skID1: $('#txtUser').val(),
+                    messengerT: $('$txtMessenger').val()
+                });
             });
 
 
@@ -244,7 +247,6 @@
 
 
         });
-
     </script>
     <link rel="stylesheet" type="text/css" href="chat.css">
 </head>

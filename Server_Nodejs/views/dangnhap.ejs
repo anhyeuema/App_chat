@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+
+	<title>Page Title</title>
+
+
+	<script src="jquery.js"></script>
+
+	<script>
+		$(document).ready(function () {
+			alert('1');
+			$('#login').click(function () {
+				var us = $('#username').val();
+				var pa = $('#password').val();
+				alert(us);
+
+				alert('us11111');
+				$.get("http://localhost:81/ajax/dangnhap.php", { USERNAME: us, PASSWORD: pa }, function (data) {
+					alert('data');
+					$('#ketqua').html(data);
+				});
+			});
+		});
+	</script>
+</head>
+
+<body>
+	hello
+	<input type="text" id="username" placeholder="username" />
+	<input type="text" id="password" placeholder="password" />
+	<input type="button" id="login" value="login" />
+
+	<h2 id="ketqua">....</h2>
+
+
+
+
+</body>
+
+</html>

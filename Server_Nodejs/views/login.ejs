@@ -1,0 +1,35 @@
+<html>
+<header>
+
+    <script src="jquery.js"></script>
+    <script>
+
+        $(document).ready( () => {
+            $('#login').click(function () {
+                alert('1111111');
+                var us = $('#username').val();
+                var pa = $('#password').val();
+                $.get("http://localhost:2400/login/" + us + "/" + pa, function (data) {
+                    alert('222222');
+                    $('#noidung1').html(data);
+                    alert(data);
+                })
+            });
+        })
+
+
+
+    </script>
+</header>
+
+<body>
+    <div id="noidung1">.....</div>
+
+    <div id="loginstyle">
+        <input type="text" id="username" placeholder="username" />
+        <input type="text" id="password" placeholder="password" />
+        <button type="button" id="login" aria-placeholder="login">login</button>
+    </div>
+</body>
+
+</html>
