@@ -9,10 +9,113 @@
     <script src="socket.io/socket.io.js"></script>
 
     <script>
-        var socket = io('http://localhost:3500');
-        //khi mo web len thi web=app-send-Username-dai-dien-socket.Username-ca-nhan
-        this.socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', 'Username_r');
-        //socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val() );
+
+       
+
+         var socket = io('http://localhost:3500');
+
+        //lay token len tu document.cookie  gui len 
+        var dataCookieStringPhay = document.cookie;
+        console.log('dataCookieStringPhay:::',dataCookieStringPhay);
+        var mangCookie = dataCookieStringPhay.split(" "); //mang thay dau cach bang dau phay
+        console.log('mangCookie:::',mangCookie);
+     //   var dataCookieArray = dataCookieStringPhay.split(";"); //loai bo dau ; trong mang cookie
+     //  console.log('dataCookie:::',dataCookieArray);
+
+        var mangtoken = [];
+        mangCookie.forEach(i =>{
+            if( i.indexOf("@token=") > -1 ) {
+                var token = i.replace("@token=", '');
+                mangtoken.push(token);
+            }
+        });
+
+        //lay mnag dau tien chua token thoa man
+        var token1 = mangtoken[0]; 
+        //loai ky tu la nhu dau ; trong token
+        function Token_super(valuetoken){
+            if( valuetoken.indexOf(";") > 1 ){
+                var token_super =  valuetoken.replace(";", '');
+                return token_super;
+            }
+            return valuetoken;
+        }
+        //thuc thi ham Token_super de lay ra token tinh khiet khong chua ky tu la nhu ;
+        var token = Token_super(token1);
+        console.log("token:::::",token);
+
+
+        if( token == null || token == "undefined" ){
+
+            /* $('a').linkIt({
+                link: {
+                    word: 'http://localhost:3500/chat',
+                    url: 'http://localhost:2400'
+                },
+                newWindow: true
+            }); */
+
+            $(document).ready(()=> {
+                //$('#dangnhap').click(function(){
+                //    window.location = 'http://localhost:2400';
+                //});
+                $('#dangnhap').attr("href",'http://localhost:2400');
+                window.location.href = $('').attr('href');
+            });
+        }
+
+        $.get("http://localhost:3500/checkToken/" + token , function(data){
+            //  alert(data);
+            var x = JSON.parse(data);
+            var Username1 = x.Username;
+       //     console.log('username::',Username1);
+            $('#ketqua').html(data);
+            //khi mo web len thi web=app-send-Username-dai-dien-socket.Username-ca-nhan
+            socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', Username1);
+            //socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val() );
+        }); 
+
+
+        if( token !== null ){
+            $.get("http://localhost:3500/checkToken/" + token , function(data){
+              //  alert(data);
+                var x = JSON.parse(data);
+                var Username1 = x.Username;
+          //      console.log('username::',Username1);
+                $('#ketqua').html(data);
+                //khi mo web len thi web=app-send-Username-dai-dien-socket.Username-ca-nhan
+                socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', Username1);
+                //socket.emit('App-send-Username-dai-dien-socket.Username-ca-nhan', $('#txtUser').val() );
+            });
+        } else{
+            $(document).ready(()=> {
+                
+                //$('#dangnhap').click(function(){
+                //    window.location = 'http://localhost:2400';
+                //});
+                $('#dangnhap').attr("href",'http://localhost:2400');
+                window.location.href = $('').attr('href');
+               
+            });
+        }
+
+        //logout xoa token
+        $(document).ready(()=> {
+            $('#btnLogin').click(function(){
+             //   alert('login');
+                document.cookie = "@token=";
+                window.location.href = $('#dangnhap').attr('href');
+                $('#dangnhap').attr("href",'http://localhost:2400');
+        
+              // $('#dangnhap').click(function(){
+              //  window.location.href = 'http://localhost:2400';
+              //  }); 
+
+            });
+        });
+
+       
+    
 
         //LANG NGHE server-send-phong-ca-nhan
         socket.on('server-send-phong-ca-nhan', phongCaNhan => {
@@ -87,27 +190,88 @@
         });
         //lang nghe server send danh sach socket.Username
         socket.on('server-send-socket.Username', mangUsSocket => {
+            console.log("mangUsSocket:::",mangUsSocket);
             //  alert(mangUsSk);
             $('#dsSocketUsername').html('');
             $('#dsSocketUsername').append("<h4 class='dsmangsocketUs'>" + "DANH SACH SOCKET.________________________USERNAME:" + "</h4>");
+            
+        
+            
+            var mangds = [];
+            mangUsSocket.map(i => {
+                var dsUser = i.UsSoket;
+                mangds.push(dsUser);
+              
+              /*  $('#dsSocketUsername').append("<h4 id='i.key' class=' + 'dsUser' >" + dsUser + "</h4>");
+                $('#dsSocketUsername').css("color", "blue");
+                $('.dsUser').click(() => {
+                       alert(mangds[1]);
+                       // socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
+                }); */
+            });
+            console.log('mangds::',mangds);
+
+          /*  var arr = ['one','two','three','four','five'];
+            $.each(arr, function (index, value) {
+                console.log(value);
+                console.log(index);
+                // Will stop running after "three"
+                //return (value !== 'three');
+            }); */
+
+          /*  $.each(mangds, function(index, value){
+                $('#dsSocketUsername').append("<h4 id='i.key' class='socketUs'>" + "aa" + value + "</h4>");
+                $('.socketUs').click(function(){
+                    console.log(index);
+                });
+            }); */
+
+
+            var n = mangds.length;
+                for(j=0;j<n;j++){
+                $('#dsSocketUsername').append("<h4 id='i.key' class='socketUs'>" + "aa" + mangds[j] + "</h4>");
+                $('#dsSocketUsername').css("color", "red");
+            } 
+            $(function(){
+                $('.socketUs').each(function(index){
+                  //  console.log('h4' + index + ':' + $(this).attr('class'));
+                    $(this).click(function(){
+                    // $(this).addClass("list"+index);
+                    //    var z = $(this).addClass("aa"+index);
+                    alert(mangds[index]);
+                    console.log(mangds[index]);
+                   // console.log("z;;" + z);
+                    });
+                });
+            });  
+
+
+         /*   var n = mangds.length;
+                for(j=0;j<n;j++){
+                $('#dsSocketUsername').append("<h4 id='i.key' class='socketUs'>" + j + ": " + mangds[j] + "</h4>");
+                $('#dsSocketUsername').css("color", "red");
+            } 
+            $('.socketUs').click(() => {
+                alert('1');
+                       // socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
+            }); */
+
+
+            /* 
             mangUsSocket.forEach(i => {
                 $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + i.key + ":" + i.UsSoket + "</h4>");
                 $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + i.Username + "</h4>");
-
                 $(document).ready(function() {
                     $("h4").click(() => {
                         alert(i.key);
                     });
-
-                    /*
                     $('.dsmangsocketUs').click(() => {
                       //  alert(i.UsSoket);
                         socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
-                    }); */
-
+                    }); 
                 });
+            });  */
 
-            });
         });
 
 
@@ -252,9 +416,9 @@
 </head>
 
 <body>
+    <a id="dangnhap" href="http://localhost:2400">dangnhap</a>
+    <h1 id="ketqua">......</h1>
     <div id="wrapper">
-
-
         <h1>chat web</h1>
         <div id="left">
             <div>

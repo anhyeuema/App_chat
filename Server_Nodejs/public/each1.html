@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tiêu đề</title>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<style>
+.list0 { color: red; }
+.list1 { color: blue; }
+.list2 { color: yellow; }
+.list3 { color: green; }
+.list4 { color: gray; }
+.list5 { color: pink; }
+</style>
+<script>
+$(function(){
+    $('li').each(function(index){
+        $(this).click(function(){
+            $(this).addClass("list"+index);
+        });
+    });
+});
+</script>
+</head>
+
+<body>
+<ul>
+<li>list 01</li>
+<li>list 02</li>
+<li>list 03</li>
+<li>list 04</li>
+<li>list 05</li>
+<li>list 06</li>
+</ul>
+</body>
+</html>

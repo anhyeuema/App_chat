@@ -1,0 +1,69 @@
+checkToken
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Page Title</title>
+
+	<script src="jquery.js"></script>
+	<script>
+		$(document).ready(()=> {
+			//lay data len tu cookie 
+			var dataCookie = document.cookie;
+		//	var dataCookie = dataCookie.split(";"); //loai bo dau ; trong mang cookie
+			//tao mang co dau phay thay cho dau space (dau cach)
+			var mangtoken = dataCookie.split(" ");
+			//tach mang ra bang forEach(i ) thanh tung phan tu i so sach lan luot tuong
+			//phan tu i nay co chu @token= khong neu co thi phan thoa nam dieu kien 
+			//da ta dung ham indexOf.neu trong pha tu chuoi i co chua chu token= thi tra ve gtri 0 de ta bit no
+			//ton tai phan tu i thoa nam dieu kien khi do ta se cho no vao mang thao man
+			var mangtokenThoaMan = [];
+			mangtoken.forEach( i=>{
+				if( i.indexOf("@token=") >-1 ) {
+					var token = i.replace("@token=",''); // bo di 1 so ky tu trong chuoi goc;thay "@token=eyJhbGciOiJ...xdH4" = "eyJhbGciOiJ...xdH"
+					mangtokenThoaMan.push(token);
+				}
+			});
+			console.log('mangtokenThoaMan::::',mangtokenThoaMan);
+
+
+			var tokenCookie=mangtokenThoaMan[0];//bang token tai day var token = localStorage.getItem('@token');
+			//loai ky tu la nhu dau ; trong token
+			function Token_super(valuetoken){
+				if( valuetoken.indexOf(";") > 1 ){
+					var token_super =  valuetoken.replace(";", '');
+					return token_super;
+				}
+				return valuetoken;
+			}
+			//thuc thi ham Token_super de lay ra token tinh khiet khong chua ky tu la nhu ;
+			var tokenCookie = Token_super(tokenCookie);
+			console.log('token',token);
+
+		
+			//lay token len tu localStorage
+			var token = localStorage.getItem('@token');
+			//console.log(token);
+			$.get("http://localhost:2400/checkToken/" + tokenCookie, function(data){
+				$('#ketqua').html(data);
+				$('#ketqua').css("color","red");
+				
+				var datajsonparse = JSON.parse(data);
+				$('#token_new').html("token_new:::" + datajsonparse.token_new);
+				$('#token_new').css("color","blue");
+
+				$('#user').html("Username::" + datajsonparse.Username);
+				$('#user').css("color","yellow");
+			});
+		})
+	</script>
+</head>
+<body>
+	<a id="chatSocket" href="http://localhost:3500/chat">chat</a>
+	<h1 id="user">..user..</h1>
+	<h1 id="token_new">..token_new..</h1>
+	<h1 id="ketqua">..KETQUA..</h1>
+
+</body>
+</html>

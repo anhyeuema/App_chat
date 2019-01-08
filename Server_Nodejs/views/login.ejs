@@ -6,13 +6,42 @@
 
         $(document).ready( () => {
             $('#login').click(function () {
-                alert('1111111');
+              //  alert('1111111');
                 var us = $('#username').val();
                 var pa = $('#password').val();
                 $.get("http://localhost:2400/login/" + us + "/" + pa, function (data) {
-                    alert('222222');
+                //    alert('222222');
                     $('#noidung1').html(data);
-                    alert(data);
+                    $('#noidung1').css("color", "blue");
+                    var x = JSON.parse(data);
+                    var token1 = x.token;
+                    var user1 = x.user;
+
+                    console.log('x:::',x);
+                    console.log('user:::',user1);
+                    console.log('user.Username:::',user1.Username);
+
+         
+                    sessionStorage.setItem("@Username",user1.Username);
+
+                    localStorage.setItem("@token",token1);
+                    document.cookie = "@token=" + (document.cookie = token1);
+                    document.cookie = "@io=" + (document.cookie = token1);
+              //      document.cookie = "io=" + (document.cookie = token1);
+                    
+                    var token_r = localStorage.getItem('@token');
+                    var user_r = sessionStorage.getItem('@Username');
+                    console.log('token_r:::::',token_r);
+                    $('#token_r').html("token_r:::" + token_r);
+                    $('#token_r').css("color","red");
+                    $('#user').html("user_r:::" + user_r);
+                    $('#user').css("color","red");
+                    
+                    //chuyen sang chat
+                    if(token1 !==null ){
+                        window.location.href = $('#login').attr('href');
+                    }
+                  //  alert(data);
                 })
             });
         })
@@ -23,12 +52,14 @@
 </header>
 
 <body>
+    <div id="user">...user..</div>
+    <div id="token_r">...token_r..</div>
     <div id="noidung1">.....</div>
 
     <div id="loginstyle">
         <input type="text" id="username" placeholder="username" />
         <input type="text" id="password" placeholder="password" />
-        <button type="button" id="login" aria-placeholder="login">login</button>
+        <button type="button" id="login" href="http://localhost:3500/chat" aria-placeholder="login">login</button>
     </div>
 </body>
 

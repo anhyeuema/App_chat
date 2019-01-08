@@ -2,18 +2,87 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var Formidable = require('express-formidable');
-
 var server = require('http').Server(app);
-
 app.use(express.static('public')); // khai bao thu vien cho file duoi .js trong file ejs
 app.use(express.static(path.join(__dirname, 'upload'))); //thu muc de chua thu vien cho anh trong file ejs hoac html
-
 app.set('view engine', 'ejs'); //khai bao su dung ejs khi res.render
 app.set('views', './views');
+
+
+
+var fs = require('fs');
+var jwt = require('jsonwebtoken');
+var key = "secret_key_bao_mat";
+//app.listen(3500, console.log('app-lang-nghe-port-2400-hotGirls'));
+var pg = require('pg');
+var config = {
+    user: 'postgres',
+    host: 'localhost',
+    database: 'hotgirls',
+    password: 'Postgres09898',
+    port: 5432,
+    max: 10,
+    idletTimeoutMillis: 30000,
+};
+var pool = new pg.Pool(config);
+
+
 
 server.listen(3500, console.log('server_start_port_3500-de-lang-nghe-socket.io-send-image-from-Web-to-App'));
 var io = require('socket.io')(server);
 
+
+
+
+app.get('/checkToken/:token', (req, res)=> {
+    var token = req.params.token;
+    if(token ==null ){
+        res.render('login');
+    }
+    pool.connect((err, client,done)=> {
+        if(err){
+            return err;
+        }
+        var key = "secret_key_bao_mat";
+        //gia ma token roi moi so sanh vao truy van database
+        var userToken = jwt.verify(token,key);
+        console.log('userToken:::',userToken);
+        var username = userToken.Username;
+        var qr = {
+            text: 'SELECT * FROM "hotgrilscollection" WHERE "Username"=$1',
+            values:[username],
+        };
+        console.log('qr::', qr);
+        client.query(qr, function(err,result){
+            console.log('result::',result);
+            if(err){
+                return err;
+            }
+            //lay ra dong thoa man dau tien trong so dong thoa man
+            var user = result.rows[0];// phan tu thu0 cua mang la dong dau tien cua User THOA man
+            var Username = user.Username; //lay ra Usename tu dong chu phan tu dau tien thoa man
+            //tao token moi co chua thoi gian ton tai cua token
+            var key = "secret_key_bao_mat";
+            console.log('user:::',user);
+            console.log('Username:::',Username);
+            jwt.sign(Username,key,(err, token_new)=>{
+                console.log('token_new:::',token_new);
+                var tokenjson =JSON.stringify({
+                    token_new,
+                    Username,
+                });
+                res.send(tokenjson);
+            }); 
+        });
+    });
+});
+
+
+
+app.get('/', (req, res) => {
+    //res.send('hello');
+    res.send('chat');
+});
 //chat
 app.get('/chat', (req, res) => {
     //res.send('hello');
@@ -403,10 +472,12 @@ app2.post('/reactNative/Upload', (req, res) => {
 });
 
 
+
 var express = require('express');
 var app3 = express();
 var fs = require('fs');
 var jwt = require('jsonwebtoken');
+var key = "secret_key_bao_mat";
 app3.use(express.static("public"));
 app3.set('view engine', 'ejs');
 app3.set('views', './views');
@@ -438,6 +509,50 @@ app3.get('/dangnhap', (req, res) => {
     res.render('dangnhap');
 });
 
+
+app3.get('/checkToken/:token', (req, res)=> {
+    var token = req.params.token;
+    pool.connect((err, client,done)=> {
+        if(err){
+            return err;
+        }
+        var key = "secret_key_bao_mat";
+        //gia ma token roi moi so sanh vao truy van database
+        var userToken = jwt.verify(token,key);
+        console.log('userToken:::',userToken);
+        var username = userToken.Username;
+        var qr = {
+            text: 'SELECT * FROM "hotgrilscollection" WHERE "Username"=$1',
+            values:[username],
+        };
+        console.log('qr::', qr);
+        client.query(qr, function(err,result){
+            console.log('result::',result);
+            if(err){
+                return err;
+            }
+            //lay ra dong thoa man dau tien trong so dong thoa man
+            var user = result.rows[0];// phan tu thu0 cua mang la dong dau tien cua User THOA man
+            var Username = user.Username; //lay ra Usename tu dong chu phan tu dau tien thoa man
+            //tao token moi co chua thoi gian ton tai cua token
+            var key = "secret_key_bao_mat";
+            console.log('user:::',user);
+            console.log('Username:::',Username);
+            jwt.sign(Username,key,(err, token_new)=>{
+                console.log('token_new:::',token_new);
+                var tokenjson =JSON.stringify({
+                    token_new,
+                    Username,
+                });
+                res.send(tokenjson);
+            }); 
+        });
+    });
+});
+
+app3.get('/home', (req, res)=> {
+    res.render('checkToken');
+})
 
 
 app3.get('/login/:Username/:Password', (req, res) => {
@@ -487,26 +602,48 @@ app3.get('/login/:Username/:Password', (req, res) => {
             var dataJSONstringify = JSON.stringify(result.rows);
             console.log('JSON.stringify(result.rows):::', dataJSONstringify);
 
+            var user = result.rows[0]; //lay phan tu user thao man dautin
+            console.log('user', user);
+
+
             done();
             if (err) {
                 return console.log('error running query', err);
             }
-            console.log('login succuffuly');
+            //  console.log('login succuffuly');
             //  res.render('chat');
-           // res.end(dataJSONstringify);
+            // res.end(dataJSONstringify);
 
+            var key = "secret_key_bao_mat";
+
+            /*
+           var token = jwt.sign(user,key,{ expiresIn: 24 * 24 * 60 * 60 * 100 });
+           var token_time = JSON.stringify({token: token});
+           console.log('token_time',token_time);
+           
+           res.send(token_time); */
             
+            jwt.sign(user,key,{ expiresIn: 24*24*60*60*100}, (err, token1)=>{
+                console.log('token:::',token1);
+                 var jsontoken =JSON.stringify({
+                 token: token1,
+                 user: user,
+                });
+                res.send(jsontoken);
+                
+            }); 
+
 
 
             //  res.render('hotgirls', {dataJSONstringify});
             //console.log(result.rows[0].Username);
 
-            
-           // if (result.rows[0]) {
-             //   console.log(result.rows[0]);
-              //  req.flash('warning', "This email address is already registered. < a href ='/login'>Log in!</a >");
-              //  res.redirect('/join');
-          //  } 
+
+            // if (result.rows[0]) {
+            //   console.log(result.rows[0]);
+            //  req.flash('warning', "This email address is already registered. < a href ='/login'>Log in!</a >");
+            //  res.redirect('/join');
+            //  } 
         });
     });
 });
@@ -658,17 +795,17 @@ function verifyToken(req, res, next) {
     //check if bearer is undefined
     if (typeof bearerHeader !== 'undefined') {
         //split at the space
-        console.log('bearerHeader:::',bearerHeader);
+        console.log('bearerHeader:::', bearerHeader);
         const bearer = bearerHeader.split(' ');
-        console.log('bearer::',bearer);
+        console.log('bearer::', bearer);
         //get token to array
         const bearerToken = bearer[1]; //chon mang so thu thu la 1 thi co token so thu 0 la 'Bearer' 
-        console.log('bearerToken::',bearerToken);
-        
+        console.log('bearerToken::', bearerToken);
+
         //set the token 
         req.token = bearerToken; // co bearerToken=token nen gui len req.token = bearerToken
-        console.log('req.token = bearerToken::',req.token = bearerToken);
-        
+        console.log('req.token = bearerToken::', req.token = bearerToken);
+
         //next middleware;
         next();
         console.log('next', next);
@@ -684,7 +821,7 @@ app4.post('/api/posts', verifyToken, (req, res) => {
             res.sendStatus(403);
         } else {
             res.json({
-               AuthDta
+                AuthDta
             });
         }
     })
@@ -697,7 +834,7 @@ app4.post('/api/login', (req, res) => {
     var user = { id: 1, Username: 'lan', Password: '123', email: 'teo@' };
     var key = 'cert';
     jwt.sign(user, key, { expiresIn: 60 * 60 }, function (err, token1) {
-        res.json({
+        res.jon({
             messenger: "create token",
             token: token1,
         });
