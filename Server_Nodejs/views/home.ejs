@@ -1,0 +1,210 @@
+<html>
+<header>
+	<script src="jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="homeView.css">
+	<script>
+		function getCookie(NameOfCookie) {
+			// First we check to see if there is a cookie stored.
+			// Otherwise the length of document.cookie would be zero.
+			if (document.cookie.length > 0) {
+				// Second we check to see if the cookie's name is stored in the
+				// "document.cookie" object for the page.
+				// Since more than one cookie can be set on a
+				// single page it is possible that our cookie
+				// is not present, even though the "document.cookie" object
+				// is not just an empty text.
+				// If our cookie name is not present the value -1 is stored
+				// in the variable called "begin".
+				begin = document.cookie.indexOf(NameOfCookie + "=");
+				if (begin != -1) // Note: != means "is not equal to"
+				{
+					// Our cookie was set. 
+					// The value stored in the cookie is returned from the function.
+					begin += NameOfCookie.length + 1;
+					end = document.cookie.indexOf(";", begin);
+					if (end == -1) end = document.cookie.length;
+					return unescape(document.cookie.substring(begin, end));
+				}
+			}
+			return null;
+			// Our cookie was not set. 
+			// The value "null" is returned from the function.
+		}
+
+		function setCookie(NameOfCookie, value, expiredays) {
+			// Three variables are used to set the new cookie. 
+			// The name of the cookie, the value to be stored,
+			// and finally the number of days until the cookie expires.
+			// The first lines in the function convert 
+			// the number of days to a valid date.
+			var ExpireDate = new Date();
+			ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
+			// The next line stores the cookie, simply by assigning 
+			// the values to the "document.cookie" object.
+			// Note the date is converted to Greenwich Mean time using
+			// the "toGMTstring()" function.
+			document.cookie = NameOfCookie + "=" + escape(value) +
+				((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
+		}
+
+		function delCookie(NameOfCookie) {
+			// The function simply checks to see if the cookie is set.
+			// if so, the expiration date is set to Jan. 1st 1970.
+			if (getCookie(NameOfCookie)) {
+				document.cookie = NameOfCookie + "=" +
+					"; expires=Thu, 01-Jan-70 00:00:01 GMT";
+			}
+		}
+	</script>
+	<script>
+
+		$(document).ready(() => {
+			$('#LOGIN').click(() => {
+				var us = $('#username').val();
+				var pa = $('#password').val();
+				$.get("http://localhost:2400/LoginHome/" + us + "/" + pa, function (data) {
+					var Jsondata = JSON.parse(data);
+
+					var token = Jsondata.token;
+					console.log("token:::", token);
+
+				//	document.cookie = "@token=" + (document.cookie = token) + ";" + "expires=Thu, 22 Dec 2019 19:55:20 UTC;path=/"
+
+				/*	function setCookie(NameOfCookie, value, expiredays) {
+						var ExpireDate = new Date();
+						ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000)); //ms
+						document.cookie = NameOfCookie + "=" + escape(value) +
+							((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
+					} */
+
+					function setCookie( NameOfCookie, value, expriredays ) {
+						//  dat bien expireData = thoi gian hien tai
+						// setTime, getTime là các phương thức của đối tượng Date
+						//setTime,getTime() thời gian đã được convert sang dạng miliseconds.
+						// settime Vì đây là hàm set nên bạn phải truyền tham số vào.
+						var ExpireDate = new Date();
+						// setTime luu thoi gian ( getTime la lay thi gian len + expriredays thoi gian dat * gio * phut* giay * mili giay)
+						ExpireDate.setTime( ExpireDate.getTime() + (expriredays * 24 * 60 * 60 * 1000) );
+						//Hàm escape() loại bỏ các ký tự đặc biệt, mục đích là để trang web hiển thị đúng hơn và tránh được lỗi cross-site scripting
+						document.cookie = NameOfCookie + "=" + escape(document.cookie = value) +  // escape loai bo ky tu dac biet
+						( (expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString() );
+						//toGMTString  la Phương thức cũ - Biến đổi 1 ngày thành 1 chuỗi bởi sử dụng các qui ước Internet GMT. Bạn dùng toUTCString để thay thế.
+					}
+
+					setCookie("@token", token,1 );
+
+
+
+					$('#ketquaToken').html(data);
+					$('#ketquaToken').css("color", "yellow");
+				});
+
+			});
+
+
+
+			$('#usernameR').blur(function () {
+				var us = $(this).val();
+				//alert(us);
+				$.get("http://localhost:2400/checkUsername/" + us, function (data) {
+					alert(data);
+					if (data == 0) {
+						$('#thongbaoHL').html("username hop le");
+						$('#thongbaoHL').css("color", "blue");
+					}
+					else if (data == 1) {
+						$('#thongbaoHL').html("username da ton tai");
+						$('#thongbaoHL').css("color", "red");
+					}
+
+				});
+			});
+
+
+
+			$('#REGISTER').click(() => {
+				var us = $('#usernameR').val();
+				var pa = $('#passwordR').val();
+				var ht = $('#hoten').val();
+				var email = $('#email').val();
+				$.get("http://localhost:2400/register/" + us + "/" + pa + "/" + ht + "/" + email, function (data) {
+					//alert("1");
+					var id = data[0];
+					alert(data);
+					$('#ketqua').html(data);
+					$('#ketqua').css("color", "blue");
+					if (id !== null) {
+						$('#register').hide(300);
+						$('#thongDk').html("dang username ky thanh cong vui long danh nhap");
+						alert('dang username ky thanh cong vui long danh nhap');
+					}
+				});
+
+
+
+
+			})
+		})
+
+
+
+
+
+	</script>
+</header>
+
+<body>
+	<div id="warrper">
+		<div>
+			<a id="ketquaToken">...ketqua Token..</a>
+
+		</div>
+		<div>
+			<a id="ketqua">ketqua</a>
+		</div>
+		<div>
+			<a id="thongDk">thong bao dang ky username</a>
+		</div>
+		<div id="login">
+			<div id="user">
+
+				<input type="text" id="username" placeholder="Username">
+				<a id="thongbao">.....</a>
+			</div>
+			<div class="block"></div>
+			<div>
+				<input type="text" id="password" placeholder="Password" />
+			</div>
+			<div class="block"></div>
+			<div>
+				<input type="button" id="LOGIN" value="Login" />
+			</div>
+
+		</div>
+		<div class="block"></div>
+		<div id="register">
+			<div>
+				<input type="text" id="usernameR" placeholder="Username" />
+				<a id="thongbaoHL">.....</a>
+			</div>
+			<div class="block"></div>
+			<div>
+				<input type="text" id="passwordR" placeholder="Password" />
+			</div>
+			<div class="block"></div>
+			<div>
+				<input type="text" id="hoten" placeholder="Ho Ten" />
+			</div>
+			<div class="block"></div>
+			<div>
+				<input type="text" id="email" placeholder="Email" />
+			</div>
+			<div class="block"></div>
+			<div>
+				<input type="button" id="REGISTER" value="Register" />
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

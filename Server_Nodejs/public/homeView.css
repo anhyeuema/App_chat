@@ -1,0 +1,31 @@
+body{
+	background-color: blue;
+}
+#warrper{
+	justify-items: center;
+	margin: auto;
+	height: auto;
+	width: 900px;
+}
+.block{display: block; clear: both}
+#login,#register{ 
+	padding: 5px;
+
+}
+#login{background-color: aqua;
+	border: solid 2px blue;;
+}
+#register{
+	clear: both;
+	display: block;
+	border: solid 2px black;
+	flex-direction: row;
+}
+#username,#password,#usernameR,#passwordR,#hoten,#email,#thongbao,#thongbaoHL{
+	width: 400;
+	float: left;
+	margin-bottom: 5px;
+}
+#thongbao,#thongbaoHL{
+	background-color: blueviolet;
+}

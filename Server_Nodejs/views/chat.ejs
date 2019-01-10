@@ -32,9 +32,29 @@
 
         //lay mnag dau tien chua token thoa man
         var token1 = mangtoken[0]; 
+        console.log('token1::::',token1);
         //loai ky tu la nhu dau ; trong token
+
+        function getSum(a, b) {
+            document.write('Tổng: ' + (a + b));
+            return (a+b);
+        }
+        var x = getSum(10,10);
+        console.log('x::::',x);
+        
+        var valuetoken = "aadadssdfdfasd";
+        var result = valuetoken.indexOf(";");
+        console.log('result::',result);
+
         function Token_super(valuetoken){
-            if( valuetoken.indexOf(";") > 1 ){
+            if( valuetoken ==null || valuetoken =="undefined" ){
+              //  return  $('#dangnhap').attr("href",'http://localhost:2400');
+                return null;
+              // return alert('vui long dang nhap truoc');
+            }
+            var result = valuetoken.indexOf(";");
+            console.log('result::',result);
+            if( valuetoken.indexOf(";") > -1 ){
                 var token_super =  valuetoken.replace(";", '');
                 return token_super;
             }
@@ -76,7 +96,7 @@
         }); 
 
 
-        if( token !== null ){
+        if( token !== null ||  token !== "undefined" ){
             $.get("http://localhost:3500/checkToken/" + token , function(data){
               //  alert(data);
                 var x = JSON.parse(data);
@@ -155,8 +175,6 @@
         // lang nghe server-send-socketID-Rieng
         socket.on('server-send-socketID-Rieng', socketIDriengA => {
             alert(socketIDriengA.skID1 + ":" + socketIDriengA.messengerT);
-
-
         });
 
         //lang nghe danh sach socket.ID
@@ -188,20 +206,28 @@
                 $('#listMessagChatSoscketUsername').append("<h4 id='aaaa' class='dsmangsocketUs'>" + i.Username + ": " + i.msText + "</h4>");
             });
         });
+
+
+
+        //lang nhge server-send-messageText-caNhan hay ha 
+        socket.on('server-send-messageText-caNhan', ms=> {
+            alert(ms);
+        })
         //lang nghe server send danh sach socket.Username
         socket.on('server-send-socket.Username', mangUsSocket => {
-            console.log("mangUsSocket:::",mangUsSocket);
+           // console.log("mangUsSocket:::",mangUsSocket);
             //  alert(mangUsSk);
             $('#dsSocketUsername').html('');
             $('#dsSocketUsername').append("<h4 class='dsmangsocketUs'>" + "DANH SACH SOCKET.________________________USERNAME:" + "</h4>");
             
-        
-            
-            var mangds = [];
+
+            var danhSachSocketIDUsername = [];
+            var arrayUsername = [];
             mangUsSocket.map(i => {
-                var dsUser = i.UsSoket;
-                mangds.push(dsUser);
-              
+                var socketIDUsername = i.UsSoket;
+                var Username = i.Username;
+                danhSachSocketIDUsername.push(socketIDUsername);
+                arrayUsername.push(Username);
               /*  $('#dsSocketUsername').append("<h4 id='i.key' class=' + 'dsUser' >" + dsUser + "</h4>");
                 $('#dsSocketUsername').css("color", "blue");
                 $('.dsUser').click(() => {
@@ -209,9 +235,47 @@
                        // socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
                 }); */
             });
-            console.log('mangds::',mangds);
+            console.log('danhSachSocketIDUsername::',danhSachSocketIDUsername);
+            console.log('arrayUsname::',arrayUsername);
 
-          /*  var arr = ['one','two','three','four','five'];
+            var n = danhSachSocketIDUsername.length; //mangds.length = arrayUsname.length
+            for(j=0;j<n;j++){
+                $('#dsSocketUsername').append("<h4 id='i.key' class='socketUs'>" + "aa" + danhSachSocketIDUsername[j] + "</h4>");
+                $('#dsSocketUsername').append("<h4 id='i.key' class='dsmangsocketUs'>" + arrayUsername[j] + "</h4>");
+                $('#dsSocketUsername').css("color", "red");
+            } 
+            $(function(){
+                $('.socketUs').each(function(index){
+                  //  console.log('h4' + index + ':' + $(this).attr('class'));
+                    $(this).click(function(){
+                    // $(this).addClass("list"+index);
+                    //    var z = $(this).addClass("aa"+index);
+                    // console.log("z;;" + z);
+                
+                    var UserSocketThoaMan = danhSachSocketIDUsername[index]; // index la so dang duoc tich Username chua socketID = so thu tu dang tich cua Username
+                    var UsernameThoanam = arrayUsername[index]; // Username chua socketID = so thu tu dang tich cua Username => so thu tu UserSocketThoaMan = tso thu tu UsernameThoanam
+                    alert(UserSocketThoaMan + ": " +  UsernameThoanam);
+                    console.log(UserSocketThoaMan + ": " + UsernameThoanam);
+
+                    //tim ra danh sach socketID.Username ma Usernama la cai da duoc kich chuot vao
+                    //  danhSachSocketID.Username - Usernama = danhSachSocketIDthoanMan
+                    var danhSachSocketIDthoanMan = [];
+                    $(danhSachSocketIDUsername).each( function(index, value) { //value la tuong phan tu trong danhSachSocketIDUsername
+                            if( value.indexOf(UsernameThoanam) >1 ) { // phan tu nao co so chu trong chuoi giong UsernameThoanam thi phan tu doa thoan nam tuoc la socketID thoa nam sang tich chuoi
+                                var SocketIDthoanMan = value.replace(UsernameThoanam, ''); //cat di UsernameThoanam username da kich chuot chi con lai socktID co cung Username
+                                danhSachSocketIDthoanMan.push(SocketIDthoanMan);
+                            }
+                    });
+                    console.log('danhSachSocketIDthoanMan::',danhSachSocketIDthoanMan);
+                    socket.emit('web-send-socket.username-va-messenger', {msText: $('#txtMessenger').val(),danhSachSocketIDthoanMan: danhSachSocketIDthoanMan, Username: UsernameThoanam});
+                
+                 //   socket.emit('app-send-socket.username-va-messenger', {key1: i.key, socketUs : i.UsSoket , msText: $('#txtMessenger').val(),dsSoketUsername: mangUsSocket, Username: i.Username})
+                
+                    });
+                });
+            });  
+
+        /*  var arr = ['one','two','three','four','five'];
             $.each(arr, function (index, value) {
                 console.log(value);
                 console.log(index);
@@ -225,27 +289,6 @@
                     console.log(index);
                 });
             }); */
-
-
-            var n = mangds.length;
-                for(j=0;j<n;j++){
-                $('#dsSocketUsername').append("<h4 id='i.key' class='socketUs'>" + "aa" + mangds[j] + "</h4>");
-                $('#dsSocketUsername').css("color", "red");
-            } 
-            $(function(){
-                $('.socketUs').each(function(index){
-                  //  console.log('h4' + index + ':' + $(this).attr('class'));
-                    $(this).click(function(){
-                    // $(this).addClass("list"+index);
-                    //    var z = $(this).addClass("aa"+index);
-                    alert(mangds[index]);
-                    console.log(mangds[index]);
-                   // console.log("z;;" + z);
-                    });
-                });
-            });  
-
-
          /*   var n = mangds.length;
                 for(j=0;j<n;j++){
                 $('#dsSocketUsername').append("<h4 id='i.key' class='socketUs'>" + j + ": " + mangds[j] + "</h4>");

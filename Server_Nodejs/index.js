@@ -32,30 +32,29 @@ server.listen(3500, console.log('server_start_port_3500-de-lang-nghe-socket.io-s
 var io = require('socket.io')(server);
 
 
-
-
-app.get('/checkToken/:token', (req, res)=> {
+app.get('/checkToken/:token', (req, res) => {
     var token = req.params.token;
-    if(token ==null ){
+    if (token == null) {
         res.render('login');
     }
-    pool.connect((err, client,done)=> {
-        if(err){
+    pool.connect((err, client, done) => {
+        if (err) {
             return err;
         }
         var key = "secret_key_bao_mat";
         //gia ma token roi moi so sanh vao truy van database
-        var userToken = jwt.verify(token,key);
-        console.log('userToken:::',userToken);
+        var userToken = jwt.verify(token, key);
+        console.log('userToken:::', userToken);
         var username = userToken.Username;
+      
         var qr = {
             text: 'SELECT * FROM "hotgrilscollection" WHERE "Username"=$1',
-            values:[username],
+            values: [username],
         };
         console.log('qr::', qr);
-        client.query(qr, function(err,result){
-            console.log('result::',result);
-            if(err){
+        client.query(qr, function (err, result) {
+            console.log('result::', result);
+            if (err) {
                 return err;
             }
             //lay ra dong thoa man dau tien trong so dong thoa man
@@ -63,16 +62,16 @@ app.get('/checkToken/:token', (req, res)=> {
             var Username = user.Username; //lay ra Usename tu dong chu phan tu dau tien thoa man
             //tao token moi co chua thoi gian ton tai cua token
             var key = "secret_key_bao_mat";
-            console.log('user:::',user);
-            console.log('Username:::',Username);
-            jwt.sign(Username,key,(err, token_new)=>{
-                console.log('token_new:::',token_new);
-                var tokenjson =JSON.stringify({
+            console.log('user:::', user);
+            console.log('Username:::', Username);
+            jwt.sign(Username, key, (err, token_new) => {
+                console.log('token_new:::', token_new);
+                var tokenjson = JSON.stringify({
                     token_new,
                     Username,
                 });
                 res.send(tokenjson);
-            }); 
+            });
         });
     });
 });
@@ -226,7 +225,18 @@ io.on('connection', (socket) => {
         console.log('ManguriSkID emit len web::::', ManguriSkID);
     });
 
-    socket
+
+    //lang nghe app-send-socket.username-va-messenger 
+    //co the lang nghe web-send-socket.username-va-messenger 
+    //la 1 lang nghe cung duoc nhung o day ta dung rieng voi cack khach
+    //su soket.username duoc tich bang chon o danh sanh cho y phan tu trong danh
+    //sach mang phai su ly
+    socket.on('web-send-socket.username-va-messenger', messeUsernameWeb => {
+        console.log('messeUsernameWeb::', messeUsernameWeb);
+        messeUsernameWeb.danhSachSocketIDthoanMan.forEach(i => {
+            io.to(i).emit('server-send-messageText-caNhan', messeUsernameWeb.msText);
+        })
+    })
 
     //lang nghe app-send-socket.username-va-messenger
     socket.on('app-send-socket.username-va-messenger', UsSoketApp => {
@@ -510,25 +520,25 @@ app3.get('/dangnhap', (req, res) => {
 });
 
 
-app3.get('/checkToken/:token', (req, res)=> {
+app3.get('/checkToken/:token', (req, res) => {
     var token = req.params.token;
-    pool.connect((err, client,done)=> {
-        if(err){
+    pool.connect((err, client, done) => {
+        if (err) {
             return err;
         }
         var key = "secret_key_bao_mat";
         //gia ma token roi moi so sanh vao truy van database
-        var userToken = jwt.verify(token,key);
-        console.log('userToken:::',userToken);
+        var userToken = jwt.verify(token, key);
+        console.log('userToken:::', userToken);
         var username = userToken.Username;
         var qr = {
             text: 'SELECT * FROM "hotgrilscollection" WHERE "Username"=$1',
-            values:[username],
+            values: [username],
         };
         console.log('qr::', qr);
-        client.query(qr, function(err,result){
-            console.log('result::',result);
-            if(err){
+        client.query(qr, function (err, result) {
+            console.log('result::', result);
+            if (err) {
                 return err;
             }
             //lay ra dong thoa man dau tien trong so dong thoa man
@@ -536,22 +546,26 @@ app3.get('/checkToken/:token', (req, res)=> {
             var Username = user.Username; //lay ra Usename tu dong chu phan tu dau tien thoa man
             //tao token moi co chua thoi gian ton tai cua token
             var key = "secret_key_bao_mat";
-            console.log('user:::',user);
-            console.log('Username:::',Username);
-            jwt.sign(Username,key,(err, token_new)=>{
-                console.log('token_new:::',token_new);
-                var tokenjson =JSON.stringify({
+            console.log('user:::', user);
+            console.log('Username:::', Username);
+            jwt.sign(Username, key, (err, token_new) => {
+                console.log('token_new:::', token_new);
+                var tokenjson = JSON.stringify({
                     token_new,
                     Username,
                 });
                 res.send(tokenjson);
-            }); 
+            });
         });
     });
 });
 
-app3.get('/home', (req, res)=> {
+app3.get('/home', (req, res) => {
     res.render('checkToken');
+});
+
+app3.get('/homeView', (req, res) => {
+    res.render('home');
 })
 
 
@@ -622,16 +636,16 @@ app3.get('/login/:Username/:Password', (req, res) => {
            console.log('token_time',token_time);
            
            res.send(token_time); */
-            
-            jwt.sign(user,key,{ expiresIn: 24*24*60*60*100}, (err, token1)=>{
-                console.log('token:::',token1);
-                 var jsontoken =JSON.stringify({
-                 token: token1,
-                 user: user,
+
+            jwt.sign(user, key, { expiresIn: 24 * 24 * 60 * 60 * 100 }, (err, token1) => {
+                console.log('token:::', token1);
+                var jsontoken = JSON.stringify({
+                    token: token1,
+                    user: user,
                 });
                 res.send(jsontoken);
-                
-            }); 
+
+            });
 
 
 
@@ -646,6 +660,211 @@ app3.get('/login/:Username/:Password', (req, res) => {
             //  } 
         });
     });
+});
+
+app3.get('/FreeAll', (req, res)=> {
+    res.render('FreeSuper');
+});
+
+app3.get('/checkLogin/:token',(req, res) => {
+    var token = req.params.token;
+    if( token == null || token == undefined || token == '' ){
+        console.log("token rong");
+    }
+    var key = "secret_key_bao_mat";
+    console.log('token::',token);
+    var mang = [];
+    function getJwt(value) {
+        jwt.verify(value,key, function(err, decoded){
+            console.log('decoded::::', decoded);
+            if(err) {
+                console.log("token khong hop le");
+            } else {
+                mang.push(decoded)
+            }
+        });
+        return mang[0];
+    }
+    var data = getJwt(token);
+    console.log('data::::', data);
+    
+    var username = data.Username;
+
+    pool.connect((err, client, done)=> {
+        if(err){
+            console.log(" token checklogin client from pool");
+        }
+        var qr = {
+            text: ' SELECT * FROM "Users" WHERE "Username" = $1 ',
+            values: [username]
+        }
+        console.log('qr:::', qr);
+        client.query(qr, ( err, result) => {
+            done();
+            if(err) {
+                console.log("err cant not connect database");
+            }
+            console.log("result:::", result);
+            if( result.rows == [] ) {
+                console.log('khong ton tai username nao  hoac  token da het han');
+            }
+
+            var username = (result.rows[0]).Username;
+            jwt.sign({ Username: username,iat: Math.floor(Date.now() / 1000) - (60 * 60) },key,{ expiresIn : 2*24*60*60 },(err, tokenNew)=> {
+                console.log('token check login::', token);
+                if ( err ) {
+                    console.log(' err encode token tren check login');
+                }
+                var data = {
+                    tokenNew,
+                    Username: username,
+                }
+                var dataString = JSON.stringify(data);
+                console.log(dataString, dataString);
+                res.send(dataString);
+            })
+
+        })
+
+    }); 
+});
+
+app3.get('/checkUsername/:username', (req, res) => {
+    var username = req.params.username;
+    pool.connect((err, client, done)=> {
+        if(err){
+            console.log("client checkUsername from pool");
+        }
+        var qr = {
+            text: ' SELECT * FROM "Users" WHERE "Username" = $1',
+            values: [username]
+        }
+        console.log('qr::::', qr);
+        client.query(qr, (err, result)=> {
+            done();
+            if(err){
+                console.log('err connect database');
+            }
+            console.log('result:::::', result);
+            console.log('result.rows:::::', result.rows);
+            if ( result.rows[0] == null || result.rows[0] == 'undefined' ){
+                res.send('0');
+            } else {
+                res.send('1');
+            }
+           
+            
+        })
+    })
+})
+
+app3.get('/LoginHome/:username/:password', (req, res) => {
+    pool.connect((err, client, done) => {
+        var username = req.params.username;
+        var password = req.params.password;
+        if (err) {
+            console.log('Login client from pool');
+        }
+        var qr = {
+            text: 'SELECT * FROM "Users" WHERE "Username" = $1 AND "Password" = $2 ',
+            values: [username, password]
+        }
+        console.log("qr:::", qr);
+        client.query(qr, (err, result) => {
+            done();
+            if (err) {
+                console.log('err truy van username and password');
+            }
+            console.log("result:::", result);
+
+            if (result == null || result == "undefined") {
+                console.log('err query username and password');
+            }
+            // var user = result[0];
+            //neu ket qua tra ve result ==null
+            var key = "secret_key_bao_mat";
+            //exp: Math.floor(Date.now() / 1000) + (60 * 60) singing a token with 1 hour of expiration 
+            jwt.sign({ Username: username, iat: Math.floor(Date.now() / 1000) - (60 * 60) }, key, { expiresIn: '2 days' }, function (err, token) {
+                console.log('token:::', token);
+                var dataToken = {
+                    Username: username,
+                    token
+                }
+                var data = JSON.stringify(dataToken);
+                console.log('data token loginHome::', data);
+                if (err) {
+                    console.log(err);
+                }
+                res.send(data);
+            });
+
+            /*   var t = { expiresIn: 60 * 60 };
+               console.log('t:::',t);
+              // var token = jwt.sign(username,{iat: Math.floor(Date.now() / 1000) - 30 },"secret_key_bao_mat");
+               jwt.sign({Username: username, iat: Math.floor(Date.now() / 1000) - (60*60) },key,{expiresIn: '2 days'}, function(err,token){
+                   console.log("token::::",token);
+                   var ObjData = {
+                       token,
+                       Username: username,
+                   }
+                   var data = JSON.parse(ObjData);
+                   res.send(data);
+               }); */
+
+            /*
+            console.log('older_token:::', older_token);
+            var obj_data = {
+                Username: username,
+                token: older_token
+            } 
+            var data = JSON.stringify(obj_data);
+            res.send(data); */
+
+            /*    var token = jwt.sign({
+                exp: Math.floor(Date.now() / 1000) + ( 60 * 60), //Signing a token with 7ngay * 24 =168 hour of expiration:
+                Username: username,
+            }, key);
+            console.log('token:::',token);
+            var data = {Username: username, token: token};
+            console.log('data::::',data);
+            var datajson = JSON.stringify(data);
+            console.log('datajson::::',datajson);
+            res.send(datajson); */
+
+        })
+    })
+})
+
+app3.get('/register/:username/:password/:hoten/:email', (req, res) => {
+    var username = req.params.username;
+    var password = req.params.password;
+    var hoten = req.params.hoten;
+    var email = req.params.email;
+
+    pool.connect((err, client, done) => {
+        if (err) {
+            console.log('err register client from pool');
+        }
+        var i = 2;
+        var qr = {
+            text: 'INSERT INTO "Users"(id, "Username", "Password", "Hoten", "Email") VALUES ($1, $2, $3, $4, $5)',
+            values: [i = i + 1, username, password, hoten, email]
+        }
+        console.log('qr::', qr);
+        client.query(qr, function (err, result) {
+            done();
+            if (err) {
+                console.log('err truy van dang ky Users');
+            }
+            console.log('result::::', result);
+
+            var values = qr.values;
+            console.log('values:::::', values);
+            if (result !== null || result !== "undefined") {
+                res.send(values);
+            }
+        });
+    })
 });
 
 app3.get('/fetchData/:id/:ima/:username/:password', (req, res) => {

@@ -1,0 +1,9 @@
+body{ background-color: blueviolet}
+
+#warrper{
+    justify-items: center;
+	margin: auto;
+	height: auto;
+    width: 900px;
+    background-color: #007ACC;
+}
