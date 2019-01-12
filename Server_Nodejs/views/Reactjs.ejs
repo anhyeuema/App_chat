@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="FreeAll.css" />
+    <script src="jquery.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+
+    <script src="lib/react.js"></script>
+    <script src="lib/react-dom.js"></script>
+    <script src="lib/Babel-core-browser.min.js"></script>
+    
+    <script>
+
+        /*
+        var dataCookie = document.cookie;
+        var ArrayCookie = dataCookie.split(" "); //loai bo dau cach va tao mang
+        console.log('ArrayCookie:::', ArrayCookie);
+        //tim  ten cookie can tim
+        ArrayTokenThoanMan = [];
+        ArrayCookie.forEach(i => {
+            if (i.indexOf("@token=") > -1) {
+                var token = i.replace("@token=", ''); //loai bo ky tu @token= chi lay gia tri token thui
+                ArrayTokenThoanMan.push(token);
+                var token1 = ArrayTokenThoanMan[0];
+                console.log('token1::', token1);
+                if (token1.indexOf(";") > -1) {
+                    var token = token1.replace(";", ''); //loai bo dau phay
+                    ArrayTokenThoanMan.push(token);
+                }
+            }
+        });
+        var token = ArrayTokenThoanMan[0];
+        console.log('token::::', token); */
+    </script>
+    <script>
+
+
+        var socket = io('http://localhost:2400');
+
+        function getCookie(NameCookie) {
+            ArrayTokenThoanMan = [];
+            var dataCookie = document.cookie;
+            var ArrayCookie = dataCookie.split(" "); //loai bo dau cach va tao mang
+            $(ArrayCookie).each((index, value) => {
+                if (value.indexOf(NameCookie) > -1) {
+                    var token1 = value.replace(NameCookie, ''); //loai bo ky tu @token= chi lay gia tri token thui
+                    ArrayTokenThoanMan.push(token1);
+                    console.log('ArrayTokenThoanMan[0]::', ArrayTokenThoanMan[0]);
+                }
+            });
+            if (ArrayTokenThoanMan[0] == null || ArrayTokenThoanMan[0] =='undefined') {
+                return [];
+            }
+
+            if (ArrayTokenThoanMan[0].indexOf(";") > -1) {
+                var token = ArrayTokenThoanMan[0].replace(";", ''); //loai bo dau phay
+                console.log('token:::4444', token);
+                return token;
+            }
+            return ArrayTokenThoanMan[0];
+
+        }
+
+        var token = getCookie("@token=");
+        console.log('token::', token);
+        
+        $.get("http://localhost:2400/checkLogin/" + token, function(data) {
+            var dataParse = JSON.parse(data);
+            var tokenNew = dataParse.tokenNew;
+            var Username = dataParse.Username;
+
+            function setCookie(NameCookie,value,expiredays){
+                var ExpireDate = new Date;
+                ExpireDate.setTime( ExpireDate.getTime() + (expiredays* 24* 60*60* 1000) );
+                return document.cookie = NameCookie + "= " + escape(document.cookie = value) +
+                ( ExpireDate == null ? "" : "; expires =" + ExpireDate.toUTCString() );
+            }
+            setCookie("@token",tokenNew);
+            
+            $('#ketquaCheckLogin').html(data);
+            $('#ketquaCheckLogin').css("color", "red");
+        })
+      
+        $(document).ready( ()=> {
+
+        })
+
+
+    </script>
+</head>
+
+<style>
+    .mauvang{ background-color: yellow; 
+    
+    }
+</style>
+<body>
+
+    <div id="root"></div>
+    <script type="text/babel" src="xulyJSX.js"> </script>
+    <div id="warrper">
+        <a id="ketquaCheckLogin">...ket qua....</a>
+    </div>
+</body>
+
+</html>

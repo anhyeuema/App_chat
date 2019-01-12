@@ -63,40 +63,38 @@
 				var us = $('#username').val();
 				var pa = $('#password').val();
 				$.get("http://localhost:2400/LoginHome/" + us + "/" + pa, function (data) {
-					var Jsondata = JSON.parse(data);
 
-					var token = Jsondata.token;
-					console.log("token:::", token);
-
-				//	document.cookie = "@token=" + (document.cookie = token) + ";" + "expires=Thu, 22 Dec 2019 19:55:20 UTC;path=/"
-
-				/*	function setCookie(NameOfCookie, value, expiredays) {
-						var ExpireDate = new Date();
-						ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000)); //ms
-						document.cookie = NameOfCookie + "=" + escape(value) +
-							((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
-					} */
-
-					function setCookie( NameOfCookie, value, expriredays ) {
-						//  dat bien expireData = thoi gian hien tai
-						// setTime, getTime là các phương thức của đối tượng Date
-						//setTime,getTime() thời gian đã được convert sang dạng miliseconds.
-						// settime Vì đây là hàm set nên bạn phải truyền tham số vào.
-						var ExpireDate = new Date();
-						// setTime luu thoi gian ( getTime la lay thi gian len + expriredays thoi gian dat * gio * phut* giay * mili giay)
-						ExpireDate.setTime( ExpireDate.getTime() + (expriredays * 24 * 60 * 60 * 1000) );
-						//Hàm escape() loại bỏ các ký tự đặc biệt, mục đích là để trang web hiển thị đúng hơn và tránh được lỗi cross-site scripting
-						document.cookie = NameOfCookie + "=" + escape(document.cookie = value) +  // escape loai bo ky tu dac biet
-						( (expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString() );
-						//toGMTString  la Phương thức cũ - Biến đổi 1 ngày thành 1 chuỗi bởi sử dụng các qui ước Internet GMT. Bạn dùng toUTCString để thay thế.
+					if (data == 0) {
+						$('#ketquaToken').html('vui long dang nhap lai ten tai khoan hoac mat khau sai');
+					} else {
+						var Jsondata = JSON.parse(data);
+						var token = Jsondata.token;
+						console.log("token:::", token);
+						//	document.cookie = "@token=" + (document.cookie = token) + ";" + "expires=Thu, 22 Dec 2019 19:55:20 UTC;path=/"
+						/*	function setCookie(NameOfCookie, value, expiredays) {
+								var ExpireDate = new Date();
+								ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000)); //ms
+								document.cookie = NameOfCookie + "=" + escape(value) +
+									((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
+							} */
+						function setCookie(NameOfCookie, value, expriredays) {
+							//  dat bien expireData = thoi gian hien tai
+							// setTime, getTime là các phương thức của đối tượng Date
+							//setTime,getTime() thời gian đã được convert sang dạng miliseconds.
+							// settime Vì đây là hàm set nên bạn phải truyền tham số vào.
+							var ExpireDate = new Date();
+							// setTime luu thoi gian ( getTime la lay thi gian len + expriredays thoi gian dat * gio * phut* giay * mili giay)
+							ExpireDate.setTime(ExpireDate.getTime() + (expriredays * 24 * 60 * 60 * 1000));
+							//Hàm escape() loại bỏ các ký tự đặc biệt, mục đích là để trang web hiển thị đúng hơn và tránh được lỗi cross-site scripting
+							document.cookie = NameOfCookie + "=" + escape(document.cookie = value) +  // escape loai bo ky tu dac biet
+								((expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString());
+							//toGMTString  la Phương thức cũ - Biến đổi 1 ngày thành 1 chuỗi bởi sử dụng các qui ước Internet GMT. Bạn dùng toUTCString để thay thế.
+						}
+						setCookie("@token", token, 1);
+						$('#ketquaToken').html(token);
+						$('#ketquaToken').css("color", "yellow");
+						window.location.href = $('#LOGIN').attr('href');
 					}
-
-					setCookie("@token", token,1 );
-
-
-
-					$('#ketquaToken').html(data);
-					$('#ketquaToken').css("color", "yellow");
 				});
 
 			});
@@ -130,14 +128,19 @@
 				$.get("http://localhost:2400/register/" + us + "/" + pa + "/" + ht + "/" + email, function (data) {
 					//alert("1");
 					var id = data[0];
-					alert(data);
-					$('#ketqua').html(data);
-					$('#ketqua').css("color", "blue");
-					if (id !== null) {
-						$('#register').hide(300);
-						$('#thongDk').html("dang username ky thanh cong vui long danh nhap");
-						alert('dang username ky thanh cong vui long danh nhap');
+					if (id == 0) {
+						$('#ketqua').html('tao khan da ton tai');
+					} else {
+						alert(data);
+						$('#ketqua').html(data);
+						$('#ketqua').css("color", "blue");
+						if (id !== null) {
+							$('#register').hide(300);
+							$('#thongDk').html("dang username ky thanh cong vui long danh nhap");
+							alert('dang username ky thanh cong vui long danh nhap');
+						}
 					}
+
 				});
 
 
@@ -177,7 +180,7 @@
 			</div>
 			<div class="block"></div>
 			<div>
-				<input type="button" id="LOGIN" value="Login" />
+				<input type="button" id="LOGIN" href="http://localhost:2400/FreeSuper"  value="Login" />
 			</div>
 
 		</div>

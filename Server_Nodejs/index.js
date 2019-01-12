@@ -10,6 +10,7 @@ app.set('views', './views');
 
 
 
+
 var fs = require('fs');
 var jwt = require('jsonwebtoken');
 var key = "secret_key_bao_mat";
@@ -46,7 +47,7 @@ app.get('/checkToken/:token', (req, res) => {
         var userToken = jwt.verify(token, key);
         console.log('userToken:::', userToken);
         var username = userToken.Username;
-      
+
         var qr = {
             text: 'SELECT * FROM "hotgrilscollection" WHERE "Username"=$1',
             values: [username],
@@ -165,8 +166,6 @@ var n = 0;
 io.on('connection', (socket) => {
 
     console.log('client-connected-port-3500-de chat:' + socket.id);
-
-
 
     socket.on('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan', usernamephong => {
         console.log('socket.adapter.rooms::', socket.adapter.rooms);
@@ -486,12 +485,104 @@ app2.post('/reactNative/Upload', (req, res) => {
 var express = require('express');
 var app3 = express();
 var fs = require('fs');
+
+var bodyParser = require('body-parser');
+var parser = bodyParser.urlencoded({ extended: false });
+
 var jwt = require('jsonwebtoken');
 var key = "secret_key_bao_mat";
 app3.use(express.static("public"));
 app3.set('view engine', 'ejs');
 app3.set('views', './views');
-app3.listen(2400, console.log('app-lang-nghe-port-2400-hotGirls'));
+
+//app3.listen(2400, console.log('app-lang-nghe-port-2400-hotGirls'));
+var server1 = require('http').Server(app3);
+server1.listen(2400, console.log('app3 server_start_port_2400-de--lang-nghe-socket.io-send-image-from-Web-to-App'));
+var io1 = require('socket.io')(server1);
+
+
+/*
+io1.sockets.on('connection', function (socket) {
+    var clients = [];
+    socket.on('storeClientInfo', function (data) {
+        console.log('customId: "000CustomIdHere0000',data)
+        var clientInfo = new Object();
+        clientInfo.customId = data.customId;
+        clientInfo.clientId = socket.id;
+        clients.push(clientInfo);
+        console.log('clients:.......mnag"clients',clients)
+    });
+    socket.on('disconnect', function (data) {
+        for (var i = 0, len = clients.length; i < len; ++i) {
+            var c = clients[i];
+
+            if (c.clientId == socket.id) {
+                clients.splice(i, 1);
+                break;
+            }
+        }
+
+    });
+}); */
+
+
+var ArraySocketIdUsername = [];
+var ArraySocketId = [];
+var ArraySocketIdOn = [];
+io1.on('connect', (socket) => {
+    console.log("client connect socket io1 :" + socket.id);
+    ArraySocketId.push(socket.id);
+    console.log('ArraySocketId:::', ArraySocketId);
+    console.log('ArraySocketId.length:::', ArraySocketId.length);
+    socket.on('client-send-Username', Username => {
+
+        console.log('ArraySocketId:::', ArraySocketIdOn);
+        console.log('ArraySocketId.length:::', ArraySocketIdOn.length);
+
+        ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
+        console.log('ArraySocketUsername:::', ArraySocketIdUsername);
+        console.log('ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
+     //   io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
+        io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
+
+
+    });
+
+    socket.on('client-send-messenger', dataMessenger => {
+        console.log('client-send-messenger :' + dataMessenger);
+        console.log('UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
+        console.log('UsernameNguoiSend::', dataMessenger.UsernameNguoiSend);
+        console.log('DSsocketIdNguoiNhan::', dataMessenger.DSsocketIdNguoiNhan);
+        console.log('messenger::', dataMessenger.messenger);
+        dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
+            io1.to(socketId).emit('server-send-messenger', {
+                UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+                messenger: dataMessenger.messenger,
+            });
+        })
+    });
+
+  /*  socket.on('client-send-messenger', dataMessenger => {
+        console.log('client-send-messenger :' + dataMessenger);
+        console.log('UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
+        console.log('UsernameNguoiSend::', dataMessenger.UsernameNguoiSend);
+        console.log('DSsocketIdNguoiNhan::', dataMessenger.DSsocketIdNguoiNhan);
+        console.log('messenger::', dataMessenger.messenger);
+        dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
+            io1.to(socketId).emit('server-send-messenger', {
+                UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+                messenger: dataMessenger.messenger,
+            });
+        })
+    }) */
+
+});
+
+
+
+
 var pg = require('pg');
 
 var config = {
@@ -508,7 +599,10 @@ var pool = new pg.Pool(config)
 
 //chay truy van 
 
+app3.get('/chatCaNhan', (req, res) => {
+    res.render('chatCaNhan');
 
+})
 
 
 app3.get('/', (req, res) => {
@@ -662,22 +756,87 @@ app3.get('/login/:Username/:Password', (req, res) => {
     });
 });
 
-app3.get('/FreeAll', (req, res)=> {
+app3.get('/FreeSuper', (req, res) => {
     res.render('FreeSuper');
 });
 
-app3.get('/checkLogin/:token',(req, res) => {
+app3.get('/EditUser', (req, res) => {
+    res.render('EditUser');
+});
+
+app3.post('/checklogin', parser, (req, res) => {
+    var token = req.body.token;
+    console.log('token edituser', token);
+    var key = "secret_key_bao_mat";
+    mangtoken = [];
+    jwt.verify(token, key, (err, decoded) => {
+        console.log('decoded:::', decoded);
+        mangtoken.push(decoded);
+    });
+    var User = mangtoken[0];
+    console.log('USER:::', User);
+    res.send(User.Username);
+
+});
+
+app3.post('/changPassword', parser, (req, res) => {
+    var password = req.body.password;
+    var PasswordNew = req.body.passwordNew;
+    console.log('password tu changpassword', password + "; " + PasswordNew);
+    var mang = [];
+    pool.connect((err, client, done) => {
+        if (err) {
+            console.log('changed password no connect to data base');
+        }
+        //  UPDATE "Users"SET id=?, "Username"=?, "Password"=?, "Hoten"=?, "Email"=?WHERE <condition>;
+        //  text: 'UPDATE "hotgirlscollection" SET "Dislike"="Dislike"+1 WHERE "id" = $1',
+        //  values: [id]
+        //$1= PasswordNew
+        var qr = {
+            text: 'UPDATE "Users" SET "Password" = $1 WHERE  "Password" = $2 ',
+            values: [PasswordNew, password]
+        }
+        console.log('qr::', qr);
+
+        client.query(qr, (err, result) => {
+            done();
+            if (err) {
+                console.log('err truy van database voi changed password');
+            }
+            if (err !== null || err !== '' || err == 'undefined') {
+                console.log('result;::::', result);
+                var x = result.rowCount;
+                console.log('x:::', x);
+                // res.send(x);
+                mang.push(x);
+                console.log('mang[0]:::', mang[0]);
+                if (x == 0) {
+                    res.send('0');
+                } else {
+                    res.send('1');
+                }
+            }
+
+        });
+
+    });
+    console.log('mang[0]cccccc:::', mang[0]);
+    res.send(mang[0]);
+
+});
+
+app3.get('/checkLogin/:token', (req, res) => {
     var token = req.params.token;
-    if( token == null || token == undefined || token == '' ){
+    if (token == null || token == undefined || token == '') {
         console.log("token rong");
     }
     var key = "secret_key_bao_mat";
-    console.log('token::',token);
+    console.log('token::', token);
     var mang = [];
     function getJwt(value) {
-        jwt.verify(value,key, function(err, decoded){
+        jwt.verify(value, key, function (err, decoded) {
             console.log('decoded::::', decoded);
-            if(err) {
+            if (err) {
                 console.log("token khong hop le");
             } else {
                 mang.push(decoded)
@@ -687,11 +846,11 @@ app3.get('/checkLogin/:token',(req, res) => {
     }
     var data = getJwt(token);
     console.log('data::::', data);
-    
+
     var username = data.Username;
 
-    pool.connect((err, client, done)=> {
-        if(err){
+    pool.connect((err, client, done) => {
+        if (err) {
             console.log(" token checklogin client from pool");
         }
         var qr = {
@@ -699,40 +858,48 @@ app3.get('/checkLogin/:token',(req, res) => {
             values: [username]
         }
         console.log('qr:::', qr);
-        client.query(qr, ( err, result) => {
+        client.query(qr, (err, result) => {
             done();
-            if(err) {
+            if (err) {
                 console.log("err cant not connect database");
             }
             console.log("result:::", result);
-            if( result.rows == [] ) {
+            if (result.rows == []) {
                 console.log('khong ton tai username nao  hoac  token da het han');
             }
 
-            var username = (result.rows[0]).Username;
-            jwt.sign({ Username: username,iat: Math.floor(Date.now() / 1000) - (60 * 60) },key,{ expiresIn : 2*24*60*60 },(err, tokenNew)=> {
-                console.log('token check login::', token);
-                if ( err ) {
-                    console.log(' err encode token tren check login');
-                }
-                var data = {
-                    tokenNew,
-                    Username: username,
-                }
-                var dataString = JSON.stringify(data);
-                console.log(dataString, dataString);
-                res.send(dataString);
-            })
+            if (result.rows[0] == null) {
+                console.log('dang nhap khng thanh cong');
+                res.send('0');
+            }
+
+            else if (result.rows[0] !== null) {
+                var username = (result.rows[0]).Username;
+                jwt.sign({ Username: username, iat: Math.floor(Date.now() / 1000) - (60 * 60) }, key, { expiresIn: 2 * 24 * 60 * 60 }, (err, tokenNew) => {
+                    console.log('token check login::', token);
+                    if (err) {
+                        console.log(' err encode token tren check login');
+                    }
+                    var data = {
+                        tokenNew,
+                        Username: username,
+                    }
+                    var dataString = JSON.stringify(data);
+                    console.log(dataString, dataString);
+                    res.send(dataString);
+                })
+            }
+
 
         })
 
-    }); 
+    });
 });
 
 app3.get('/checkUsername/:username', (req, res) => {
     var username = req.params.username;
-    pool.connect((err, client, done)=> {
-        if(err){
+    pool.connect((err, client, done) => {
+        if (err) {
             console.log("client checkUsername from pool");
         }
         var qr = {
@@ -740,20 +907,20 @@ app3.get('/checkUsername/:username', (req, res) => {
             values: [username]
         }
         console.log('qr::::', qr);
-        client.query(qr, (err, result)=> {
+        client.query(qr, (err, result) => {
             done();
-            if(err){
+            if (err) {
                 console.log('err connect database');
             }
             console.log('result:::::', result);
             console.log('result.rows:::::', result.rows);
-            if ( result.rows[0] == null || result.rows[0] == 'undefined' ){
+            if (result.rows[0] == null || result.rows[0] == 'undefined') {
                 res.send('0');
             } else {
                 res.send('1');
             }
-           
-            
+
+
         })
     })
 })
@@ -777,26 +944,30 @@ app3.get('/LoginHome/:username/:password', (req, res) => {
             }
             console.log("result:::", result);
 
-            if (result == null || result == "undefined") {
-                console.log('err query username and password');
+            if (result.rows[0] == null || result.rows[0] == "undefined") {
+                console.log('err query username hoac password sai');
+                res.send('0');
             }
-            // var user = result[0];
-            //neu ket qua tra ve result ==null
-            var key = "secret_key_bao_mat";
-            //exp: Math.floor(Date.now() / 1000) + (60 * 60) singing a token with 1 hour of expiration 
-            jwt.sign({ Username: username, iat: Math.floor(Date.now() / 1000) - (60 * 60) }, key, { expiresIn: '2 days' }, function (err, token) {
-                console.log('token:::', token);
-                var dataToken = {
-                    Username: username,
-                    token
-                }
-                var data = JSON.stringify(dataToken);
-                console.log('data token loginHome::', data);
-                if (err) {
-                    console.log(err);
-                }
-                res.send(data);
-            });
+            else if (result.rows[0] !== null || result.rows[0] !== "undefined") {
+                // var user = result[0];
+                //neu ket qua tra ve result ==null
+                var key = "secret_key_bao_mat";
+                //exp: Math.floor(Date.now() / 1000) + (60 * 60) singing a token with 1 hour of expiration 
+                jwt.sign({ Username: username, iat: Math.floor(Date.now() / 1000) - (60 * 60) }, key, { expiresIn: '2 days' }, function (err, token) {
+                    console.log('token:::', token);
+                    var dataToken = {
+                        Username: username,
+                        token
+                    }
+                    var data = JSON.stringify(dataToken);
+                    console.log('data token loginHome::', data);
+                    if (err) {
+                        console.log(err);
+                    }
+                    res.send(data);
+                });
+            }
+
 
             /*   var t = { expiresIn: 60 * 60 };
                console.log('t:::',t);
@@ -987,6 +1158,36 @@ app3.get('/hotgirls/:id', (req, res) => {
             res.render('hotgirls', { dangxem: id, hinh: result.rows[0].Hinh });
         });
     });
+});
+
+app3.get('/Reactjs', (req, res) => {
+    res.render('Reactjs');
+});
+
+var mangLIST = ["Android", "ios", "php", "reactjd"];
+app3.post('/getNotes', (req, res) => {
+    res.send(mangLIST);
+});
+
+app3.post('/add', parser, (req, res) => {
+    var newNote = req.body.note;
+    console.log('newNote:::', newNote);
+    mangLIST.push(newNote);
+    res.send(mangLIST);
+});
+
+app3.post('/delete', parser, (req, res) => {
+    var idXoa1 = req.body.idXoa;
+    console.log('idXoa1::::', idXoa1);
+    mangLIST.splice(idXoa1, 1);
+    res.send(mangLIST);
+});
+
+app3.post('/update', parser, (req, res) => {
+    var idSua1 = req.body.idSua;
+    console.log('idSua::::', idSua1);
+    mangLIST[idSua1] = req.body.noidung;
+    res.send(mangLIST);
 });
 
 var express = require('express');

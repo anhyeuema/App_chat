@@ -1,0 +1,89 @@
+<html>
+<header>
+	<script src="jquery.js"></script>
+	<style>
+		body{
+				background-color: blue;
+
+			}
+			#warrper{ background-color: darkgreen;
+				width: 800px;
+				height: auto;
+				margin: auto;
+			}
+			#changePa{
+				border: 2px blue
+			}
+			#p{
+				padding: 10px;
+			}
+		</style>
+	<script>
+
+		var mang = [];
+		function getCookie(NameCooki) {
+			var dataCookie = document.cookie;
+			console.log('dataCookie:::', dataCookie);
+			var ArrarryCookie = dataCookie.split(" ");
+			console.log('ArrarryCookie:::', ArrarryCookie);
+			ArrarryCookie.map((cookie, index) => {
+				if (cookie.indexOf(NameCooki) > -1) {
+					var cookietoken = cookie.replace(NameCooki, '');
+					mang.push(cookietoken);
+					console.log('cookietoken:::', cookietoken);
+				}
+			});
+			if (mang[0] == null) {
+				console.log('khong co token');
+			}
+			if (mang[0].indexOf(";") > -1) {
+				var token = mang[0].replace(";", '');
+				return token;
+			}
+			return mang[0];
+		}
+
+		var token1 = getCookie("@token=");
+		console.log('token1::::', token1);
+		var t = { token: token1 }
+		$.post("http://localhost:2400/checklogin", t, data => {
+			console.log('data::', data);
+		});
+
+		$(document).ready(() => {
+			$('#changedPa').click(() => {
+				alert(1);
+				var x = { password: $('#password').val(), passwordNew: $('#passwordNew').val() };
+				$.post("http://localhost:2400/changPassword", x, data => {
+					alert(data);
+					console.log('datajjjj:::', data);
+				});
+			});
+		});
+
+
+
+
+	</script>
+</header>
+
+<body>
+	<div id="warrper">
+
+		<div id="changePassword">
+			<div id="p">
+				<input type="text" id="password" placeholder="enter password older" />
+
+			</div>
+			<div id="p">
+				<input type="text" id="passwordNew" placeholder="enter new password" />
+			</div>
+			<div>
+				<input type="button" id="changedPa" value="chang password" />
+			</div>
+
+		</div>
+	</div>
+</body>
+
+</html>

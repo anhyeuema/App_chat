@@ -1,4 +1,4 @@
-body{ background-color: blueviolet}
+body{ background-color: black}
 
 #warrper{
     justify-items: center;
@@ -6,4 +6,16 @@ body{ background-color: blueviolet}
 	height: auto;
     width: 900px;
     background-color: #007ACC;
+}
+.div-ablum{ 
+    width: 400;
+    height: 500;
+    background-color: darkred;
+}
+#avata{ 
+    width: 400;
+    height: 500;
+}
+hr{
+    visibility: hidden;
 }
