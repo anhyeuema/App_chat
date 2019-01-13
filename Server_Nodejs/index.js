@@ -502,15 +502,23 @@ var io1 = require('socket.io')(server1);
 
 
 /*
+var clients = [];
+var  mang1 =[];
 io1.sockets.on('connection', function (socket) {
-    var clients = [];
+  
     socket.on('storeClientInfo', function (data) {
         console.log('customId: "000CustomIdHere0000',data)
         var clientInfo = new Object();
+        console.log('clientInfo:::',clientInfo);
         clientInfo.customId = data.customId;
+        console.log('clientInfo:::',clientInfo);
+        console.log('clientInfo.customId:::',clientInfo.customId);
         clientInfo.clientId = socket.id;
+        console.log('clientInfo:::',clientInfo);
         clients.push(clientInfo);
-        console.log('clients:.......mnag"clients',clients)
+        console.log('clients:.......mnag"clients',clients);
+        mang1.push(socket.id);
+        console.log('mang1:::',mang1);
     });
     socket.on('disconnect', function (data) {
         for (var i = 0, len = clients.length; i < len; ++i) {
@@ -523,7 +531,7 @@ io1.sockets.on('connection', function (socket) {
         }
 
     });
-}); */
+});   */
 
 
 var ArraySocketIdUsername = [];
@@ -534,8 +542,8 @@ io1.on('connect', (socket) => {
     ArraySocketId.push(socket.id);
     console.log('ArraySocketId:::', ArraySocketId);
     console.log('ArraySocketId.length:::', ArraySocketId.length);
+    
     socket.on('client-send-Username', Username => {
-
         console.log('ArraySocketId:::', ArraySocketIdOn);
         console.log('ArraySocketId.length:::', ArraySocketIdOn.length);
 
@@ -560,9 +568,44 @@ io1.on('connect', (socket) => {
                 UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
                 messenger: dataMessenger.messenger,
             });
-        })
+        });
+
+      /*  socket.on('client-xoa-Username', data=>{
+            console.log('client-xoa-Username trong client-send-messenger', data);
+            console.log(socket.id);
+        }); */
     });
 
+    socket.on('client-xoa-Username', socketIdUsernameNguoiSend=>{
+        console.log('client-xoa-Username', socketIdUsernameNguoiSend);
+       var SocketIdUsernameDisconnet  = socketIdUsernameNguoiSend;
+       
+               //cap nhat lai cai mang ArraySocketUsername
+               for (i=0; i< ArraySocketIdUsername.length; i++) {
+                var x = ArraySocketIdUsername[i].UserSocketId;
+                if (x == SocketIdUsernameDisconnet) {
+                    //chi can tim ra so thu tu thu i nao can loai bo vi no disconnect
+                    ArraySocketIdUsername.splice(i,1); // xoa 1 phan tu vi tri thu i
+                    // break ; //ket thuc cau lenh//Lệnh break thoát khỏi vòng lặp chứa nó o day la thoat khoi cong for
+                } 
+            }
+            console.log('ArraySocketIdUsername new cap nhat khi disconnectLL',ArraySocketIdUsername);
+            console.log('ArraySocketIdUsername new cap nhat khi disconnectLL',ArraySocketIdUsername.length);
+    
+
+    });
+
+    socket.on('disconnect', (data)=>{
+        console.log('data disconnect::::',data);
+        console.log('socket.id data disconnect', socket.id);
+        io1.sockets.emit('socketId-da-disconnect',socket.id )
+        console.log('ArraySocketId:::',ArraySocketId);
+        socket.on('client-xoa-Username', data=>{
+            console.log('client-xoa-Username', data);
+            console.log(socket.id);
+        });
+
+    });
   /*  socket.on('client-send-messenger', dataMessenger => {
         console.log('client-send-messenger :' + dataMessenger);
         console.log('UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
@@ -579,6 +622,7 @@ io1.on('connect', (socket) => {
     }) */
 
 });
+
 
 
 

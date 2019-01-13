@@ -40,12 +40,20 @@
 
     <style>
         .CmsSend{
-            float: left
+            float: left;
+            font-size: 20;
+            width: 300px;
+            height: auto;
         }
         .CmsNhan{
             float: right;
-
-        }
+            font-size: 20px;
+            width: 300px;
+            height: auto;
+        } 
+        .ClassNguoiSend{
+            font-size: 40px
+        } 
     </style>
 
     <script>
@@ -92,7 +100,7 @@
             var dataParse = JSON.parse(data);
             var tokenNew = dataParse.tokenNew;
             var UsernameNguoiSend = dataParse.Username;
-            $('#NguoiSend').append("<div class='' >" + UsernameNguoiSend + "</div>");
+            $('#NguoiSend').append("<div class='ClassNguoiSend' >" + UsernameNguoiSend + "</div>");
             $('#NguoiSend').css("color", "#00BF00");
             function setCookie(NameCookie, value, expiredays) {
                 var ExpireDate = new Date;
@@ -116,30 +124,42 @@
             console.log('11111111111111111111111111', { query: "token=" + tokenNew });
 
             /*    socket.on('connect', function (data) {
-                    socket.emit('storeClientInfo', { customId: "000CustomIdHere0000" });
-                }); */
-
-
-
+                    socket.emit('storeClientInfo', { customId: "000CustomIdHere0000" + UsernameNguoiSend });
+                });  */
 
             socket.on('connect', function (data) {
                 socket.emit('client-send-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
+                //disconnect ngang hang voi su kien client-send-Username
+             /*  socket.on('disconnect', data => {
+                    socket.emit('client-xoa-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
+                });*/
             });
+
+            socket.on('socketId-da-disconnect', socketId => {
+                console.log('socketId-da-disconnect: data la',socketId);
+                socket.emit('client-xoa-Username',  socketId + UsernameNguoiSend); //co ket noi cai la gui luon username
+            });
+           /* socket.on('disconnect', data => {
+                    socket.emit('client-xoa-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
+            });  */
+
+
 
 
 
 
 
             socket.on('server-send-messenger', dataMessenger => {
-                alert(dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger);
+                //    alert(dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger);
                 console.log('dataMessenger:::', dataMessenger);
-                var msSend = dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger;
-                var msNhan = dataMessenger.UsernameNguoiNhan + ": " + dataMessenger.messenger;
+                //  var msSend = dataMessenger.UsernameNguoiNhan + ": " + dataMessenger.messenger;
+                var msNhan = dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger;
 
-                $('#ListMesseger').append("<div class='CmsSend'>" + msSend + "</div>");
-                $('#ListMesseger').css("color", "red");
-                $('#ListMesseger').append("<div class='CmsNhan'>" + msNhan + "</div>");
-                $('#ListMesseger').css("color", "blue");
+                //   $('#ListMesseger').append("<div class='CmsSend'>" + msSend + "</div>" + "<br/>");
+                //   $('.CmsSend').css("color", "red");
+
+                $('#ListMesseger').append("<div class='CmsNhan'>" + msNhan + "</div>" + "<br/>");
+                $('.CmsNhan').css("color", "blue");
                 //  $('#NguoiSend').append("<div class='' >" + UsernameNguoiSend + "</div>");
             });
 
@@ -149,10 +169,11 @@
                 var ArrayUserSocketId = [];
                 var arrayUsername = [];
                 //  var ArraySocketIdThoaMan = [];
+                $('#listSocket_id_User').html('');
                 $(ArraySocketUsername).each(function (index, value) {
                     /////////////////////////////////////////////////
                     //////////////////////////////////////////
-                    $('#listSocket_id_User').html('');
+                    // $('#listSocket_id_User').html('');
                     $('#listSocket_id_User').append("<div class='skidUS' >" + value.UserSocketId + "</div>");
                     $('#listSocket_id_User').append("<div class='US' >" + value.Username + "</div>");
                     $('#listSocket_id_User').css("color", "blue");
@@ -183,25 +204,39 @@
                 var mangU1 = deduplicate(arrayUsername);
                 console.log('mangU1111111', mangU1);
 
-           
-                for (i = 0; i < mangU1.length; i++) {
-                  
-                    $('#ListUser').append("<div class='Username' >" + mangU1[i] + "</div>");
-                    $('#ListUser').css("color", "#E61A5F");
-                } 
+                $('#ListUser').html('');
+                $(mangU1).each(function (index, value) {
+                    /////////////////////////////////////////////////
+                    if (value == null || value == 'undefined') {
+                        $('#ListUser').html('');
+                    }
+                    else {
+                        //    $('#UserOnline').html('');
+                        $('#ListUser').append("<div class='Username' >" + value + "</div>");
+                        $('#ListUser').css("color", "#E61A5F");
+                        //   $('#ListUser').html('');
+                    }
+                    //  $('#ListUser').html('');
+                });
 
+
+                /*   for (i = 0; i < mangU1.length; i++) {
+                       $('#UserOnline').html('');
+                       $('#ListUser').append("<div class='Username' >" + mangU1[i] + "</div>");
+                       $('#ListUser').css("color", "#E61A5F");
+                       $('#UserOnline').html('');
+                   }  */
+                $('#UserOnline').html('');
                 $('.Username').map(function (index, value) {
                     $(this).click(() => {
                         var Username = mangU1[index];
                         // $('#UserOnline').append( value );
-                        if( Username !== 'undefined'){
-                            $('#UserOnline').append("<div class = 'user' >" + "Userane Online: " + Username + "</div>");
-                            $('#UserOnline').css("color", "#E61A5F");
-                        } else {       
-                            $('#UserOnline').html('');
-                        }
-                        
-                     
+                        $('#UserOnline').html('');
+                        $('#UserOnline').append("<div class = 'user' >" + "Userane Online: " + Username + "</div>");
+                        $('#UserOnline').css("color", "#E61A5F");
+
+
+
                         // alert(Username)
                         //   console.log('value:::', value);
                         //   console.log('index:::', index);
@@ -216,13 +251,17 @@
                         });
                         console.log('ArraySocketIdThoaMan:::', ArraySocketIdThoaMan.length + ": +" + Username + ": " + ArraySocketIdThoaMan);
                         $(document).ready(() => {
+                            //khi nhan send
                             $('#send').click(() => {
+                                $('#ListMesseger').append("<div class='CmsSend'>" + UsernameNguoiSend + ": " + $('#messenger').val() + "</div>" + "<br/>");
+                                $('.CmsSend').css("color", "red");
                                 socket.emit("client-send-messenger", { UsernameNguoiNhan: Username, UsernameNguoiSend: UsernameNguoiSend, DSsocketIdNguoiNhan: ArraySocketIdThoaMan, messenger: $('#messenger').val() });
+
                             });
                         })
                     });
                 });
-                
+
 
                 console.log('ArrayUserSocketId::', ArrayUserSocketId);
                 $('.skidUS').each(function (index, value) {
@@ -259,6 +298,10 @@
 </head>
 
 <style>
+    #listSocket_id_User{
+        overflow-y: scroll;
+        height: 500px;
+    }
     .mauvang {
         background-color: yellow;
 
@@ -280,10 +323,27 @@
         float: left;
     }
     #messenger{
-        width: 300px
+        width: 600px;
+        border: 3px solid aqua; 
+        padding: 5px; width: 300px; 
+        word-wrap: break-word; 
+        white-space:normal;
+        word-break: break-all;
+        white-space: pre;
+       
+      
+    }
+    textarea{
+        overflow: auto;
+    }
+    #mstxt-div{
+        word-wrap: break-word;
     }
     #ListMesseger{
-        height: 500px;
+        width: 400px;
+        height: 600px;
+        overflow-y: scroll;
+        word-wrap:  break-word;
     }
     .container {
     width: 50%;
@@ -344,7 +404,11 @@
             <div id="ListMesseger"></div>
             <div>
 
-                <input type="text" id="messenger" placeholder="vui long nhap text chat" />
+                <div id="mstxt">
+                    <textarea wrap="off" cols="30" rows="5" type="text" id="messenger" placeholder="vui long nhap text chat"></textarea>
+                    <br />
+
+                </div>
 
 
                 <input type="button" id="send" value="send">

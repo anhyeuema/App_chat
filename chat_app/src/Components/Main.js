@@ -12,7 +12,7 @@ export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: 'status'
+            selectedTab: 'freeall'
         };
     }
 
@@ -63,6 +63,15 @@ export default class Main extends Component {
                             //badgeText="1"
                             onPress={() => this.setState({ selectedTab: 'status' })}>
                             <Status />
+                        </TabNavigator.Item>
+                        <TabNavigator.Item
+                            selected={this.state.selectedTab === 'freeall'}
+                            title="FreeAll"
+                            //  renderIcon={() => <Image source={...} />}
+                            //  renderSelectedIcon={() => <Image source={...} />}
+                            //badgeText="1"
+                            onPress={() => this.setState({ selectedTab: 'freeall' })}>
+                            <FreeAll />
                         </TabNavigator.Item>
                     </TabNavigator>
                 </View>
