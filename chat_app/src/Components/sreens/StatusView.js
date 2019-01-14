@@ -29,7 +29,7 @@ export default class Status extends Component {
 
     constructor(props) {
         super(props);
-        this.socket = io('http://192.168.216.2:3500', { jsonp: false });
+        this.socket = io.connect('http://192.168.216.2:3500', { jsonp: false });
         e = this;
         this.state = {
             mang: [

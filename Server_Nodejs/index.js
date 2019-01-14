@@ -538,18 +538,19 @@ var ArraySocketIdUsername = [];
 var ArraySocketId = [];
 var ArraySocketIdOn = [];
 io1.on('connect', (socket) => {
-    console.log("client connect socket io1 :" + socket.id);
+    console.log("io1..client connect socket io1 :" + socket.id);
     ArraySocketId.push(socket.id);
-    console.log('ArraySocketId:::', ArraySocketId);
-    console.log('ArraySocketId.length:::', ArraySocketId.length);
+    console.log('io1...ArraySocketId:::', ArraySocketId);
+    console.log('io1..ArraySocketId.length:::', ArraySocketId.length);
     
     socket.on('client-send-Username', Username => {
-        console.log('ArraySocketId:::', ArraySocketIdOn);
-        console.log('ArraySocketId.length:::', ArraySocketIdOn.length);
+        console.log('io1....Username client-send-Username',Username);
+        console.log('io1...ArraySocketId:::', ArraySocketIdOn);
+        console.log('io1...ArraySocketId.length:::', ArraySocketIdOn.length);
 
         ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
-        console.log('ArraySocketUsername:::', ArraySocketIdUsername);
-        console.log('ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
+        console.log('io1...ArraySocketUsername:::', ArraySocketIdUsername);
+        console.log('io1...ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
      //   io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
         io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
 
@@ -557,11 +558,11 @@ io1.on('connect', (socket) => {
     });
 
     socket.on('client-send-messenger', dataMessenger => {
-        console.log('client-send-messenger :' + dataMessenger);
-        console.log('UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
-        console.log('UsernameNguoiSend::', dataMessenger.UsernameNguoiSend);
-        console.log('DSsocketIdNguoiNhan::', dataMessenger.DSsocketIdNguoiNhan);
-        console.log('messenger::', dataMessenger.messenger);
+        console.log('io1..client-send-messenger :' + dataMessenger);
+        console.log('io1..UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
+        console.log('io1..UsernameNguoiSend::', dataMessenger.UsernameNguoiSend);
+        console.log('io1..DSsocketIdNguoiNhan::', dataMessenger.DSsocketIdNguoiNhan);
+        console.log('io1..messenger::', dataMessenger.messenger);
         dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
             io1.to(socketId).emit('server-send-messenger', {
                 UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
@@ -577,7 +578,7 @@ io1.on('connect', (socket) => {
     });
 
     socket.on('client-xoa-Username', socketIdUsernameNguoiSend=>{
-        console.log('client-xoa-Username', socketIdUsernameNguoiSend);
+        console.log('io1..client-xoa-Username', socketIdUsernameNguoiSend);
        var SocketIdUsernameDisconnet  = socketIdUsernameNguoiSend;
        
                //cap nhat lai cai mang ArraySocketUsername
@@ -586,22 +587,22 @@ io1.on('connect', (socket) => {
                 if (x == SocketIdUsernameDisconnet) {
                     //chi can tim ra so thu tu thu i nao can loai bo vi no disconnect
                     ArraySocketIdUsername.splice(i,1); // xoa 1 phan tu vi tri thu i
-                    // break ; //ket thuc cau lenh//Lệnh break thoát khỏi vòng lặp chứa nó o day la thoat khoi cong for
+                    break ; //ket thuc cau lenh//Lệnh break thoát khỏi vòng lặp chứa nó o day la thoat khoi cong for
                 } 
             }
-            console.log('ArraySocketIdUsername new cap nhat khi disconnectLL',ArraySocketIdUsername);
-            console.log('ArraySocketIdUsername new cap nhat khi disconnectLL',ArraySocketIdUsername.length);
+            console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL',ArraySocketIdUsername);
+            console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL',ArraySocketIdUsername.length);
     
 
     });
 
     socket.on('disconnect', (data)=>{
-        console.log('data disconnect::::',data);
-        console.log('socket.id data disconnect', socket.id);
+        console.log('io1..data disconnect::::',data);
+        console.log('io1..socket.id data disconnect', socket.id);
         io1.sockets.emit('socketId-da-disconnect',socket.id )
-        console.log('ArraySocketId:::',ArraySocketId);
+        console.log('io1..ArraySocketId:::',ArraySocketId);
         socket.on('client-xoa-Username', data=>{
-            console.log('client-xoa-Username', data);
+            console.log('io1..client-xoa-Username', data);
             console.log(socket.id);
         });
 

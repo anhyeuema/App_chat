@@ -5,7 +5,7 @@ import TabNavigator from 'react-native-tab-navigator';
 import Home from './sreens/Home';
 import Messenger from './sreens/Messenger';
 import Status from './sreens/Status';
-
+import FreeAll from './sreens/FreeAll';
 
 
 export default class Main extends Component {

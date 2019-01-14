@@ -144,11 +144,7 @@
             });  */
 
 
-
-
-
-
-
+            //lang nghe server send tin nhan
             socket.on('server-send-messenger', dataMessenger => {
                 //    alert(dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger);
                 console.log('dataMessenger:::', dataMessenger);
@@ -169,16 +165,14 @@
                 var ArrayUserSocketId = [];
                 var arrayUsername = [];
                 //  var ArraySocketIdThoaMan = [];
-                $('#listSocket_id_User').html('');
+                //hien thi danh sach socket+id+Username
+                $('#listSocket_id_User').html('');  //truoc vong lap  xoa dach sach hien thi socket+id+username khong xoa thi no se hien thi lap va gay ra undefine bien hien thi socketidusername
                 $(ArraySocketUsername).each(function (index, value) {
-                    /////////////////////////////////////////////////
-                    //////////////////////////////////////////
-                    // $('#listSocket_id_User').html('');
                     $('#listSocket_id_User').append("<div class='skidUS' >" + value.UserSocketId + "</div>");
                     $('#listSocket_id_User').append("<div class='US' >" + value.Username + "</div>");
                     $('#listSocket_id_User').css("color", "blue");
-                    ArrayUserSocketId.push(value.UserSocketId);
-                    arrayUsername.push(value.Username);
+                    ArrayUserSocketId.push(value.UserSocketId); ////tach ra de lay ArrayUserSocketId
+                    arrayUsername.push(value.Username); // tach ra de lay arrayUsername =>  ArrayUserSocketId - arrayUsername = ArraySocketID_thoanam
                     //console.log('ArrayUserSocketId::', ArrayUserSocketId);
 
                 });
@@ -226,7 +220,9 @@
                        $('#ListUser').css("color", "#E61A5F");
                        $('#UserOnline').html('');
                    }  */
-                $('#UserOnline').html('');
+
+                //danh sach socket-id-username thoa nam kich chuot ArraySocketIdThoaMan
+                $('#UserOnline').html(''); //truoc khi vao vong lap xoa ve chong '' danh sach ListUser
                 $('.Username').map(function (index, value) {
                     $(this).click(() => {
                         var Username = mangU1[index];
@@ -262,7 +258,7 @@
                     });
                 });
 
-
+              // hien thi username tu kich choubao socketIdUsernaem goc da duoc kich chuot va         
                 console.log('ArrayUserSocketId::', ArrayUserSocketId);
                 $('.skidUS').each(function (index, value) {
                     $(this).click(() => {
