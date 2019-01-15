@@ -2,7 +2,7 @@ import saveToken from '../api/saveToken';
 import getToken from '../api/getToken';
 
 const RefreshToken_time = async (varToken_time) => {
-    fetch('http://192.168.0.100:81/App_Chat_Web/chat/refreshToken.php', {
+    fetch('http://192.168.216.2:81/App_Chat_Web/chat/refreshToken.php', {
         method: 'post',
         headers: {
             'Accept': 'application/json',

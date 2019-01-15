@@ -25,7 +25,7 @@ export default class Authentication extends Component {
     }
 
     DangKy() {
-        fetch('http://192.168.0.101:81/App_Chat_Web/chat/Register.php', {
+        fetch('http://192.168.216.2:81/App_Chat_Web/chat/Register.php', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -65,7 +65,7 @@ export default class Authentication extends Component {
 
 
     DangNhap() { //la DangNhap duoc fetch len Login.php
-        fetch('http://192.168.0.101:81/App_Chat_Web/chat/Login.php', { //(####)
+        fetch('http://192.168.216.2:81/App_Chat_Web/chat/Login.php', { //(####)
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -154,7 +154,7 @@ export default class Authentication extends Component {
     checkLogin() { //checkLogin = checkToken
 
         const KieTraToken = async (varToken) => { // gui token voi ten token voi ten token la TOKEN
-            fetch('http://192.168.0.101:81/App_Chat_Web/chat/checkToken.php', {
+            fetch('http://192.168.216.2:81/App_Chat_Web/chat/checkToken.php', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -216,7 +216,7 @@ export default class Authentication extends Component {
     refreshToken() {
 
         const RefreshToken_time = async (varToken_time) => {
-            fetch('http://192.168.0.101:81/App_Chat_Web/chat/refreshToken.php', {
+            fetch('http://192.168.216.2:81/App_Chat_Web/chat/refreshToken.php', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',

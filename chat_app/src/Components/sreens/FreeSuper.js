@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput, AsyncStorage } from 'react-native';
 import io from 'socket.io-client/dist/socket.io.js';
 import ImagePicker from 'react-native-image-picker'; //yarn add react-native-image-picker// react-native link react-native-image-picker
 import RNFetchBlob from 'react-native-fetch-blob'; //yarn add react-native-fetch-blob//react-native link
@@ -20,11 +20,59 @@ const options = {
 
 var key = 0;
 
-var ArrdataMessenger = [];
+// var ArrdataMessenger = [];
 var ArrarySaveDataMessenger = [];
 
+
+const SaveTinNhan = async (Username, ArrayMesse) => {
+    try {
+
+
+        await AsyncStorage.setItem(Username, ArrayMesse)
+        return 'SAVE MESSENGER CHO' + Username + 'THANH_CONG';
+
+    } catch (e) {
+        return e;
+    }
+}
+
+const GetTinNhan = async (Username) => {
+    try {
+        var value = await AsyncStorage.getItem(Username);
+        if (value !== null) {
+            return value;
+        }
+        return [];
+
+    } catch (e) {
+        return console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbb', e);;
+
+    }
+}
+
+
+
+
+
+
 export default class FreeAll extends Component {
+
+
     constructor(props) {
+
+
+        var ArrUserSendKey1 = [
+            { key: 0, UserSend: 'UserSend', messenger: 'messenger' },
+            { key: 0, UserSend: 'UserSend', messenger: 'messenger' },
+            { key: 1, UserSend: 'UserSend', messenger: 'messenger' },
+            { key: 0, UserSend: 'UserSend', messenger: 'messenger' },
+            { key: 1, UserSend: 'UserSend', messenger: 'messenger' },
+            { key: 2, UserSend: 'UserSend', messenger: 'messenger' },
+
+        ];
+        var x = ArrUserSendKey1;
+        console.log('xxxxxxxxxxxx', x);
+
         super(props);
         this.socket = io('http://192.168.216.2:2400', { jsonp: false });
         this.socket.on('connect', (data) => {
@@ -44,6 +92,8 @@ export default class FreeAll extends Component {
                 });
         });
 
+
+
         this.socket.on('socketId-da-disconnect', socketId => {
             console.log('socketId-da-disconnect: data la', socketId);
             getToken('@Username')
@@ -56,6 +106,19 @@ export default class FreeAll extends Component {
 
         e = this;
         this.state = {
+
+            ArrUserSendKey9: [
+                { key: 0, UserSend: 'UserSend', messenger: 'messenger' },
+                { key: 0, UserSend: 'UserSend', messenger: 'messenger' },
+                { key: 1, UserSend: 'UserSend', messenger: 'messenger' },
+                { key: 0, UserSend: 'UserSend', messenger: 'messenger' },
+                { key: 1, UserSend: 'UserSend', messenger: 'messenger' },
+                { key: 2, UserSend: 'UserSend', messenger: 'messenger' },
+
+            ],
+
+            SaveDataMessengerApp: [], //luu thong tin ap khi nhan vao Username thi se load lai mang nay SaveDataMessengerApp ==  ArrdataMessenger
+
             UsernameNguoiSend: '', //lay username da luu emit toi server de cong voi socket.id cua server de tao socket+id+username
             // ArraySocketUsername -  ArrayUserSocketId = arrayUsername (loc Useranem trung) == mangU1 chua Usernam duoc tich
             ArraySocketUsername: [],// mang nay khong can setState o app ArraySocketUsername: [], //danh sach socket+id+Username
@@ -225,9 +288,13 @@ export default class FreeAll extends Component {
             //khi nhan duoc lai phai setState ve rong
             // e.setState({  UserSendEmit: '',  messenger: '',});
 
-           // e.setState({  UserSendEmit: '',  messenger: '',});
+            // e.setState({  UserSendEmit: '',  messenger: '',});
             // var UserSendKey = { key: (ArrdataMessenger.length + 1), UserSend: dataMessenger.UsernameNguoiSend, messenger: dataMessenger.messenger, UserNhan: this.state.Username, messengerNhan: this.state.Username==null? null : this.state.messenger };
+
+            var ArrdataMessenger = this.state.SaveDataMessengerApp;
+            console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
             var UserSendKey = { key: (ArrdataMessenger.length + 1), UserSend: dataMessenger.UsernameNguoiSend, messenger: dataMessenger.messenger, UserNhan: '', messengerNhan: '' };
+
             ArrdataMessenger.push(UserSendKey);
 
             ArrarySaveDataMessenger.push(UserSendKey);
@@ -244,12 +311,36 @@ export default class FreeAll extends Component {
                 var UserSendKey = { key: i, UserSend: UserSend, messenger: messenger, UserNhan: UserNhan, messengerNhan: messengerNhan };
                 ArrUserSendKey1.push(UserSendKey);
             }
-            console.log('ArrUserSendKey1::::', ArrUserSendKey1); //ArrUserSendKey1 maga nay gui len server de luu chu nha
+            //  console.log('ArrUserSendKey1::::', ArrUserSendKey1); //ArrUserSendKey1 maga nay gui len server de luu chu nha
             e.setState({
-                ArrUserSendKey: ArrUserSendKey1
+                ArrUserSendKey: ArrUserSendKey1,
+                SaveDataMessengerApp: ArrUserSendKey1
             });
             console.log('this.state.ArrUserSendKey::::', this.state.ArrUserSendKey);
+            console.log('this.state.SaveDataMessengerApp::::', this.state.SaveDataMessengerApp);
+            var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+            var Username = this.state.Username;
+            console.log('.SaveDataMessengerApp1::::', SaveDataMessengerApp1);
 
+            const SaveTinNhan = async (Username, ArrayMesse) => {
+                try {
+                    await AsyncStorage.setItem(Username, ArrayMesse)
+                    if (ArrayMesse !== null) {
+                        return 'SAVE MESSENGER CHO' + Username + 'THANH_CONG';
+                    }
+                } catch (e) {
+                    return e;
+                }
+            }
+            SaveTinNhan(Username, SaveDataMessengerApp1); //luu tin nha cho ten duoc tich
+            //SaveTinNhan(this.state.Username, ArrdataMessenger);
+            // SaveTinNhan('manh', ArrdataMessenger);
+
+
+            GetTinNhan(Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
+                .then(SaveDataMessengerApp => {
+                    console.log('SaveDataMessengerApp get tinnhan ::', SaveDataMessengerApp);
+                });
 
             /*
             for (i = 0; i < ArrdataMessenger.length; i++) {
@@ -279,7 +370,10 @@ export default class FreeAll extends Component {
 
     }
 
-
+    componentDidMount() {
+        var y = this.state.ArrUserSendKey9;
+        console.log('yyyyyyyyyyyyy', y);
+    }
 
     setStateArrUserSendKey() {
         var ArrUserSendKey1 = [
@@ -310,7 +404,7 @@ export default class FreeAll extends Component {
         console.log('this.state.UserSendEmit', this.state.UserSendEmit);
 
         //test thu message text send di 
-        e.setState({ messenger: 'Instead of playing the guessing game, when you try all the different combinations till you find the one that fits, just use the following modifiers props: left, top, right & bottom.ect your layout' });
+        e.setState({ messenger: 'Instead of playing the guessing game, when you try all the different combinations till you find the one that fits, just use the following modifiers props: left, top, right & bottom.' });
         /*
         this.setState({ //lay gia tri send khi da setState (*****)
             send: true, // khi chua gui bang flase nhe
@@ -327,7 +421,7 @@ export default class FreeAll extends Component {
         this.socket.emit("client-send-messenger", dataEmit);
         console.log('server dang send socket.usernam va messenger ca nhan dataEmit', dataEmit);
 
-         e.setState({ m: (parseInt(this.state.m) + 1), });//so lan emit 1 lan emit la 1 lan cap nhat mang tin nhan cua app nhe
+        e.setState({ m: (parseInt(this.state.m) + 1), });//so lan emit 1 lan emit la 1 lan cap nhat mang tin nhan cua app nhe
         console.log('this.state.m::::', this.state.m);
 
         //su ly mang moi cho this.state.ArrUserSendKey
@@ -371,19 +465,17 @@ export default class FreeAll extends Component {
         //var UserSendKey = { key: (ArrdataMessenger.length + 1), UserSend: UserSend, messenger: messenger, UserNhan: UserNhan, messengerNhan: this.state.messenger };
 
         //  e.setState({ messenger: 'this.setState({ //lay gia tri send khi da setState (*****)sdgdsgdgdgdgdgdgdg' }); //setState messenger     //neu khong co ten nguoi nhan thi k hien thi tin nhan messenger ng gui
-       // var UserSendKey = { key: (ArrdataMessenger.length + 1), UserSend: '', messenger: '', UserNhan: this.state.Username, messengerNhan: this.state.Username == null ? null : this.state.messenger };
+        // var UserSendKey = { key: (ArrdataMessenger.length + 1), UserSend: '', messenger: '', UserNhan: this.state.Username, messengerNhan: this.state.Username == null ? null : this.state.messenger };
         // ArrdataMessenger = this.state.ArrUserSendKey.push(UserSendKey);
         //ArrdataMessenger da co them phan tu UserNhan, messengerNhan
 
+        //  ArrdataMessenger = (this.state.SaveDataMessengerApp);
 
+        var ArrdataMessenger = this.state.SaveDataMessengerApp;
         var UserSendKey = { key: (ArrdataMessenger.length + 1), UserSend: '', messenger: '', UserNhan: this.state.Username, messengerNhan: this.state.Username == null ? null : this.state.messenger };
-      
         ArrdataMessenger.push(UserSendKey);
-
         ArrarySaveDataMessenger.push(UserSendKey);
         console.log('ArrarySaveDataMessenger...ArrarySaveDataMessenger', ArrarySaveDataMessenger);
-
-
         var ArrUserSendKey1 = [];
         for (i = 0; i < ArrdataMessenger.length; i++) {
             var UserSend = ArrdataMessenger[i].UserSend;
@@ -397,9 +489,21 @@ export default class FreeAll extends Component {
         }
         console.log('ArrUserSendKey1::::', ArrUserSendKey1); //ArrUserSendKey1 maga nay gui len server de luu chu nha
         e.setState({
-            ArrUserSendKey: ArrUserSendKey1
+            ArrUserSendKey: ArrUserSendKey1,
+            SaveDataMessengerApp: ArrUserSendKey1,
         });
         console.log('this.state.ArrUserSendKey sendEmit::::', this.state.ArrUserSendKey);
+        console.log('this.state.ArrUserSendKey sendEmit::::', this.state.SaveDataMessengerApp);
+        var SaveDataMessengerApp = JSON.stringify(this.state.SaveDataMessengerApp);
+        SaveTinNhan(this.state.Username, SaveDataMessengerApp); //luu tin nha cho ten duoc tich
+        GetTinNhan(this.state.Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
+            .then(SaveDataMessengerApp => {
+                console.log('SaveDataMessengerApp get tinnhan sendemit  ::', SaveDataMessengerApp);
+            });
+        //  SaveTinNhan(this.state.Username, ArrdataMessenger); //luu tin nhan o mang goc  ArrdataMessenger
+        // SaveTinNhan('manh', ArrdataMessenger); //luu tin nhan o mang goc  ArrdataMessenger
+
+
         /*  var b = this.state.ArrUserSendKey;
           console.log('this.state.ArrUserSendKey_ bbbbb::::', b);
           //co duoc mang moi can cong mang cu va mang moi la de duoc mang tong data tin nhan app
@@ -415,11 +519,24 @@ export default class FreeAll extends Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: '#fff' }}>
-                <Text style={styles.styleText} >danh sach socket.id+Username</Text>
+                <View style={{ flex: 1, backgroundColor: '#fff', flexDirection: 'row' }} >
+                    <Text style={styles.styleText} >danh sach socket.id+Username</Text>
+                    <Text style={styles.UserOnline}>UserOnline: {this.state.Username === null ? null : this.state.Username}</Text>
+                    <TouchableOpacity onPress={() => {
+                        SaveTinNhan(this.state.Username, '');
+                        GetTinNhan(this.state.Username)
+                            .then(SaveDataMessengerApp_r => {
+                                console.log('da xoa tin nhan cho :' + this.state.Username, SaveDataMessengerApp_r);
+                                e.setState({ ArrUserSendKey: SaveDataMessengerApp_r, SaveDataMessengerApp: SaveDataMessengerApp_r });
+                                console.log('this.state.ArrUserSendKey get tin nhan khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len ::', this.state.SaveDataMessengerApp_r);
 
-                <Text style={styles.UserOnline}>UserOnline: {this.state.Username === null ? null : this.state.Username}</Text>
+                            });
+                    }}>
+                        <Text style={styles.styleText}>xoa Tin nhan cho Username Hien tren Username Onlike</Text>
+                    </TouchableOpacity>
+                </View>
 
-                <View style={{ flex: 5, backgroundColor: '#fff', flexDirection: 'row' }}>
+                <View style={{ flex: 7, backgroundColor: '#fff', flexDirection: 'row' }}>
 
                     <View style={{ flex: 1, backgroundColor: '#007ACC' }}>
 
@@ -430,6 +547,38 @@ export default class FreeAll extends Component {
                                     <TouchableOpacity onPress={() => {
                                         var Username = item.Userkey;
                                         e.setState({ Username: Username }); //de hien thi Username duoc kich chuot
+                                        GetTinNhan(this.state.Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
+                                            .then(SaveDataMessengerApp_r => {
+                                                console.log('SaveDataMessengerApp_r khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len chua JSON.paser thi no van o dang JSON.string ::', SaveDataMessengerApp_r);
+                                                console.log('SaveDataMessengerApp_r[0]::',SaveDataMessengerApp_r[0])
+                                                if (SaveDataMessengerApp_r[0] == null || SaveDataMessengerApp_r[0] == '' || SaveDataMessengerApp_r[0] == 'undefined' ) {
+                                                    console.log('SaveDataMessengerApp_r kiem tra xem nhay vao if (SaveDataMessengerApp_r === []) ',SaveDataMessengerApp_r);
+                                                    e.setState({ ArrUserSendKey: SaveDataMessengerApp_r, SaveDataMessengerApp: SaveDataMessengerApp_r });
+                                                    console.log('this.state.ArrUserSendKey get tin nhan khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len ::', this.state.SaveDataMessengerApp_r);
+                                                }
+                                                else {
+                                                    var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp_r);
+                                                    console.log('ArrUserSendKey khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len ::', SaveDataMessengerApp);
+                                                    e.setState({ ArrUserSendKey: SaveDataMessengerApp, SaveDataMessengerApp: SaveDataMessengerApp });
+                                                    console.log('this.state.ArrUserSendKey get tin nhan khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len ::', this.state.SaveDataMessengerApp)
+
+                                                }
+                                            });
+
+                                        /*
+                                        GetTinNhan(this.state.Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
+                                            .then(SaveDataMessengerApp => {
+                                                console.log('ArrUserSendKey get tinnhan ::', SaveDataMessengerApp);
+                                                e.setState({ SaveDataMessengerApp: SaveDataMessengerApp });
+                                                console.log('this.state.ArrUserSendKey get tin nhan::', this.state.ArrUserSendKey)
+                                            });
+                                         GetTinNhan(this.state.Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
+                                             .then(ArrUserSendKey => {
+                                                 console.log('ArrUserSendKey get tinnhan ::', ArrUserSendKey);
+                                                 e.setState({ ArrUserSendKey: ArrUserSendKey });
+                                                 console.log('this.state.ArrUserSendKey get tin nhan::', this.state.ArrUserSendKey)
+                                             }); */
+
                                         // alert(Username)
                                         var ArraySocketIdThoaMan1 = []; // moi lan nha class = skidUS thi set mang ArraySocketIdThoaMan rong neu khong cac mang truoc se conc cac manh username sau
                                         this.state.ArrayUserSocketId.map(function (value, index) {
@@ -463,36 +612,55 @@ export default class FreeAll extends Component {
 
                                         <View style={{ flex: 1 }}>
 
-                                            <TouchableOpacity onPress={() => {
+                                            {/*  <TouchableOpacity onPress={() => {
 
-                                                console.log('this.state.ArrUserSendKey TouchableOpacity::', this.state.ArrUserSendKey)
-                                            }}>
-                                                <Text>setArrUserSendKeyTouchableOpacity</Text>
+                                                    console.log('this.state.ArrUserSendKey TouchableOpacity::', this.state.ArrUserSendKey)
+                                                }}>
+                                                    <Text>setArrUserSendKeyTouchableOpacity</Text>
 
-                                            </TouchableOpacity>
+                                                </TouchableOpacity>
 
-                                            <Text>{console.log('this.state.ArrUserSendKey o flatList1111111111', this.state.ArrUserSendKey)}</Text>
-                                            <Text key={item.key} style={styles.styleText}>{item.key} {item.UserSend} {":  " + item.messenger}</Text>
+                                                <Text>{console.log('this.state.ArrUserSendKey o flatList1111111111', this.state.ArrUserSendKey)}</Text>
+                                            */}
+                                            <View style={{ flex: 1, flexDirection: 'row', }}>
 
-                                            <Text key={item.key} style={{ color: 'blue' }}>
-                                                {
-                                                    // this.state.messenger == null ? null : (item.UserNhan + item.messengerNhan)
-                                                     item.key + (item.UserNhan==null? null: item.UserNhan) + (item.messengerNhan==null ? null : item.messengerNhan)
-                                                  //  item.key + item.UserNhan + item.messengerNhan
+                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                <View style={{ flex: 9 }}>
+                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                        <Text key={item.key} style={{ flex: 2, color: 'red', fontSize: 10, }}>{item.key} {item.UserSend}</Text>
+                                                        <Text key={item.key} style={{ flex: 7, fontSize: 8 }}>{":  " + item.messenger}</Text>
+                                                        <Text style={{ flex: 1 }} />
+                                                    </View>
+                                                </View>
+                                                <View style={{ flex: 1 }} />
+                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
+                                            </View>
 
-                                                }
-                                            </Text>
-                                            {/* <Text key={item.key} style={{ color: 'blue' }}>{item.key + ": "}{ketQuaJSX}</Text> */}
+                                            <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                <Text style={{ flex: 2 }} />
+                                                <Text key={item.key} style={styles.styleUserSend_FromApp_Send}>
+                                                    {
+                                                        // this.state.messenger == null ? null : (item.UserNhan + item.messengerNhan)
+                                                        item.key + (item.UserNhan == null ? null : item.UserNhan + ": ") + (item.messengerNhan == null ? null : item.messengerNhan)
+                                                        //  item.key + item.UserNhan + item.messengerNhan
+                                                    }
+                                                </Text>
+                                            </View>
+
+                                            {/* 
+                                                la 1 cai view khac ha
+                                                <Text key={item.key} style={{ color: 'blue' }}>{item.key + ": "}{ketQuaJSX}</Text> */}
 
                                         </View>
                                     }
 
                                 />
 
-                                <Text style={{ color: 'blue' }}>{ketQuaJSX}</Text>
+                                {/*   <Text style={{ color: 'blue' }}>{ketQuaJSX}</Text> */}
 
                             </View>
-                            <View style={{ flex: 3, backgroundColor: '#FFFFFF' }}>
+
+                            {/*  <View style={{ flex: 3, backgroundColor: '#FFFFFF' }}>
                                 {
                                     this.state.ArrUserSendKey.map(function (item, index) {
                                         <View>
@@ -502,34 +670,38 @@ export default class FreeAll extends Component {
                                     })
                                 }
 
-                                <Text style={{ color: 'blue' }}>{ketQuaJSX}</Text>
-                            </View>
+                                <Text style={{ color: 'blue' }}>{ketQuaJSX}</Text> 
+                                </View>
+                            */}
+
                         </View>
                     </View>
 
                 </View>
 
-                <View style={{ flex: 2, backgroundColor: '#fff' }}>
+                <View style={{ flex: 2, backgroundColor: '#fff', height: 200, }} >
 
-                    <TouchableOpacity onPress={() => { this.sendEmit() }}>
-                        <Text>send</Text>
-                        <Image source={require('../../../api/Images/sendIcon.png')} style={styles.styleIcon} />
-                    </TouchableOpacity>
-                    <TextInput
-                        onChangeText={text => this.setState({ messenger: text })}
-                        value={this.state.messenger}
-                        placeholder={"vui long nhap text"}
-                    />
+                    <View style={{ flex: 2, backgroundColor: '#fff', height: 80, }}>
+
+                        <TextInput
+                            onChangeText={text => this.setState({ messenger: text })}
+                            value={this.state.messenger}
+                            placeholder={"vui long nhap text"}
+                            style={{ height: 80 }}
+                        />
+                    </View>
 
 
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                    <View style={{ flex: 1, flexDirection: 'row', height: 100, }}>
                         <TouchableOpacity onPress={() => { this.sendEmit() }}>
-                            <Text>send</Text>
                             <Image source={require('../../../api/Images/sendIcon.png')} style={styles.styleIcon} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => { this.setStateArrUserSendKey() }}>
-                            <Text>setState Test ArrUserSendKey </Text>
+                            <Text> setStateArrUserSendKey </Text>
                         </TouchableOpacity>
+
+
 
                         <TouchableOpacity onPress={() => { this.setState1() }}>
                             <Text style={{ color: 'red' }}>SETSTATE </Text>
@@ -544,6 +716,17 @@ export default class FreeAll extends Component {
 }
 
 const styles = StyleSheet.create({
+    styleUserSend_ToAPP_Nhan: {
+        fontSize: 8,
+        // backgroundColor: '#ffff',
+
+    },
+    styleUserSend_FromApp_Send: {
+        fontSize: 10,
+        // backgroundColor: '#ffff',
+        color: 'blue',
+        flex: 3,
+    },
     UserOnline: {
         backgroundColor: '#DDD6DB',
         color: 'red'

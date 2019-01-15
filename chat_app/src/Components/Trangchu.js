@@ -89,7 +89,7 @@ export default class Trangchu extends Component {
                     ref={(ref) => this._drawer = ref}
                     content={< ControlPanel navigator={this.props.navigator} />}
                 >
-                    <Main OnControl={() => this.openControlPanel()} />
+                    <Main  OnControl={() => this.openControlPanel()} navigator={this.props.navigator} />
                 </Drawer>
             </View>
         );

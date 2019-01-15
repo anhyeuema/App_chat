@@ -6,13 +6,14 @@ import Home from './sreens/Home';
 import Messenger from './sreens/Messenger';
 import Status from './sreens/Status';
 import FreeAll from './sreens/FreeAll';
+import FreeSuper from './sreens/FreeSuper';
 
 
 export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: 'freeall'
+            selectedTab: 'freesuper'
         };
     }
 
@@ -73,6 +74,16 @@ export default class Main extends Component {
                             onPress={() => this.setState({ selectedTab: 'freeall' })}>
                             <FreeAll />
                         </TabNavigator.Item>
+                        <TabNavigator.Item
+                            selected={this.state.selectedTab === 'freesuper'}
+                            title="FreeSuper"
+                            //  renderIcon={() => <Image source={...} />}
+                            //  renderSelectedIcon={() => <Image source={...} />}
+                            //badgeText="1"
+                            onPress={() => this.setState({ selectedTab: 'freesuper' })}>
+                            <FreeSuper  navigator={this.props.navigator}/>
+                        </TabNavigator.Item>
+                        
                     </TabNavigator>
                 </View>
 
