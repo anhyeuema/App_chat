@@ -8,12 +8,14 @@ import Status from './sreens/Status';
 import FreeAll from './sreens/FreeAll';
 import FreeSuper from './sreens/FreeSuper';
 
+import User from './User/User';
+
 
 export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: 'freesuper'
+            selectedTab: 'user'
         };
     }
 
@@ -30,7 +32,7 @@ export default class Main extends Component {
                 <View style={{ flex: 1, backgroundColor: '#F2F2F2', flexDirection: 'row' }} >
                     <Text style={styles.styleText} >Main</Text>
                     <TouchableOpacity onPress={() => this.OnContolPanal()} style={styles.btnStyle} >
-                        <Text  style={styles.styleText} > OnContolPanal</Text>
+                        <Text style={styles.styleText} > OnContolPanal</Text>
                         <Image source={require('../../api/Images/BackIcon.png')} style={styles.styleIcon} />
                     </TouchableOpacity>
                 </View>
@@ -81,9 +83,19 @@ export default class Main extends Component {
                             //  renderSelectedIcon={() => <Image source={...} />}
                             //badgeText="1"
                             onPress={() => this.setState({ selectedTab: 'freesuper' })}>
-                            <FreeSuper  navigator={this.props.navigator}/>
+                            <FreeSuper navigator={this.props.navigator} />
                         </TabNavigator.Item>
-                        
+
+                        <TabNavigator.Item
+                            selected={this.state.selectedTab === 'user'}
+                            title="User"
+                            //  renderIcon={() => <Image source={...} />}
+                            //  renderSelectedIcon={() => <Image source={...} />}
+                            //badgeText="1"
+                            onPress={() => this.setState({ selectedTab: 'user' })}>
+                            <User navigator={this.props.navigator} />
+                        </TabNavigator.Item>
+
                     </TabNavigator>
                 </View>
 
