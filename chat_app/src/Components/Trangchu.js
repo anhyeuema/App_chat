@@ -29,6 +29,8 @@ export default class Trangchu extends Component {
                         if ( username1 !== null ) {
                             console.log('bat dau tu trang chu truyen Username bang ham global sang cho Conponent Controlpanal su ly ');
                             global.OnSignIn(a.Username);
+                            global.OnUser(a.Username);
+                          //  global.OnSocketID(a.Username);
                         } else {
                             console.log('bat dau truyen Username rong [] tu ham global sang cho Conponent Controlpanal su ly ');
                        

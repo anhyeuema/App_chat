@@ -607,20 +607,13 @@ io1.on('connect', (socket) => {
         });
 
     });
-  /*  socket.on('client-send-messenger', dataMessenger => {
-        console.log('client-send-messenger :' + dataMessenger);
-        console.log('UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
-        console.log('UsernameNguoiSend::', dataMessenger.UsernameNguoiSend);
-        console.log('DSsocketIdNguoiNhan::', dataMessenger.DSsocketIdNguoiNhan);
-        console.log('messenger::', dataMessenger.messenger);
-        dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
-            io1.to(socketId).emit('server-send-messenger', {
-                UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
-                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
-                messenger: dataMessenger.messenger,
-            });
-        })
-    }) */
+
+    //servser lang nghe status cong khai tu client va emit toi tat ca cac client vi la public cong khai
+    socket.on('client-share-status-public-congKhai', (dataStatus)=> {
+        console.log('client-share-status-public-congKhai:::',dataStatus);
+        io1.sockets.emit('server-share-status-public-congKhai',dataStatus);
+    })
+    
 
 });
 
