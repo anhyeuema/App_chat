@@ -53,6 +53,9 @@ export default class User extends Component {
 
         e = this;
         this.state = {
+
+
+
             dataUser: [
                 { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') },
                 { key: "1", StatusMe: 'statusImage1', imaBase64: require('../../../api/ImageAvata/3.jpg') },
@@ -74,7 +77,15 @@ export default class User extends Component {
             ArrayAvatarAnhBia: [
                 { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
             ],
-            imaPath: [], //duong dan anh
+            // ArrayStatusPublic: [],
+            imaPath: '', //duong dan anh,
+
+            ArrayStatus: [],
+            ArrayStatusItem: [
+                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
+            ],
+
+            
 
         };
         global.OnUser = this.getUser.bind(this);
@@ -91,12 +102,13 @@ export default class User extends Component {
         });
 
         this.socket.on('server-share-status-public-congKhai', DataStatusPublic => {
-            console.log('DataStatusPublic:::', DataStatusPublic);
+            //  console.log('DataStatusPublic:::', DataStatusPublic);
             e.setState({ n: (parseInt(this.state.n) + 1) });
 
             //key se duoc tang len oi khi thay 1 lang nhe moi server-share-status-public-congKhai
             // JSON.tringigy de dua key ve string k phai munber de no ho tro doc key o flatlist
 
+            /*
             var TheSaveArrStatusPublic = this.state.SaveArrStatusPublic;
             var p = ((this.state.n) + 1);
             console.log('p::::::', p);
@@ -105,23 +117,50 @@ export default class User extends Component {
             var statusPublic = { key: JSON.stringify(m), User: DataStatusPublic.User, StatusMe: DataStatusPublic.StatusMe, imaBase64: DataStatusPublic.imaBase64, imaPath: DataStatusPublic.imaPath };
             console.log('statusPublic:::::::', statusPublic);
             TheSaveArrStatusPublic.push(statusPublic);
-            // var TheSaveArrStatusPublic1 = (this.state.ArrayAvatarAnhBia).concat(TheSaveArrStatusPublic);
-            // var TheSaveArrStatusPublic1 = [];
-            // console.log('TheSaveArrStatusPublic1::',TheSaveArrStatusPublic1);
             console.log('TheSaveArrStatusPublic::', TheSaveArrStatusPublic);
-            //  TheSaveArrStatusPublic.push(statusPublic);
             // mang SaveArrStatusPublic se duoc set la e gia tri moi duoc push them doi tung statusPublic
             e.setState({ SaveArrStatusPublic: TheSaveArrStatusPublic });
-
             console.log('this.state.SaveArrStatusPublic on server-share-status-public-congKhai::::', this.state.SaveArrStatusPublic);
-
             //chuyen mnag ve dang JSON.stringify moi luu duoc 
             var SaveArrStatusPublic = JSON.stringify(this.state.SaveArrStatusPublic);
             // var User = this.state.Username;
-
             SaveTinNhan(this.state.User + "StatusPublic", SaveArrStatusPublic); //luu tin nha cho ten duoc tich
             GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
                 .then(SaveArrStatusPublic => {
+                    //  console.log('SaveDataMessengerApp get tinnhan sendemit  ::', SaveArrStatusPublic);
+                }); */
+
+
+            //can the hien status theo thoi gian hien taji vua dang roi moi toi qua khu nen ta can dao lai gia tri key trong status
+            //them 1 bien mang  moi de luu chu no
+            var status = { User: DataStatusPublic.User, StatusMe: DataStatusPublic.StatusMe, imaBase64: DataStatusPublic.imaBase64, imaPath: DataStatusPublic.imaPath };
+            var ArrayStatus = this.state.ArrayStatus;
+            ArrayStatus.unshift(status);
+            // console.log(' ArrayStatus.unshift::::', ArrayStatus);
+            var ArrayStatusThem = [];
+            for (i = 0; i < ArrayStatus.length; i = i + 1) {
+                var User = ArrayStatus[i].User;
+                var StatusMe = ArrayStatus[i].StatusMe;
+                var imaBase64 = ArrayStatus[i].imaBase64;
+                var imaPath = ArrayStatus[i].imaPath;
+                var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                ArrayStatusThem.push(statePublic);
+            }
+            //   console.log('ArrayStatusThem::::', ArrayStatusThem);
+            var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
+            //   console.log('CCC::::', c);
+            e.setState({
+                ArrayStatus: ArrayStatus,
+                ArrayStatusItem: c,
+            });
+            console.log(',this.state.ArrayStatus::::', this.state.ArrayStatus);
+            console.log(',this.state.ArrayStatusItem::::', this.state.ArrayStatusItem);
+            //chuyen mnag ve dang JSON.stringify moi luu duoc 
+            var ArrayStatus = JSON.stringify(this.state.ArrayStatus);
+            // var User = this.state.Username;
+            SaveTinNhan(this.state.User + "StatusPublic", ArrayStatus); //luu tin nha cho ten duoc tich
+            GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
+                .then(ArrayStatus => {
                     //  console.log('SaveDataMessengerApp get tinnhan sendemit  ::', SaveArrStatusPublic);
                 });
 
@@ -137,28 +176,56 @@ export default class User extends Component {
 
     componentDidMount() {
 
+        /* GetTinNhan(this.state.User + "StatusPublic")
+             .then(SaveArrStatusPublic_R => {
+                 console.log('SaveArrStatusPublic_R[0]:::::', SaveArrStatusPublic_R[0]);
+                 if (SaveArrStatusPublic_R[0] == null || SaveArrStatusPublic_R == 'undefined' || SaveArrStatusPublic_R == '') {
+                     e.setState({ SaveArrStatusPublic: [] });
+                 } else {
+                     console.log('da xoa tin nhan cho :' + this.state.User, SaveArrStatusPublic_R);
+                     var SaveArrStatusPublic_R1 = JSON.parse(SaveArrStatusPublic_R);
+                     e.setState({ SaveArrStatusPublic: SaveArrStatusPublic_R1 });
+                     console.log('this.state.SaveArrStatusPublic get tin nhan khi kich chuot vao Username ta se get ::', this.state.SaveArrStatusPublic);
+ 
+                 }
+ 
+             }); */
+
         GetTinNhan(this.state.User + "StatusPublic")
-            .then(SaveArrStatusPublic_R => {
-                console.log('SaveArrStatusPublic_R[0]:::::', SaveArrStatusPublic_R[0]);
-                if (SaveArrStatusPublic_R[0] == null || SaveArrStatusPublic_R == 'undefined' || SaveArrStatusPublic_R == '') {
-                    e.setState({ SaveArrStatusPublic: [] });
+            .then(ArrayStatus_r => {
+                console.log('SaveArrStatusPublic_R:::::', ArrayStatus_r);
+                console.log('SaveArrStatusPublic_R[0]:::::', ArrayStatus_r[0]);
+                if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                    var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                    e.setState({
+                        ArrayStatus: [],
+                        ArrayStatusItem: c,
+                    });
+                    console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+
                 } else {
-                    console.log('da xoa tin nhan cho :' + this.state.User, SaveArrStatusPublic_R);
-                    var SaveArrStatusPublic_R1 = JSON.parse(SaveArrStatusPublic_R);
-                    e.setState({ SaveArrStatusPublic: SaveArrStatusPublic_R1 });
-                    console.log('this.state.SaveArrStatusPublic get tin nhan khi kich chuot vao Username ta se get ::', this.state.SaveArrStatusPublic);
+                    console.log(' Status cho :' + this.state.User, ArrayStatus_r);
+                    var ArrayStatus_r = JSON.parse(ArrayStatus_r);
+                    var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
+                    e.setState({
+                        ArrayStatus: ArrayStatus_r,
+                        ArrayStatusItem: c,
+                    });
+                    console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
 
                 }
 
             });
+
+
     }
 
     changedAvata() {
 
     }
 
-    edit() {
-
+    editAnhBia() {
+        e.setState({ avata: '' })
     }
 
     Share() {
@@ -168,23 +235,51 @@ export default class User extends Component {
     }
 
     Delete() {
-        alert(0);
-        var ArrayAvatarAnhBia = [
-            { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
-        ];
-        var ArrayAvatarAnhBiaString = JSON.stringify(ArrayAvatarAnhBia);
-        SaveTinNhan(this.state.User + "StatusPublic", ArrayAvatarAnhBiaString); //luu tin nha cho ten duoc tich
+        /* 
+       alert(0);
+       var ArrayAvatarAnhBia = [
+           { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
+       ];
+       var ArrayAvatarAnhBiaString = JSON.stringify(ArrayAvatarAnhBia);
+       SaveTinNhan(this.state.User + "StatusPublic", ArrayAvatarAnhBiaString); //luu tin nha cho ten duoc tich
+     
         GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
-            .then(SaveArrStatusPublic_R => {
-                if (SaveArrStatusPublic_R[0] == null || SaveArrStatusPublic_R == 'undefined' || SaveArrStatusPublic_R == '') {
-                    e.setState({ SaveArrStatusPublic: [] });
+             .then(SaveArrStatusPublic_R => {
+                 if (SaveArrStatusPublic_R[0] == null || SaveArrStatusPublic_R == 'undefined' || SaveArrStatusPublic_R == '') {
+                     e.setState({ SaveArrStatusPublic: [] });
+                 } else {
+                     console.log('da xoa tin nhan cho :' + this.state.User, SaveArrStatusPublic_R);
+                     var SaveArrStatusPublic_R1 = JSON.parse(SaveArrStatusPublic_R);
+                     e.setState({ SaveArrStatusPublic: SaveArrStatusPublic_R1 });
+                     console.log('SaveArrStatusPublic DELETE  ::', this.state.SaveArrStatusPublic);
+                 }
+             }); */
+
+        SaveTinNhan(this.state.User + "StatusPublic",''); //luu tin nha cho ten duoc tich
+
+        GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
+            .then(ArrayStatus_r => {
+                console.log('SaveArrStatusPublic_R:::::', ArrayStatus_r);
+                console.log('SaveArrStatusPublic_R[0]:::::', ArrayStatus_r[0]);
+                if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r[0] == '') {
+                    var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                    e.setState({
+                        ArrayStatus: [],
+                        ArrayStatusItem: c,
+                    });
+                    console.log('ArrayStatusItem DELETE  ::', this.state.ArrayStatusItem);
                 } else {
-                    console.log('da xoa tin nhan cho :' + this.state.User, SaveArrStatusPublic_R);
-                    var SaveArrStatusPublic_R1 = JSON.parse(SaveArrStatusPublic_R);
-                    e.setState({ SaveArrStatusPublic: SaveArrStatusPublic_R1 });
-                    console.log('SaveArrStatusPublic DELETE  ::', this.state.SaveArrStatusPublic);
+                    console.log('da xoa STATUS cho :' + this.state.User, ArrayStatus_r);
+                    var ArrayStatus_r = JSON.parse(ArrayStatus_r);
+                    var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
+                    e.setState({
+                        ArrayStatus: [],
+                        ArrayStatusItem: c,
+                    });
+                    console.log('ArrayStatusItem DELETE  ::', this.state.ArrayStatusItem);
                 }
             });
+
     }
 
     ShowImage_piker() {
@@ -263,7 +358,9 @@ export default class User extends Component {
                     }}
 
 
-                    data={this.state.SaveArrStatusPublic}
+                    //data={this.state.SaveArrStatusPublic}
+                    data={this.state.ArrayStatusItem}
+
                     renderItem={({ item }) =>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 
@@ -287,7 +384,11 @@ export default class User extends Component {
                                                         </View>
                                                     </View>
                                                     <View style={{ flex: 1, }} />
-
+                                                    <View  style={{ flex: 1, }}>
+                                                            <TouchableOpacity onPress={()=> { this.editAnhBia()}}>
+                                                                <Text>{item.anhbia==null? null : 'edit'}</Text>
+                                                            </TouchableOpacity>
+                                                    </View>
                                                 </View>
                                             </ImageBackground>
                                         </TouchableOpacity>
@@ -308,7 +409,7 @@ export default class User extends Component {
 
                                 </View>
 
-                                <View style={{ height: (item.avata) == null ? 0 : 50, marginTop: (item.avata == null ? 0 : 70), marginBottom: (item.avata == null ? 0 : 10), justifyContent: 'center', alignItems: 'center' }} >
+                                <View style={{ height: (item.avata) == null ? 0 : 50, marginTop: (item.avata == null ? 0 : 70), marginBottom: (item.avata == null ? 0 : 60), justifyContent: 'center', alignItems: 'center' }} >
                                     <TextInput
                                         onChangeText={text => this.setState({ textStatus: text })}
                                         value={this.state.textStatus}
@@ -332,14 +433,14 @@ export default class User extends Component {
                                     </View>
                                 </View>
 
-                                <View style={{ marginBottom: (item.anhbia == null ? 0 : 20),height: (item.imaBase64 == null ? 0 : avataHeight ), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>{item.User == null ? null : item.User + ": "}{item.StatusMe == null ? null : item.StatusMe + <br/>}</Text>
-                                    <ImageBackground source={item.imaBase64} style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ marginTop: (item.StatusMe == null ? 0 : 30), height: (item.imaBase64 == null ? 0 : avataHeight), justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>{item.User == null ? null : item.User + ": "}</Text>
+
+                                    <Text>{item.StatusMe == null ? null : item.StatusMe}</Text>
+                                    <ImageBackground source={item.imaBase64==null ? null : item.imaBase64} style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
 
                                     </ImageBackground>
-                                    <ImageBackground source={item.imaPath} style={{ height: (item.imaPath == null ? 0 : avataHeight), width: (item.imaPath == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
 
-                                    </ImageBackground>
 
                                 </View>
                             </View>

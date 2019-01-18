@@ -642,6 +642,9 @@ app3.get('/chatCaNhan', (req, res) => {
 
 })
 
+app3.get('/status', (req, res)=> {
+    res.render('status')
+})
 
 app3.get('/', (req, res) => {
     res.render('login');

@@ -1,0 +1,27 @@
+body{ background-color: black}
+#warpper{
+	width: 800;
+	height: auto;
+	margin: auto
+}
+#avataCaNhan{
+	margin: auto;
+
+}
+#anhbia{
+	
+
+}
+#avatar{
+	border-radius: 200px;
+	border-bottom-left-radius: 100px;
+}
+#block{
+	
+}
+#listStatus{
+	background-color: blanchedalmond;
+	width: 600px;
+	height: auto;
+	margin: auto;
+}
