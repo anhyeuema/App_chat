@@ -7,6 +7,8 @@ import getToken from '../../../api/getToken';
 
 import global from '../../../api/global';
 
+import StatusUser from '../Status/StatusUser';
+
 const options = {
     title: 'Select Avatar',
     customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
@@ -46,7 +48,7 @@ var e;
 
 const { width, height } = Dimensions.get('window');
 
-export default class User extends Component {
+export default class StatusPublic extends Component {
     constructor(props) {
         super(props);
 
@@ -62,7 +64,7 @@ export default class User extends Component {
 
 
             ],
-            User: '',
+            User: '', //User cua chu tai khoan
             refresh: false,
 
             textStatus: '', //text Trang thai,
@@ -82,25 +84,31 @@ export default class User extends Component {
             ArrayStatusItem: [
                 { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
             ],
+            Username: '', //hung click chuot vao user tren status public , bao gom user cua tat ca cac tai khoan
 
-            
+            ArraySocketIdUsername: [], //danh sach socket.id+ Username
+            ArraySocketIdThoaMan: [], //danh sach socket.id thoa man co Username = socket.id + Username //tat ca socket.id co chua Username
 
         };
         global.OnUser = this.getUser.bind(this);
-        this.socket = io.connect('http://192.168.216.2:2400', { jsonp: false });
-        this.socket.on('connect', () => {
-            console.log('this.state.User o User.js', this.state.User);
-            this.socket.emit('client-send-Username', this.state.User);
-            console.log(' serser app dang emit this.state.User o User.js', this.state.User);
-        });
-        this.socket.on('disconnect', (socketId) => {
+        this.socket = io('http://192.168.216.2:2400', { jsonp: false });
+        /*  this.socket.on('connect', () => {
+              console.log('this.state.User o User.js', this.state.User);
+              this.socket.emit('client-send-Username', this.state.User);
+              console.log(' serser app dang emit this.state.User o User.js', this.state.User);
+          }); */
+        this.socket.on('socketId-da-disconnect', (socketId) => {
             console.log('socketId-da-disconnect: data la', socketId);
             this.socket.emit('client-xoa-Username', socketId + this.state.User); //co ket noi cai la gui luon username
-            console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', this.state.User);
+            console.log('client-xoa-Username', socketId + this.state.User);
+            this.socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername => {
+                e.setState({ ArraySocketIdUsername: ArraySocketIdUsername });
+            });
+          //  console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
         });
 
         this.socket.on('server-share-status-public-congKhai', DataStatusPublic => {
-            //  console.log('DataStatusPublic:::', DataStatusPublic);
+            console.log('DataStatusPublic:::', DataStatusPublic);
             e.setState({ n: (parseInt(this.state.n) + 1) });
 
             //key se duoc tang len oi khi thay 1 lang nhe moi server-share-status-public-congKhai
@@ -151,7 +159,7 @@ export default class User extends Component {
                 ArrayStatus: ArrayStatus,
                 ArrayStatusItem: c,
             });
-            console.log(',this.state.ArrayStatus::::', this.state.ArrayStatus);
+            //  console.log(',this.state.ArrayStatus::::', this.state.ArrayStatus);
             console.log(',this.state.ArrayStatusItem::::', this.state.ArrayStatusItem);
             //chuyen mnag ve dang JSON.stringify moi luu duoc 
             var ArrayStatus = JSON.stringify(this.state.ArrayStatus);
@@ -159,17 +167,128 @@ export default class User extends Component {
             SaveTinNhan(this.state.User + "StatusPublic", ArrayStatus); //luu tin nha cho ten duoc tich
             GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
                 .then(ArrayStatus => {
-                    //  console.log('SaveDataMessengerApp get tinnhan sendemit  ::', SaveArrStatusPublic);
+                    console.log('ArrayStatus save    ::', ArrayStatus);
                 });
 
-        })
+            var statusPublicSaveServer = { userStatus: this.state.User + "StatusPublic", ArrayStatus: ArrayStatus };
+            this.socket.emit('client-send-status-public-khi-da-saveStaus',statusPublicSaveServer);
+            console.log('statusPublicSaveServer',statusPublicSaveServer);
+
+        });
 
     }
 
 
     getUser(User1) { //User1 la Username tu trang chu bang  global  truyen qua cho User.js
         e.setState({ User: User1 });
-        console.log('User1 la Username tu trang chu bang  global  truyen qua cho User.js', this.state.User);
+        console.log('User1 la Username tu trang chuyen bang  global  truyen qua cho User.js', this.state.User);
+
+        this.socket = io('http://192.168.216.2:2400', { jsonp: false });
+        this.socket.on('connect', () => {
+            console.log('this.state.User o User.js', this.state.User);
+            this.socket.emit('client-send-Username', this.state.User);
+       //     console.log(' serser app dang emit this.state.User o User.js', this.state.User);
+        });
+        this.socket.on('socketId-da-disconnect', (socketId) => {
+            console.log('socketId-da-disconnect: data la', socketId);
+            this.socket.emit('client-xoa-Username', socketId + this.state.User); //co ket noi cai la gui luon username
+            console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', this.state.User);
+
+            this.socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername => {
+                e.setState({ ArraySocketIdUsername: ArraySocketIdUsername });
+            });
+         //   console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
+       
+        });
+
+        //lenh muo lay mnag ArrayStatus da luu o app va emit toi server de khi run app len ke ca nhung user chua nhan duoc emit tu socket.io thi gio da luu ArrayStatus
+        //thi ta se lay ArrayStatus tu server ve de khi run app le lai moi user de nhanduoc statusPublic
+        this.socket.emit('client-muon-lay-ArrayStatus-public', { userStatus: this.state.User + "StatusPublic" })
+        this.socket.on('server-trave-yeucau-ArrayStatus-public', ArrayStatus_r => {
+            console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus_r);
+            if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                e.setState({
+                    ArrayStatus: [],
+                    ArrayStatusItem: c,
+                });
+                console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+
+            } else {
+                var ArrayStatusThem = [];
+                console.log(' Status cho :' + this.state.User, ArrayStatus_r);
+                var ArrayStatus = JSON.parse(ArrayStatus_r);
+                for (i = 0; i < ArrayStatus.length; i = i + 1) {
+                    var User = ArrayStatus[i].User;
+                    var StatusMe = ArrayStatus[i].StatusMe;
+                    var imaBase64 = ArrayStatus[i].imaBase64;
+                    var imaPath = ArrayStatus[i].imaPath;
+                    var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                    ArrayStatusThem.push(statePublic);
+                }
+                //   console.log('ArrayStatusThem::::', ArrayStatusThem);
+                var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
+                e.setState({
+                    ArrayStatus: ArrayStatus,
+                    ArrayStatusItem: c,
+                });
+                console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+
+            }
+        });
+
+        //cap nhan danh sach Socket.id+ Username
+        this.socket.on('server-send-socket.id+Username', ArraySocketIdUsername => {
+            e.setState({ ArraySocketIdUsername: ArraySocketIdUsername });
+        });
+
+        /* if (this.state.User !== null) {
+             console.log('this.state.User + "StatusPublic"', this.state.User + "StatusPublic");
+             GetTinNhan(this.state.User + "StatusPublic")
+                 .then(ArrayStatus_r => {
+                     console.log('ArrayStatus_r:::::', ArrayStatus_r);
+                     console.log('ArrayStatus_r[0]:::::', ArrayStatus_r[0]);
+                     if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                         var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                         e.setState({
+                             ArrayStatus: [],
+                             ArrayStatusItem: c,
+                         });
+                         console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+ 
+                     } else {
+ 
+                         var ArrayStatusThem = [];
+                         console.log(' Status cho :' + this.state.User, ArrayStatus_r);
+                         var ArrayStatus = JSON.parse(ArrayStatus_r);
+                         for (i = 0; i < ArrayStatus.length; i = i + 1) {
+                             var User = ArrayStatus[i].User;
+                             var StatusMe = ArrayStatus[i].StatusMe;
+                             var imaBase64 = ArrayStatus[i].imaBase64;
+                             var imaPath = ArrayStatus[i].imaPath;
+                             var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                             ArrayStatusThem.push(statePublic);
+                         }
+                         //   console.log('ArrayStatusThem::::', ArrayStatusThem);
+                         var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
+                         e.setState({
+                             ArrayStatus: ArrayStatus,
+                             ArrayStatusItem: c,
+                         });
+                         console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+ 
+                     }
+ 
+                 });
+         } else {
+             //  e.setState({ User: User1 });
+             //  console.log('User1 la Username tu trang chu bang  global  truyen qua cho User.js', this.state.User);
+             console.log('chua co User nhe');
+         } */
+
+
+
+
     }
 
     componentDidMount() {
@@ -189,32 +308,31 @@ export default class User extends Component {
  
              }); */
 
-        GetTinNhan(this.state.User + "StatusPublic")
-            .then(ArrayStatus_r => {
-                console.log('SaveArrStatusPublic_R:::::', ArrayStatus_r);
-                console.log('SaveArrStatusPublic_R[0]:::::', ArrayStatus_r[0]);
-                if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
-                    var c = (this.state.ArrayAvatarAnhBia).concat([]);
-                    e.setState({
-                        ArrayStatus: [],
-                        ArrayStatusItem: c,
-                    });
-                    console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
-
-                } else {
-                    console.log(' Status cho :' + this.state.User, ArrayStatus_r);
-                    var ArrayStatus_r = JSON.parse(ArrayStatus_r);
-                    var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
-                    e.setState({
-                        ArrayStatus: ArrayStatus_r,
-                        ArrayStatusItem: c,
-                    });
-                    console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
-
-                }
-
-            });
-
+        /* GetTinNhan(this.state.User + "StatusPublic")
+             .then(ArrayStatus_r => {
+                 console.log('ArrayStatus_r:::::', ArrayStatus_r);
+                 console.log('ArrayStatus_r[0]:::::', ArrayStatus_r[0]);
+                 if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                     var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                     e.setState({
+                         ArrayStatus: [],
+                         ArrayStatusItem: c,
+                     });
+                     console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+ 
+                 } else {
+                     console.log(' Status cho :' + this.state.User, ArrayStatus_r);
+                     var ArrayStatus_r = JSON.parse(ArrayStatus_r);
+                     var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
+                     e.setState({
+                         ArrayStatus: ArrayStatus_r,
+                         ArrayStatusItem: c,
+                     });
+                     console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+ 
+                 }
+ 
+             }); */
 
     }
 
@@ -253,7 +371,7 @@ export default class User extends Component {
                  }
              }); */
 
-        SaveTinNhan(this.state.User + "StatusPublic",''); //luu tin nha cho ten duoc tich
+        SaveTinNhan(this.state.User + "StatusPublic", ''); //luu tin nha cho ten duoc tich
 
         GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
             .then(ArrayStatus_r => {
@@ -267,7 +385,7 @@ export default class User extends Component {
                     });
                     console.log('ArrayStatusItem DELETE  ::', this.state.ArrayStatusItem);
                 } else {
-                    console.log('da xoa STATUS cho :' + this.state.User, ArrayStatus_r);
+                    console.log('ArrayStatus_r STATUS_PUBLIC :' + this.state.User, ArrayStatus_r);
                     var ArrayStatus_r = JSON.parse(ArrayStatus_r);
                     var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
                     e.setState({
@@ -310,13 +428,25 @@ export default class User extends Component {
         });
     }
 
+    statusPublic() {
+        alert(item.User);
+        const User = item.User;
+        const { navigator } = this.props;
+        navigator.push({ name: 'STATUS_USER', User });
+    }
+
+
+
     render() {
 
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }} >
-                <Text>Component User</Text>
+                <Text>Component StatusPublic {"; " + this.state.User}</Text>
                 <TouchableOpacity onPress={() => { this.Delete() }}>
                     <Text>XOA Status</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => this.statusPublic()}>
+                    <Text>goto StatusPublic</Text>
                 </TouchableOpacity>
                 <FlatList
                     //load tin nhan  cu ve
@@ -382,12 +512,12 @@ export default class User extends Component {
                                                         </View>
                                                     </View>
                                                     <View style={{ flex: 1, }} />
-                                                    <View  style={{ flex: 1, }}>
-                                                            <View style={{flex: 5}} />
-                                                            <TouchableOpacity style={{ flex: 1}} 
-                                                                 onPress={()=> { this.editAnhBia()}}>
-                                                                <Text>{item.anhbia==null? null : 'edit'}</Text>
-                                                            </TouchableOpacity>
+                                                    <View style={{ flex: 1, }}>
+                                                        <View style={{ flex: 5, }} />
+                                                        <TouchableOpacity style={{ flex: 1 }}
+                                                            onPress={() => { this.editAnhBia() }}>
+                                                            <Text>{item.anhbia == null ? null : 'edit'}</Text>
+                                                        </TouchableOpacity>
                                                     </View>
                                                 </View>
                                             </ImageBackground>
@@ -409,7 +539,7 @@ export default class User extends Component {
 
                                 </View>
 
-                                <View style={{ height: (item.avata) == null ? 0 : 50, marginTop: (item.avata == null ? 0 : 70), marginBottom: (item.avata == null ? 0 : 90), justifyContent: 'center', alignItems: 'center' }} >
+                                <View style={{ height: (item.avata) == null ? 0 : 50, marginTop: (item.avata == null ? 0 : 20), marginBottom: (item.avata == null ? 0 : 50), justifyContent: 'center', alignItems: 'center' }} >
                                     <TextInput
                                         onChangeText={text => this.setState({ textStatus: text })}
                                         value={this.state.textStatus}
@@ -433,11 +563,48 @@ export default class User extends Component {
                                     </View>
                                 </View>
 
-                                <View style={{ marginTop: (item.StatusMe == null ? 0 : 10), marginBottom: (item.StatusMe == null ? 0 : 5), height: (item.imaBase64 == null ? 0 : avataHeight), justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>{item.User == null ? null : item.User + ": "}</Text>
+                                <View style={{ marginTop: (item.StatusMe == null ? 0 : 30), marginBottom: (item.StatusMe == null ? 0 : 5), height: (item.imaBase64 == null ? 0 : avataHeight), justifyContent: 'center', alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => {
+                                        //this.gotoStatusUser();
+                                        alert(item.User);
+                                        e.setState({ Username: item.User }); // user duoc tich
+                                        var Username = this.state.Username; //user duoc tich
+                                       var  User = this.state.User;//  User cua cua app
+                                        const { navigator } = this.props;
+                                        if (User == Username) { //neu la chinh no thi cho ve statusUser cua no luon
+                                            var User = Username;
+                                            navigator.push({ name: 'STATUS_USER', User });
+                                        } else {
+                                            // se bao StatusUser ma tra tao cai mang cua may day de tao hien thi cai
+                                            var ArraySocketIdThoaMan = [];
+                                            var ArraySocketIdUsername = this.state.ArraySocketIdUsername;
 
-                                    <Text>{item.StatusMe == null ? null : item.StatusMe}</Text>
-                                    <ImageBackground source={item.imaBase64==null ? null : item.imaBase64} style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
+                                            // var UserSocketId = value.UserSocketId;
+                                            // var Username = value.Username;
+                                            for (i = 0; i < ArraySocketIdUsername.length; i++) {
+                                                if ((ArraySocketIdUsername[i].UserSocketId).indexOf(User) > -1) {
+                                                    var socketIdUsername = ArraySocketIdUsername[i].UserSocketId;
+                                                    var SocketId = socketIdUsername.replace(User, '');
+                                                    ArraySocketIdThoaMan.push(SocketId);
+                                                }
+                                            }
+
+                                            e.setState({ ArraySocketIdThoaMan: ArraySocketIdThoaMan});
+                                            this.socket.emit('client-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', { User: User, ArraySocketIdThoaMan: this.state.ArraySocketIdThoaMan })
+                                            this.socket.on('server-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', StatusUser_item=>{
+                                                
+                                                navigator.push({ name: 'STATUS_CANHAN', User, StatusUser_item });
+                                            })
+                                            // navigator.push({ name: 'STATUS_FRIEND', User });
+                                            
+                                        }
+                                    }}>
+                                        <Text style={{ color: 'blue' }}>{item.StatusMe == null ? null : item.User + ": "}</Text>
+                                        <Text>{item.StatusMe == null ? null : item.StatusMe}</Text>
+                                    </TouchableOpacity>
+
+
+                                    <ImageBackground style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
 
                                     </ImageBackground>
 

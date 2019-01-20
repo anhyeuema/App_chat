@@ -46,23 +46,21 @@ var e;
 
 const { width, height } = Dimensions.get('window');
 
-export default class User extends Component {
+export default class StatusUser extends Component {
     constructor(props) {
         super(props);
-
-
         e = this;
         this.state = {
-
             dataUser: [
                 { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') },
                 { key: "1", StatusMe: 'statusImage1', imaBase64: require('../../../api/ImageAvata/3.jpg') },
                 { key: "2", StatusMe: 'statusImage2', imaBase64: require('../../../api/ImageAvata/4.jpg') },
                 { key: "3", StatusMe: 'statusImage3', imaBase64: require('../../../api/ImageAvata/5.jpg') },
 
-
             ],
-            User: '',
+
+            //chi getTinNhan(this.props.User) //get status ma duoc kich chuot vao thui
+            User: this.props.User, //hung du lieu thu navigator bang cach User={ route.User } o day ta k phai lam the 
             refresh: false,
 
             textStatus: '', //text Trang thai,
@@ -80,26 +78,30 @@ export default class User extends Component {
 
             ArrayStatus: [],
             ArrayStatusItem: [
-                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
+                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/3.jpg'), anhbia: require('../../../api/ImageAvata/4.jpg') }
             ],
 
-            
+
 
         };
         global.OnUser = this.getUser.bind(this);
         this.socket = io.connect('http://192.168.216.2:2400', { jsonp: false });
+      
+       /*
         this.socket.on('connect', () => {
             console.log('this.state.User o User.js', this.state.User);
             this.socket.emit('client-send-Username', this.state.User);
             console.log(' serser app dang emit this.state.User o User.js', this.state.User);
         });
-        this.socket.on('disconnect', (socketId) => {
+        this.socket.on('socketId-da-disconnect', (socketId) => {
             console.log('socketId-da-disconnect: data la', socketId);
             this.socket.emit('client-xoa-Username', socketId + this.state.User); //co ket noi cai la gui luon username
             console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', this.state.User);
-        });
+        }); */
 
-        this.socket.on('server-share-status-public-congKhai', DataStatusPublic => {
+
+       // this.socket.on('server-share-status-public-congKhai', DataStatusPublic => {
+        this.socket.on('server-send-tra-statusUser',DataStatusPublic => {
             //  console.log('DataStatusPublic:::', DataStatusPublic);
             e.setState({ n: (parseInt(this.state.n) + 1) });
 
@@ -170,6 +172,55 @@ export default class User extends Component {
     getUser(User1) { //User1 la Username tu trang chu bang  global  truyen qua cho User.js
         e.setState({ User: User1 });
         console.log('User1 la Username tu trang chu bang  global  truyen qua cho User.js', this.state.User);
+
+        this.socket = io.connect('http://192.168.216.2:2400', { jsonp: false });
+        this.socket.on('connect', () => {
+            console.log('this.state.User o User.js', this.state.User);
+            this.socket.emit('client-send-Username', this.state.User);
+            console.log(' serser app dang emit this.state.User o User.js', this.state.User);
+        });
+        this.socket.on('disconnect', (socketId) => {
+            console.log('socketId-da-disconnect: data la', socketId);
+            this.socket.emit('client-xoa-Username', socketId + this.state.User); //co ket noi cai la gui luon username
+            console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', this.state.User);
+        });
+
+
+        if (this.state.User !== null) {
+            console.log('this.state.User + "StatusPublic"', this.state.User + "StatusPublic");
+            GetTinNhan(this.state.User + "StatusPublic")
+                .then(ArrayStatus_r => {
+                    console.log('ArrayStatus_r:::::', ArrayStatus_r);
+                    var ArrayStatus_r = JSON.parse(ArrayStatus_r);
+                    console.log('ArrayStatus_r:::::', ArrayStatus_r);
+                    console.log('ArrayStatus_r[0]:::::', ArrayStatus_r[0]);
+                    if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                        var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                        e.setState({
+                            ArrayStatus: [],
+                            ArrayStatusItem: c,
+                        });
+                        console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+
+                    } else {
+                        console.log(' Status cho :' + this.state.User, ArrayStatus_r);
+                        var ArrayStatus_r = JSON.parse(ArrayStatus_r);
+                        var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
+                        e.setState({
+                            ArrayStatus: ArrayStatus_r,
+                            ArrayStatusItem: c,
+                        });
+                        console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
+
+                    }
+
+                });
+        } else {
+          //  e.setState({ User: User1 });
+          //  console.log('User1 la Username tu trang chu bang  global  truyen qua cho User.js', this.state.User);
+            console.log('chua co User nhe');
+        }
+
     }
 
     componentDidMount() {
@@ -189,31 +240,6 @@ export default class User extends Component {
  
              }); */
 
-        GetTinNhan(this.state.User + "StatusPublic")
-            .then(ArrayStatus_r => {
-                console.log('SaveArrStatusPublic_R:::::', ArrayStatus_r);
-                console.log('SaveArrStatusPublic_R[0]:::::', ArrayStatus_r[0]);
-                if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
-                    var c = (this.state.ArrayAvatarAnhBia).concat([]);
-                    e.setState({
-                        ArrayStatus: [],
-                        ArrayStatusItem: c,
-                    });
-                    console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
-
-                } else {
-                    console.log(' Status cho :' + this.state.User, ArrayStatus_r);
-                    var ArrayStatus_r = JSON.parse(ArrayStatus_r);
-                    var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatus_r);
-                    e.setState({
-                        ArrayStatus: ArrayStatus_r,
-                        ArrayStatusItem: c,
-                    });
-                    console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
-
-                }
-
-            });
 
 
     }
@@ -223,13 +249,15 @@ export default class User extends Component {
     }
 
     editAnhBia() {
-        e.setState({ avata: '' })
+        e.setState({ avata: '' });
     }
 
     Share() {
         //test textStatus
         e.setState({ textStatus: this.state.textStatus + 'Tính năng dịch trang web trên Chrome có thể là một tính năng vô cùng tiện lợi đối với nhiều người dùng nhưng do được kích hoạt tự động nên khiến nhiều người dùng cảm thấy khó chịu, do đó việc tắt tính năng dịch trang web trê' })
-        this.socket.emit('client-share-status-public-congKhai', { User: this.state.User, StatusMe: this.state.textStatus, imaBase64: this.state.imaBase64, imaPath: this.state.imaPath });
+      //  this.socket.emit('client-share-status-public-congKhai', { User: this.state.User, StatusMe: this.state.textStatus, imaBase64: this.state.imaBase64, imaPath: this.state.imaPath });
+        this.socket.emit('client-share-statusUser', { User: this.state.User, StatusMe: this.state.textStatus, imaBase64: this.state.imaBase64, imaPath: this.state.imaPath });
+   
     }
 
     Delete() {
@@ -253,7 +281,7 @@ export default class User extends Component {
                  }
              }); */
 
-        SaveTinNhan(this.state.User + "StatusPublic",''); //luu tin nha cho ten duoc tich
+        SaveTinNhan(this.state.User + "StatusPublic", ''); //luu tin nha cho ten duoc tich
 
         GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
             .then(ArrayStatus_r => {
@@ -314,7 +342,7 @@ export default class User extends Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }} >
-                <Text>Component User</Text>
+                <Text>Component StatusUser {": " + this.state.User}</Text>
                 <TouchableOpacity onPress={() => { this.Delete() }}>
                     <Text>XOA Status</Text>
                 </TouchableOpacity>
@@ -382,12 +410,12 @@ export default class User extends Component {
                                                         </View>
                                                     </View>
                                                     <View style={{ flex: 1, }} />
-                                                    <View  style={{ flex: 1, }}>
-                                                            <View style={{flex: 5}} />
-                                                            <TouchableOpacity style={{ flex: 1}} 
-                                                                 onPress={()=> { this.editAnhBia()}}>
-                                                                <Text>{item.anhbia==null? null : 'edit'}</Text>
-                                                            </TouchableOpacity>
+                                                    <View style={{ flex: 1, }}>
+                                                        <View style={{ flex: 5 }} />
+                                                        <TouchableOpacity style={{ flex: 1 }}
+                                                            onPress={() => { this.editAnhBia() }}>
+                                                            <Text>{item.anhbia == null ? null : 'edit'}</Text>
+                                                        </TouchableOpacity>
                                                     </View>
                                                 </View>
                                             </ImageBackground>
@@ -437,7 +465,7 @@ export default class User extends Component {
                                     <Text>{item.User == null ? null : item.User + ": "}</Text>
 
                                     <Text>{item.StatusMe == null ? null : item.StatusMe}</Text>
-                                    <ImageBackground source={item.imaBase64==null ? null : item.imaBase64} style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
+                                    <ImageBackground source={item.imaBase64 == null ? null : item.imaBase64} style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
 
                                     </ImageBackground>
 

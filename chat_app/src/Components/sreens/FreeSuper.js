@@ -74,35 +74,6 @@ export default class FreeAll extends Component {
         console.log('xxxxxxxxxxxx', x);
 
         super(props);
-        this.socket = io('http://192.168.216.2:2400', { jsonp: false });
-        this.socket.on('connect', (data) => {
-            //  console.log('data app ket lang nghe connect tu ser nodjs', data);
-            getToken('@Username')
-                .then(UsernameNguoiSend => {
-                    if (UsernameNguoiSend == '' || UsernameNguoiSend == 'undefined') {
-                        //go back to dang nhap goto Authentication
-                        const { navigator } = this.props;
-                        navigator.push({ 'name': 'AUTHENTICATION' });
-                    } else {
-                        console.log('Username_r.. UsernameNguoiSend tai FressALL::', UsernameNguoiSend);
-                        this.socket.emit('client-send-Username', UsernameNguoiSend);
-                        console.log('App dang-emit send to getToken -Username -UsernameNguoiSend-ca-nhan trong coment FressALL::::', UsernameNguoiSend);
-
-                    }
-                });
-        });
-
-
-
-        this.socket.on('socketId-da-disconnect', socketId => {
-            console.log('socketId-da-disconnect: data la', socketId);
-            getToken('@Username')
-                .then(UsernameNguoiSend => {
-                    console.log('Username_r.. UsernameNguoiSend socketId-da-disconnect FressALL::', UsernameNguoiSend);
-                    this.socket.emit('client-xoa-Username', socketId + UsernameNguoiSend); //co ket noi cai la gui luon username
-                    console.log('app dang emit socketId ma server nodejs -da-disconnect: data la', socketId + UsernameNguoiSend);
-                });
-        });
 
         e = this;
         this.state = {
@@ -141,6 +112,40 @@ export default class FreeAll extends Component {
             m: 0, //dem so lan emit de xong mang On lang nghe tin ngan cong voi mang emit tin nhan
         }
 
+
+        this.socket = io('http://192.168.216.2:2400', { jsonp: false });
+        this.socket.on('connect', (data) => {
+            //  console.log('data app ket lang nghe connect tu ser nodjs', data);
+            getToken('@Username')
+                .then(UsernameNguoiSend => {
+                    if (UsernameNguoiSend == '' || UsernameNguoiSend == 'undefined') {
+                        //go back to dang nhap goto Authentication
+                        const { navigator } = this.props;
+                        navigator.push({ 'name': 'AUTHENTICATION' });
+                    } else {
+                        console.log('Username_r.. UsernameNguoiSend tai FressALL::', UsernameNguoiSend);
+                        this.socket.emit('client-send-Username', UsernameNguoiSend);
+                        console.log('App dang-emit send to getToken -Username -UsernameNguoiSend-ca-nhan trong coment FressALL::::', UsernameNguoiSend);
+
+                    }
+                });
+        });
+
+
+
+        this.socket.on('socketId-da-disconnect', socketId => {
+            console.log('socketId-da-disconnect: data la', socketId);
+            getToken('@Username')
+                .then(UsernameNguoiSend => {
+                    console.log('Username_r.. UsernameNguoiSend socketId-da-disconnect FressALL::', UsernameNguoiSend);
+                    this.socket.emit('client-xoa-Username', socketId + UsernameNguoiSend); //co ket noi cai la gui luon username
+                    console.log('app dang emit socketId ma server nodejs -da-disconnect: data la', socketId + UsernameNguoiSend);
+                    this.socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketUsername => {
+                        e.setState({ ArraySocketUsername: ArraySocketUsername });
+                    })
+                });
+        });
+
         /*
                 this.socket = io('http://192.168.216.2:2400', { jsonp: false });
                 this.socket.on('connect', (data) => {
@@ -171,8 +176,10 @@ export default class FreeAll extends Component {
         this.socket.on('server-send-socket.id+Username', async (ArraySocketUsername) => {
             console.log('ArraySocketUsername:::', ArraySocketUsername);
             console.log('ArraySocketUsername.length:::', ArraySocketUsername.length);
+            e.setState({ ArraySocketUsername: ArraySocketUsername })
             var ArrayUserSocketId1 = [];
             var arrayUsername1 = [];
+            var ArraySocketUsername = this.state.ArraySocketUsername;
             ArraySocketUsername.map(function (value, index) {
                 //  console.log('ArrayUserSocketId index::', index);
 
@@ -550,9 +557,9 @@ export default class FreeAll extends Component {
                                         GetTinNhan(this.state.Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
                                             .then(SaveDataMessengerApp_r => {
                                                 console.log('SaveDataMessengerApp_r khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len chua JSON.paser thi no van o dang JSON.string ::', SaveDataMessengerApp_r);
-                                                console.log('SaveDataMessengerApp_r[0]::',SaveDataMessengerApp_r[0])
-                                                if (SaveDataMessengerApp_r[0] == null || SaveDataMessengerApp_r[0] == '' || SaveDataMessengerApp_r[0] == 'undefined' ) {
-                                                    console.log('SaveDataMessengerApp_r kiem tra xem nhay vao if (SaveDataMessengerApp_r === []) ',SaveDataMessengerApp_r);
+                                                console.log('SaveDataMessengerApp_r[0]::', SaveDataMessengerApp_r[0])
+                                                if (SaveDataMessengerApp_r[0] == null || SaveDataMessengerApp_r[0] == '' || SaveDataMessengerApp_r[0] == 'undefined') {
+                                                    console.log('SaveDataMessengerApp_r kiem tra xem nhay vao if (SaveDataMessengerApp_r === []) ', SaveDataMessengerApp_r);
                                                     e.setState({ ArrUserSendKey: SaveDataMessengerApp_r, SaveDataMessengerApp: SaveDataMessengerApp_r });
                                                     console.log('this.state.ArrUserSendKey get tin nhan khi kich chuot vao Username ta se get tinnhan de lay tin nhan da luu len ::', this.state.SaveDataMessengerApp_r);
                                                 }

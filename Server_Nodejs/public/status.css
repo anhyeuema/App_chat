@@ -2,7 +2,8 @@ body{ background-color: black}
 #warpper{
 	width: 800;
 	height: auto;
-	margin: auto
+	margin: auto;
+	overflow: scroll;
 }
 #avataCaNhan{
 	margin: auto;
@@ -17,11 +18,15 @@ body{ background-color: black}
 	border-bottom-left-radius: 100px;
 }
 #block{
-	
+	display: block;
+	width: 100%;
+	clear: both;
 }
-#listStatus{
+#statusPublic{
 	background-color: blanchedalmond;
 	width: 600px;
-	height: auto;
+	height: 800px;
 	margin: auto;
+	float: left;
+	overflow: auto;
 }

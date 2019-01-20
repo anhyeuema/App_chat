@@ -10,12 +10,14 @@ import FreeSuper from './sreens/FreeSuper';
 
 import User from './User/User';
 
+import Status1 from './Status/Status';
+
 
 export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: 'user'
+            selectedTab: 'status1'
         };
     }
 
@@ -84,6 +86,16 @@ export default class Main extends Component {
                             //badgeText="1"
                             onPress={() => this.setState({ selectedTab: 'freesuper' })}>
                             <FreeSuper navigator={this.props.navigator} />
+                        </TabNavigator.Item>
+
+                        <TabNavigator.Item
+                            selected={this.state.selectedTab === 'status1'}
+                            title="Status1"
+                            //  renderIcon={() => <Image source={...} />}
+                            //  renderSelectedIcon={() => <Image source={...} />}
+                            //badgeText="1"
+                            onPress={() => this.setState({ selectedTab: 'status1' })}>
+                            <Status1 navigator={this.props.navigator} />
                         </TabNavigator.Item>
 
                         <TabNavigator.Item
