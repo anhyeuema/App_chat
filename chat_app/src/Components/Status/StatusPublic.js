@@ -52,17 +52,13 @@ export default class StatusPublic extends Component {
     constructor(props) {
         super(props);
 
-
         e = this;
         this.state = {
-
             dataUser: [
                 { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') },
                 { key: "1", StatusMe: 'statusImage1', imaBase64: require('../../../api/ImageAvata/3.jpg') },
                 { key: "2", StatusMe: 'statusImage2', imaBase64: require('../../../api/ImageAvata/4.jpg') },
                 { key: "3", StatusMe: 'statusImage3', imaBase64: require('../../../api/ImageAvata/5.jpg') },
-
-
             ],
             User: '', //User cua chu tai khoan
             refresh: false,
@@ -72,17 +68,17 @@ export default class StatusPublic extends Component {
             n: 0, //dem so lan lang nghe server-share-status-public-congKhai de tao 1 mang nhan statusPublic
             //  SaveArrStatusPublic: [], //de hung du lieu moi vao 
             SaveArrStatusPublic: [
-                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') },
+                { key: JSON.stringify(0), avata: { uri: 'http://192.168.216.2:2400/hotgirls/1.jpg' }, anhbia: { uri: 'http://192.168.216.2:2400/hotgirls/2.jpg' } },
             ],
             ArrayAvatarAnhBia: [
-                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
+                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/3.jpg'), anhbia: { uri: 'http://192.168.216.2:2400/hotgirls/4.jpg' } }
             ],
             // ArrayStatusPublic: [],
             imaPath: '', //duong dan anh,
 
             ArrayStatus: [],
             ArrayStatusItem: [
-                { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
+                { key: JSON.stringify(0), avata: { uri: 'http://192.168.216.2:2400/hotgirls/5.jpg' }, anhbia: { uri: 'http://192.168.216.2:2400/hotgirls/6.jpg' } }
             ],
             Username: '', //hung click chuot vao user tren status public , bao gom user cua tat ca cac tai khoan
 
@@ -104,7 +100,7 @@ export default class StatusPublic extends Component {
             this.socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername => {
                 e.setState({ ArraySocketIdUsername: ArraySocketIdUsername });
             });
-          //  console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
+            //  console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
         });
 
         this.socket.on('server-share-status-public-congKhai', DataStatusPublic => {
@@ -167,15 +163,21 @@ export default class StatusPublic extends Component {
             SaveTinNhan(this.state.User + "StatusPublic", ArrayStatus); //luu tin nha cho ten duoc tich
             GetTinNhan(this.state.User + "StatusPublic") //khi kich chuot vao User chon thi getTinNhan mang nay se suoc load ra
                 .then(ArrayStatus => {
-                    console.log('ArrayStatus save    ::', ArrayStatus);
+                    //  console.log('ArrayStatus save    ::', ArrayStatus);
                 });
 
-            var statusPublicSaveServer = { userStatus: this.state.User + "StatusPublic", ArrayStatus: ArrayStatus };
-            this.socket.emit('client-send-status-public-khi-da-saveStaus',statusPublicSaveServer);
-            console.log('statusPublicSaveServer',statusPublicSaveServer);
+            var statusPublicSaveServer = { StatusPublic: "StatusPublic.docx", ArrayStatus: ArrayStatus };
+            this.socket.emit('client-send-status-public-khi-da-saveStaus', statusPublicSaveServer);
+            console.log('WriteStatuspublic to server', statusPublicSaveServer);
 
         });
 
+        /*
+        var ArrayStatus = JSON.stringify(this.state.ArrayStatus);
+        var statusPublicSaveServer = { StatusPublic: "StatusPublic.docx", ArrayStatus: ArrayStatus };
+        this.socket.emit('client-send-status-public-khi-da-saveStaus',statusPublicSaveServer);
+        console.log('WriteStatuspublic to server',statusPublicSaveServer);
+        */
     }
 
 
@@ -187,7 +189,7 @@ export default class StatusPublic extends Component {
         this.socket.on('connect', () => {
             console.log('this.state.User o User.js', this.state.User);
             this.socket.emit('client-send-Username', this.state.User);
-       //     console.log(' serser app dang emit this.state.User o User.js', this.state.User);
+            //     console.log(' serser app dang emit this.state.User o User.js', this.state.User);
         });
         this.socket.on('socketId-da-disconnect', (socketId) => {
             console.log('socketId-da-disconnect: data la', socketId);
@@ -197,44 +199,49 @@ export default class StatusPublic extends Component {
             this.socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername => {
                 e.setState({ ArraySocketIdUsername: ArraySocketIdUsername });
             });
-         //   console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
-       
+            //   console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
+
         });
 
         //lenh muo lay mnag ArrayStatus da luu o app va emit toi server de khi run app len ke ca nhung user chua nhan duoc emit tu socket.io thi gio da luu ArrayStatus
         //thi ta se lay ArrayStatus tu server ve de khi run app le lai moi user de nhanduoc statusPublic
-        this.socket.emit('client-muon-lay-ArrayStatus-public', { userStatus: this.state.User + "StatusPublic" })
+        this.socket.emit('client-muon-lay-ArrayStatus-public', { StatusPublic: "StatusPublic.docx" })
         this.socket.on('server-trave-yeucau-ArrayStatus-public', ArrayStatus_r => {
-            console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus_r);
-            if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
-                var c = (this.state.ArrayAvatarAnhBia).concat([]);
-                e.setState({
-                    ArrayStatus: [],
-                    ArrayStatusItem: c,
-                });
-                console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
-
-            } else {
-                var ArrayStatusThem = [];
-                console.log(' Status cho :' + this.state.User, ArrayStatus_r);
-                var ArrayStatus = JSON.parse(ArrayStatus_r);
-                for (i = 0; i < ArrayStatus.length; i = i + 1) {
-                    var User = ArrayStatus[i].User;
-                    var StatusMe = ArrayStatus[i].StatusMe;
-                    var imaBase64 = ArrayStatus[i].imaBase64;
-                    var imaPath = ArrayStatus[i].imaPath;
-                    var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
-                    ArrayStatusThem.push(statePublic);
-                }
-                //   console.log('ArrayStatusThem::::', ArrayStatusThem);
-                var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
-                e.setState({
-                    ArrayStatus: ArrayStatus,
-                    ArrayStatusItem: c,
-                });
-                console.log('this.state.ArrayStatusItem cmd get STATUS ::', this.state.ArrayStatusItem);
-
+            // console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus_r);
+            /* if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                 var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                 e.setState({
+                     ArrayStatus: [],
+                     ArrayStatusItem: c,
+                 });
+                 console.log('this.state.ArrayStatusItem cmd ReadStatusPublic ::', this.state.ArrayStatusItem);
+ 
+             } */
+            var ArrayStatus = (ArrayStatus_r);
+            if (ArrayStatus[0] !== "") {
+                ArrayStatus = JSON.parse(ArrayStatus_r);
             }
+            var ArrayStatusThem = [];
+            console.log(' Status cho :' + this.state.User, ArrayStatus_r);
+            var ArrayStatus = JSON.parse(ArrayStatus_r);
+            console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus);
+            for (i = 0; i < ArrayStatus.length; i = i + 1) {
+                var User = ArrayStatus[i].User;
+                var StatusMe = ArrayStatus[i].StatusMe;
+                var imaBase64 = ArrayStatus[i].imaBase64;
+                var imaPath = ArrayStatus[i].imaPath;
+                var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                ArrayStatusThem.push(statePublic);
+            }
+            //   console.log('ArrayStatusThem::::', ArrayStatusThem);
+            var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
+            e.setState({
+                ArrayStatus: ArrayStatus,
+                ArrayStatusItem: c,
+            });
+            console.log('this.state.ArrayStatusItem cmd ReadStatusPublic from server ::', this.state.ArrayStatusItem);
+
+
         });
 
         //cap nhan danh sach Socket.id+ Username
@@ -569,12 +576,10 @@ export default class StatusPublic extends Component {
                                         alert(item.User);
                                         e.setState({ Username: item.User }); // user duoc tich
                                         var Username = this.state.Username; //user duoc tich
-                                       var  User = this.state.User;//  User cua cua app
+                                        var User = this.state.User;//  User cua cua app
                                         const { navigator } = this.props;
-                                        if (User == Username) { //neu la chinh no thi cho ve statusUser cua no luon
-                                            var User = Username;
-                                            navigator.push({ name: 'STATUS_USER', User });
-                                        } else {
+                                        if (User !== Username) { //neu la chinh no thi cho ve statusUser cua no luon
+                                            console.log('User !== Username::', (User !== Username))
                                             // se bao StatusUser ma tra tao cai mang cua may day de tao hien thi cai
                                             var ArraySocketIdThoaMan = [];
                                             var ArraySocketIdUsername = this.state.ArraySocketIdUsername;
@@ -588,23 +593,29 @@ export default class StatusPublic extends Component {
                                                     ArraySocketIdThoaMan.push(SocketId);
                                                 }
                                             }
-
-                                            e.setState({ ArraySocketIdThoaMan: ArraySocketIdThoaMan});
-                                            this.socket.emit('client-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', { User: User, ArraySocketIdThoaMan: this.state.ArraySocketIdThoaMan })
-                                            this.socket.on('server-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', StatusUser_item=>{
-                                                
+                                            e.setState({ ArraySocketIdThoaMan: ArraySocketIdThoaMan });
+                                            console.log('ArraySocketIdThoaMan:::', this.state.ArraySocketIdThoaMan);
+                                            this.socket.emit('client-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', { User_item: User + "StatusPublic_User.docx", ArraySocketIdThoaMan: this.state.ArraySocketIdThoaMan })
+                                            this.socket.on('server-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', StatusUser_item => {
                                                 navigator.push({ name: 'STATUS_CANHAN', User, StatusUser_item });
                                             })
                                             // navigator.push({ name: 'STATUS_FRIEND', User });
-                                            
+
+
+
+                                        } else {
+                                            var User = Username;
+                                            navigator.push({ name: 'STATUS_USER', User });
                                         }
                                     }}>
-                                        <Text style={{ color: 'blue' }}>{item.StatusMe == null ? null : item.User + ": "}</Text>
+                                        <Text style={{ color: 'blue' }}>{item.StatusMe == null ? null : item.key + ": " + item.User} </Text>
                                         <Text>{item.StatusMe == null ? null : item.StatusMe}</Text>
                                     </TouchableOpacity>
 
 
-                                    <ImageBackground style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }}>
+                                    <ImageBackground style={{ height: (item.imaBase64 == null ? 0 : avataHeight), width: (item.imaBase64 == null ? 0 : avataWidth), justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                        // source={item.imaBase64}
+                                    }}>
 
                                     </ImageBackground>
 

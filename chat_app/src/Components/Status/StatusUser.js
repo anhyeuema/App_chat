@@ -168,13 +168,11 @@ export default class StatusUser extends Component {
                     .then(ArrayStatus => {
                         //  console.log('SaveDataMessengerApp get tinnhan sendemit  ::', SaveArrStatusPublic);
                     });
-                this.socket.emit('client-send-status-User-khi-da-saveStaus', { userStatus: this.state.User + "StatusPublic_User", ArrayStatus: ArrayStatus, UserStatusItem: this.state.User + 'ArrayStatusItem', ArrayStatusItem: ArrayStatusItem });
-
-
+                this.socket.emit('client-send-status-public-User-khi-da-saveStaus', { userStatus: this.state.User + "StatusPublic_User.docx", ArrayStatus: ArrayStatus, UserStatusItem: this.state.User + 'ArrayStatusItem.docx', ArrayStatusItem: ArrayStatusItem });
+                //phai kem theo ten de co the tim no bang cach goi ra ten la tim duoc no
             }
 
-
-        })
+        });
 
     }
 
@@ -197,9 +195,9 @@ export default class StatusUser extends Component {
 
         //lenh muo lay mnag ArrayStatus da luu o app va emit toi server de khi run app len ke ca nhung user chua nhan duoc emit tu socket.io thi gio da luu ArrayStatus
         //thi ta se lay ArrayStatus tu server ve de khi run app le lai moi user de nhanduoc statusPublic
-        this.socket.emit('client-muon-lay-ArrayStatus-User', { userStatus: this.state.User + "StatusPublic_User" })
-        this.socket.on('server-trave-yeucau-ArrayStatus-User', ArrayStatus_r => {
-            console.log('server-trave-yeucau-ArrayStatus-User::', ArrayStatus_r);
+        this.socket.emit('client-muon-lay-ArrayStatus-public-User', { userStatus: this.state.User + "StatusPublic_User.docx" })
+        this.socket.on('server-trave-yeucau-ArrayStatus-public-User', ArrayStatus_r => {
+            console.log('server-trave-yeucau-ArrayStatus-public-User::', ArrayStatus_r);
             if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r[0] == '') {
                 var c = (this.state.ArrayAvatarAnhBia).concat([]);
                 e.setState({
@@ -268,26 +266,7 @@ export default class StatusUser extends Component {
 
     }
 
-    componentDidMount() {
 
-        /* GetTinNhan(this.state.User + "StatusPublic")
-             .then(SaveArrStatusPublic_R => {
-                 console.log('SaveArrStatusPublic_R[0]:::::', SaveArrStatusPublic_R[0]);
-                 if (SaveArrStatusPublic_R[0] == null || SaveArrStatusPublic_R == 'undefined' || SaveArrStatusPublic_R == '') {
-                     e.setState({ SaveArrStatusPublic: [] });
-                 } else {
-                     console.log('da xoa tin nhan cho :' + this.state.User, SaveArrStatusPublic_R);
-                     var SaveArrStatusPublic_R1 = JSON.parse(SaveArrStatusPublic_R);
-                     e.setState({ SaveArrStatusPublic: SaveArrStatusPublic_R1 });
-                     console.log('this.state.SaveArrStatusPublic get tin nhan khi kich chuot vao Username ta se get ::', this.state.SaveArrStatusPublic);
- 
-                 }
- 
-             }); */
-
-
-
-    }
 
     changedAvata() {
 

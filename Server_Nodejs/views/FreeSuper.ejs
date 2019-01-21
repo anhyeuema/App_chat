@@ -130,18 +130,18 @@
             socket.on('connect', function (data) {
                 socket.emit('client-send-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
                 //disconnect ngang hang voi su kien client-send-Username
-             /*  socket.on('disconnect', data => {
-                    socket.emit('client-xoa-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
-                });*/
+                /*  socket.on('disconnect', data => {
+                       socket.emit('client-xoa-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
+                   });*/
             });
 
             socket.on('socketId-da-disconnect', socketId => {
-                console.log('socketId-da-disconnect: data la',socketId);
-                socket.emit('client-xoa-Username',  socketId + UsernameNguoiSend); //co ket noi cai la gui luon username
+                console.log('socketId-da-disconnect: data la', socketId);
+                socket.emit('client-xoa-Username', socketId + UsernameNguoiSend); //co ket noi cai la gui luon username
             });
-           /* socket.on('disconnect', data => {
-                    socket.emit('client-xoa-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
-            });  */
+            /* socket.on('disconnect', data => {
+                     socket.emit('client-xoa-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
+             });  */
 
 
             //lang nghe server send tin nhan
@@ -251,14 +251,21 @@
                             $('#send').click(() => {
                                 $('#ListMesseger').append("<div class='CmsSend'>" + UsernameNguoiSend + ": " + $('#messenger').val() + "</div>" + "<br/>");
                                 $('.CmsSend').css("color", "red");
-                                socket.emit("client-send-messenger", { UsernameNguoiNhan: Username, UsernameNguoiSend: UsernameNguoiSend, DSsocketIdNguoiNhan: ArraySocketIdThoaMan, messenger: $('#messenger').val() });
+                                socket.emit("client-send-messenger", {
+                                    UsernameNguoiNhan: Username, 
+                                    UsernameNguoiSend: UsernameNguoiSend,
+                                    DSsocketIdNguoiNhan: ArraySocketIdThoaMan, 
+                                    messenger: $('#messenger').val(),
+                                    imageBase64: '',
+                                    pathIma: '',
+                                });
 
                             });
                         })
                     });
                 });
 
-              // hien thi username tu kich choubao socketIdUsernaem goc da duoc kich chuot va         
+                // hien thi username tu kich choubao socketIdUsernaem goc da duoc kich chuot va         
                 console.log('ArrayUserSocketId::', ArrayUserSocketId);
                 $('.skidUS').each(function (index, value) {
                     $(this).click(() => {

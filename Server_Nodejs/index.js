@@ -537,48 +537,50 @@ io1.sockets.on('connection', function (socket) {
 var ArraySocketIdUsername = [];
 var ArraySocketId = [];
 var ArraySocketIdOn = [];
+
+
 io1.on('connect', (socket) => {
-    console.log("io1..client connect socket io1 :" + socket.id);
+    //  console.log("io1..client connect socket io1 :" + socket.id);
     ArraySocketId.push(socket.id);
-    console.log('io1...ArraySocketId:::', ArraySocketId);
-    console.log('io1..ArraySocketId.length:::', ArraySocketId.length);
+    //  console.log('io1...ArraySocketId:::', ArraySocketId);
+    //  console.log('io1..ArraySocketId.length:::', ArraySocketId.length);
 
     socket.on('client-send-Username', Username => {
-        console.log('io1....Username client-send-Username', Username);
-        console.log('io1...ArraySocketId:::', ArraySocketIdOn);
-        console.log('io1...ArraySocketId.length:::', ArraySocketIdOn.length);
+        //     console.log('io1....Username client-send-Username', Username);
+        //     console.log('io1...ArraySocketId:::', ArraySocketIdOn);
+        //     console.log('io1...ArraySocketId.length:::', ArraySocketIdOn.length);
 
         ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
-        console.log('io1...ArraySocketUsername:::', ArraySocketIdUsername);
-        console.log('io1...ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
+        //    console.log('io1...ArraySocketUsername:::', ArraySocketIdUsername);
+        // console.log('io1...ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
         //   io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
         io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
+        var ArraySocketIdUsername1 = JSON.stringify(ArraySocketIdUsername);
+        fs.writeFile(__dirname + "/public/ArraySocketIdUsername/" + "ArraySocketIdUsername.docx", ArraySocketIdUsername1, (err) => {
+            if (err) {
+                console.log(' writeFile ArraySocketIdUsername:::', err);
+            } else {
+                console.log('luu ArraySocketIdUsername succefully');
+            }
 
+        })
 
     });
 
-    socket.on('client-send-messenger', dataMessenger => {
-        console.log('io1..client-send-messenger :' + dataMessenger);
-        console.log('io1..UsernameNguoiNhan::', dataMessenger.UsernameNguoiNhan);
-        console.log('io1..UsernameNguoiSend::', dataMessenger.UsernameNguoiSend);
-        console.log('io1..DSsocketIdNguoiNhan::', dataMessenger.DSsocketIdNguoiNhan);
-        console.log('io1..messenger::', dataMessenger.messenger);
-        dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
-            io1.to(socketId).emit('server-send-messenger', {
-                UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
-                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
-                messenger: dataMessenger.messenger,
-            });
+    socket.on('disconnect', (data) => {
+        //   console.log('io1..data disconnect::::', data);
+        //  console.log('io1..socket.id data disconnect', socket.id);
+        io1.sockets.emit('socketId-da-disconnect', socket.id)
+        //   console.log('io1..ArraySocketId:::', ArraySocketId);
+        socket.on('client-xoa-Username', data => {
+            //       console.log('io1..client-xoa-Username', data);
+            //       console.log(socket.id);
         });
 
-        /*  socket.on('client-xoa-Username', data=>{
-              console.log('client-xoa-Username trong client-send-messenger', data);
-              console.log(socket.id);
-          }); */
     });
 
     socket.on('client-xoa-Username', socketIdUsernameNguoiSend => {
-        console.log('io1..client-xoa-Username', socketIdUsernameNguoiSend);
+        //    console.log('io1..client-xoa-Username', socketIdUsernameNguoiSend);
         var SocketIdUsernameDisconnet = socketIdUsernameNguoiSend;
 
         //cap nhat lai cai mang ArraySocketUsername
@@ -590,23 +592,135 @@ io1.on('connect', (socket) => {
                 break; //ket thuc cau lenh//Lệnh break thoát khỏi vòng lặp chứa nó o day la thoat khoi cong for
             }
         }
-        console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername);
-        console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername.length);
+        //    console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername);
+        //    console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername.length);
         io1.sockets.emit('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername)
+        var ArraySocketIdUsername1 = JSON.stringify(ArraySocketIdUsername);
+        fs.writeFile(__dirname + "/public/ArraySocketIdUsername/" + "ArraySocketIdUsername.docx", ArraySocketIdUsername1, (err) => {
+            if (err) {
+                console.log(' writeFile ArraySocketIdUsername:::', err);
+            } else {
+                console.log('luu ArraySocketIdUsername New sau disconnect succefully');
+            }
 
-    });
-
-    socket.on('disconnect', (data) => {
-        console.log('io1..data disconnect::::', data);
-        console.log('io1..socket.id data disconnect', socket.id);
-        io1.sockets.emit('socketId-da-disconnect', socket.id)
-        console.log('io1..ArraySocketId:::', ArraySocketId);
-        socket.on('client-xoa-Username', data => {
-            console.log('io1..client-xoa-Username', data);
-            console.log(socket.id);
         });
 
     });
+
+
+    socket.on('client-send-messenger', dataMessenger => {
+        console.log('io1..client-send-messenger :' + dataMessenger);
+        //  var msSend = dataMessenger.UsernameNguoiNhan + ": " + dataMessenger.messenger;
+        //  var msNhan = dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger;
+        // 1) SocketIdUsernameNguoiNhan = SocketIdUsername co Username la Username nhan
+        //2) tim mang socketIdThoaMan = SocketIdUsernameNguoiNhan - UsernameNguoiNhan;
+        //   console.log('client-send-messenger ArraySocketIdUsername::',ArraySocketIdUsername)
+
+        //nếu có tên UsernameNguoiNhan mà khong có socketId online nao chứa UsernameNguoiNhan thi ta mới lưu mang
+        //array tinhan NameArrayMess
+        var ArraySocketIdUserNhan = [];
+        ArraySocketIdUsername.map(function (socketIdUsername, index) {
+            if (socketIdUsername.UserSocketId.indexOf(dataMessenger.UsernameNguoiNhan) > -1) {
+                ArraySocketIdUserNhan.push(socketIdUsername.UserSocketId);
+            }
+        });
+        console.log('ArraySocketIdUserNhan::::', ArraySocketIdUserNhan); //neu no bang rong ta moi luu tinnhan
+        if (ArraySocketIdUserNhan[0] == "") { //ta moi luu tin nhan khi ma nguoi nhan khong online
+            var NameArrayMess = [];
+            var dataEmit = {
+                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+                UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+                DSsocketIdNguoiNhan: dataMessenger.ArraySocketIdThoaMan,
+                messenger: dataMessenger.messenger,
+                imageBase64: dataMessenger.imageBase64,
+                pathIma: dataMessenger.pathIma,
+            };
+            var NameArrayMessThem = (dataMessenger.UsernameNguoiSend + dataMessenger.UsernameNguoiNhan);
+            var NameArrayMessThem = [];
+            NameArrayMess.push(dataEmit);
+            console.log('NameArrayMess::::', NameArrayMess);
+            //for ( i=0; i< NameArrayMess.length; i++) {
+            //    NameArrayMessThem
+            //}
+            ArraySocketIdUserNhan.map(socketId => {
+                io1.to(socketId).emit('server-send-messenger', NameArrayMess);
+            });
+        } else {
+            var dataEmit = {
+                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+                UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+                //  DSsocketIdNguoiNhan: this.state.ArraySocketIdThoaMan, bo qua cai nay vi ta su dung no de emit toi client
+                messenger: dataMessenger.messenger,
+                imageBase64: dataMessenger.imageBase64,
+                pathIma: dataMessenger.pathIma,
+            };
+            var DSsocketIdNguoiNhan = dataMessenger.DSsocketIdNguoiNhan
+            DSsocketIdNguoiNhan.map(function (socketId, index) {
+                io1.to(socketId).emit('server-send-messenger', dataEmit);
+            });
+
+        }
+
+        /*  dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
+              io1.to(socketId).emit('server-send-messenger', {
+                  UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+                  UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+                  messenger: dataMessenger.messenger,
+              });
+          }); */
+
+        /*  socket.on('client-xoa-Username', data=>{
+              console.log('client-xoa-Username trong client-send-messenger', data);
+              console.log(socket.id);
+          }); */
+    });
+
+
+    //client-send-ArrayMessUsersendUserItem sau khi da luu tren app
+    socket.on('client-send-ArrayMessUsersendUserItem', WriteArrayMessUsersendUserItem => {
+        console.log('ArrayMessUsersendUserItem::::', WriteArrayMessUsersendUserItem);
+        // var ArrayMessUsersendUserItem = { 
+        //     NameUserSendUserItem: this.state.UsernameNguoiSend + this.state.Username, 
+        //    SaveDataMessengerApp: SaveDataMessengerApp1 
+        // }
+        var name = WriteArrayMessUsersendUserItem.NameUserSendUserItem;
+        var data = WriteArrayMessUsersendUserItem.SaveDataMessengerApp;
+        var path = __dirname + "/public/ChatUsername/" + name;
+        fs.writeFile(path, data, (err) => {
+            if (err) {
+                console.log('WriteArrayMessUsersendUserItem say ra err', err);
+            }
+            else {
+                console.log(' da WriteArrayMessUsersendUserItem  thanh cong');
+            }
+        })
+    });
+
+    //client-muon-lay-ArrayMess-User muon lay thi phai doc ArrayMess da luu o server
+    //chi can gui cai ten da luu de moc no len//khi run ap len thi lay mang da luu
+    socket.on('client-muon-lay-ArrayMess-User', ReadArrayMessUsersendUserItem => {
+        // NameUserSendUserItem: this.state.UsernameNguoiSend + this.state.Username + "ChatUsername.doxc",
+        // ArrSocketId_UserSend: ArrSocketId_UserSend,
+        console.log('ReadArrayMessUsersendUserItem::::',ReadArrayMessUsersendUserItem)
+        var ArrSocketId_UserSend = ReadArrayMessUsersendUserItem.ArrSocketId_UserSend;
+        var name = ReadArrayMessUsersendUserItem.NameUserSendUserItem;
+        var path = __dirname + "/public/ChatUsername/" + name;
+        fs.readFile(path, (err, data) => {
+            if (err) {
+                console.log(' err ReadArrayMessUsersendUserItem::');
+            } else {
+                console.log('ReadArrayMessUsersendUserItem la : ', data);
+                var SaveDataMessengerApp = data.toString(); //chuyen tu buffer sang base64
+                ArrSocketId_UserSend.map(function (SocketId, index) {
+                    io.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
+                });
+            }
+        });
+
+    })
+
+
+
 
     //servser lang nghe status cong khai tu client va emit toi tat ca cac client vi la public cong khai
     // o statusPublic.js gan khoi tao this.state = {}
@@ -615,36 +729,134 @@ io1.on('connect', (socket) => {
         io1.sockets.emit('server-share-status-public-congKhai', dataStatus);
     });
 
+
     //client-send-status-public-khi-da-save Staus .dung de khi ma user nhan duoc khong online se nhan duoc sau khi bat mang
     //luu o  writeFile statusPublic.js coi ham khoi tao contructor(props) {}
-    socket.on('client-send-status-public-khi-da-saveStaus', saveStatuspublic => {
-        console.log('saveStatuspublic:::::', saveStatuspublic);
-        fs.writeFile(__dirname + "/public/StatusPublic" + "/" +  saveStatuspublic.userStatus, saveStatuspublic.ArrayStatus, (err) => {
+    socket.on('client-send-status-public-khi-da-saveStaus', WriteStatuspublic => {
+        console.log('WriteStatuspublic:::::', WriteStatuspublic);
+        var ArrayStatus = WriteStatuspublic.ArrayStatus;
+        var StatusPublic = WriteStatuspublic.StatusPublic;
+        var pathStatusPublic = __dirname + "/public/StatusPublic" + "/" + StatusPublic;
+        console.log('ArrayStatus[0]:::', ArrayStatus[0]);
+        if (ArrayStatus[0] !== 'undefined' || ArrayStatus[0] !== '' || ArrayStatus[0] !== null) {
+            fs.writeFile(pathStatusPublic, ArrayStatus, (err) => {
+                if (err) {
+                    console.log('WriteStatuspublic err:::', err);
+                } else {
+                    console.log('da luu statusPublic tai', pathStatusPublic)
+                }
+
+            });
+        } else if (ArrayStatus[0] == 'undefined') {
+            fs.writeFile(pathStatusPublic, '');
+        }
+    });
+    //khi run app getUser(User1) client-muon-lay-ArrayStatus-public. o statusPublic.js ngay getUser(user1),
+    socket.on('client-muon-lay-ArrayStatus-public', ReadStatusPublic => {
+        // StatusPublic: "StatusPublic.docx"
+        console.log('"ReadStatusPublic', ReadStatusPublic);
+        var StatusPublic = ReadStatusPublic.StatusPublic;
+        var pathStatusPublic = __dirname + "/public/StatusPublic" + "/" + StatusPublic;
+        console.log('pathStatusPublic::::', pathStatusPublic);
+        if (pathStatusPublic !== null || pathStatusPublic !== 'undefined' || pathStatusPublic !== '') {
+            fs.readFile(pathStatusPublic, (err, data) => {
+                if (err) {
+                    console.log('value:::', err);
+                } else {
+                    console.log('data::::', data);
+
+                    // var ArrayStatus = data.toString('utf8');
+                    var ArrayStatus = data.toString();
+                    console.log('ArrayStatus::::', ArrayStatus);
+                    io1.sockets.emit('server-trave-yeucau-ArrayStatus-public', ArrayStatus);
+                    console.log('server-trave-yeucau-ArrayStatus-public ArrayStatus::::', ArrayStatus)
+                }
+            });
+        } else {
+            console.log('WriteStatuspublic chua duoc luu thi khong co ma doc');
+        }
+    });
+
+
+
+
+    //client-send-status-public-khi-da-save Staus .dung de khi ma user nhan duoc khong online se nhan duoc sau khi bat mang
+    //luu o  writeFile statusUser.js coi ham khoi tao contructor(props) {}
+    socket.on('client-send-status-public-User-khi-da-saveStaus', async (WriteStaticPulicUser) => {
+        //userStatus: this.state.User + "StatusPublic_User.docx", ArrayStatus: ArrayStatus, UserStatusItem: this.state.User + 'ArrayStatusItem.docx', ArrayStatusItem: ArrayStatusItem
+        var UserStatusItem = WriteStaticPulicUser.UserStatusItem;  // = ten user =  WriteStaticPulicUser.userStatus
+        var ArrayStatusItem = JSON.stringify(WriteStaticPulicUser.ArrayStatusItem);///co ca avata va anhBia cua User
+        console.log('WriteStaticPulicUser:::::', WriteStaticPulicUser);
+        console.log('JSON.stringify(ArrayStatusItem):::::', ArrayStatusItem);
+        var path = __dirname + "/public/StatusUser" + "/" + WriteStaticPulicUser.userStatus;
+        await fs.writeFile(path, WriteStaticPulicUser.ArrayStatus, (err) => {
             if (err) {
-                console.log('saveStatuspublic err:::', err);
+                console.log('WriteStaticPulicUser err:::', err);
             } else {
-                console.log('da luu statusPublic',__dirname + "/public/StatusPublic" + "/" + saveStatuspublic.userStatus )
+                console.log('da luu statusPublicUser', path)
             }
 
         });
+        /*  var path1 = __dirname + "public/StatusUser" + "/" + UserStatusItem;
+          await fs.writeFile(path1, ArrayStatusItem, (err)=> {
+            if (err) {
+                console.log('WriteStaticPulicUserItem err:::', err);
+            } else {
+                console.log('da luu statusPublicUser_item', path1);
+            }
+          }) */
     });
-    //client-muon-lay-ArrayStatus-public. o statusPublic.js ngay getUser(user1), 
-    socket.on('client-muon-lay-ArrayStatus-public', userStatus => {
-        console.log('this.state.User + "StatusPublic', userStatus);
-        fs.readFile(__dirname + "/public/StatusPublic" + "/" + userStatus.userStatus , (err, data) => {
+    //client-muon-lay-ArrayStatus-public. o statusUser.js ngay getUser(user1), 
+    socket.on('client-muon-lay-ArrayStatus-public-User', ReadStatusPublicUser => {
+        console.log('ReadStatusPublicUser', ReadStatusPublicUser);
+        var path = __dirname + "/public/StatusUser" + "/" + ReadStatusPublicUser.userStatus;
+        fs.readFileSync(path, (err, data) => {
             if (err) {
                 console.log('value:::', err);
             } else {
                 console.log('data::::', data);
-           
-               // var ArrayStatus = data.toString('utf8');
-               var ArrayStatus = data.toString();
-                console.log('ArrayStatus::::',ArrayStatus );
-                io1.sockets.emit('server-trave-yeucau-ArrayStatus-public', ArrayStatus);
-                console.log('server-trave-yeucau-ArrayStatus-public ArrayStatus::::',ArrayStatus)
+                // var ArrayStatus = data.toString('utf8');
+                var ArrayStatus = data.toString();
+                console.log('ArrayStatus::::', ArrayStatus);
+                io1.sockets.emit('server-trave-yeucau-ArrayStatus-public-User', ArrayStatus);
+                console.log('server-trave-yeucau-ArrayStatus-public USER ArrayStatus::::', ArrayStatus)
             }
         });
     });
+
+    //o trong StatusPublic ben trong render( <View>) 
+    socket.on('client-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', ReadStatusUserPublic_item => {
+        // User_item: User + "StatusPublic_User.docx", ArraySocketIdThoaMan: this.state.ArraySocketIdThoaMan
+        console.log('User_socketIdThoaMan', ReadStatusUserPublic_item);
+        var path = __dirname + "/public/StatusUser/" + ReadStatusUserPublic_item.User_item;
+        fs.readFile(path, (err, StatusUser) => {
+            if (err) {
+                console.log('voi satatus cua' + + "chua duoc luu tren server")
+            }
+            else {
+                console.log('data::::', StatusUser.toString());
+                var StatusUser_item = StatusUser.toString();
+                (ReadStatusUserPublic_item.ArraySocketIdThoaMan).map(function (socketId, index) {
+                    io1.to(socketId).emit('server-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', StatusUser_item);
+                    //app component StatusUser.js se lang nghe va tra cho ArrayStatusItem de StatusPublic hien thi
+                    //nhung khi no khong Online thi khong lay duoc ma ta luu mang StatusUser tren server o (3*)
+                    //thi ta chi can qua do coc thui nhe chi can gui User xuong moc o server nodejs
+                });
+            }
+        });
+    });
+
+    //add-friend
+    //khi nhan duoc loi moi ket ban ta se push vao 1 mang va mang nay la 1 phong
+    //mang ten la UsernameAddFriend + UsernameConfig: + .... cong ten dat car thang moi add vao la 1 phong 
+    //do cac username co 1 ten duy nhat nen cong cac ten lai no cung co 1 ten duy nhat
+    var ArrarAddFriend = [];
+    socket.on('add-friend', addFriend => {
+        ArrarAddFriend.push(addFriend.UsernameAddFriend);
+        ArrarAddFriend.push(addFriend.UsernameConfig);
+        console.log('ArrarAddFriend:::::', ArrarAddFriend);
+    });
+
 
     /* //client-share-statusUser chi emit lai cai socketid cua 1 cai client da emit xuong
      socket.on('client-share-statusUser',statusUser => {
@@ -654,6 +866,8 @@ io1.on('connect', (socket) => {
 
     //client-send-status-User-khi-da-saveStaus . 
     //luu o  writeFile//o ngay sau  statusUser.js.js ngay cuoi Contructor(props)
+
+    /*
     socket.on('client-send-status-User-khi-da-saveStaus', saveStatusUser => { //(3*) 
         console.log('saveStatusUser:::::', saveStatusUser);
         //  this.socket.emit('client-send-status-User-khi-da-saveStaus', { userStatus: this.state.User + "StatusPublic_User", ArrayStatus: ArrayStatus, UserStatusItem: this.state.User + 'ArrayStatusItem',ArrayStatusItem: ArrayStatusItem });
@@ -703,42 +917,47 @@ io1.on('connect', (socket) => {
       }); */
 
     //o trong StatusPublic ben trong render( <View>) 
-    socket.on('client-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', User_socketIdThoaMan => {
-        console.log('User_socketIdThoaMan', User_socketIdThoaMan);
-        fs.readFile(__dirname + "/public/StatusUser/" + User_socketIdThoaMan.User + 'ArrayStatusItem', (err, StatusUser) => {
-            if (err) {
-                console.log('voi satatus cua' + + "chua duoc luu tren server")
-            }
-            else {
-                console.log('data::::', StatusUser.toString());
-                var StatusUser_item = StatusUser.toString();
-                (User_socketIdThoaMan.ArraySocketIdThoaMan).map(function (socketId, index) {
-                    io1.to(socketId).emit('server-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', StatusUser_item);
-                    //app component StatusUser.js se lang nghe va tra cho ArrayStatusItem de StatusPublic hien thi
-                    //nhung khi no khong Online thi khong lay duoc ma ta luu mang StatusUser tren server o (3*)
-                    //thi ta chi can qua do coc thui nhe chi can gui User xuong moc o server nodejs
-                });
-            }
-        });
-    })
-
-
-    //add-friend
-    //khi nhan duoc loi moi ket ban ta se push vao 1 mang va mang nay la 1 phong
-    //mang ten la UsernameAddFriend + UsernameConfig: + .... cong ten dat car thang moi add vao la 1 phong 
-    //do cac username co 1 ten duy nhat nen cong cac ten lai no cung co 1 ten duy nhat
-    var ArrarAddFriend = [];
-    socket.on('add-friend', addFriend => {
-        ArrarAddFriend.push(addFriend.UsernameAddFriend);
-        ArrarAddFriend.push(addFriend.UsernameConfig);
-        console.log('ArrarAddFriend:::::', ArrarAddFriend);
-    })
+    /* socket.on('client-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', ReadStatusUserPublic => {
+        // User_item: User + "StatusPublic_User.docx", ArraySocketIdThoaMan: this.state.ArraySocketIdThoaMan
+         console.log('User_socketIdThoaMan', ReadStatusUserPublic);
+         var path = __dirname + "/public/StatusUser/" + ReadStatusUserPublic.User_item;
+         fs.readFile(path, (err, StatusUser) => {
+             if (err) {
+                 console.log('voi satatus cua' + + "chua duoc luu tren server")
+             }
+             else {
+                 console.log('data::::', StatusUser.toString());
+                 var StatusUser_item = StatusUser.toString();
+                 (ReadStatusUserPublic.ArraySocketIdThoaMan).map(function (socketId, index) {
+                     io1.to(socketId).emit('server-StatusPublic-yeu-cau-StatusUser-Gui-ArrayStatusUser', StatusUser_item);
+                     //app component StatusUser.js se lang nghe va tra cho ArrayStatusItem de StatusPublic hien thi
+                     //nhung khi no khong Online thi khong lay duoc ma ta luu mang StatusUser tren server o (3*)
+                     //thi ta chi can qua do coc thui nhe chi can gui User xuong moc o server nodejs
+                 });
+             }
+         });
+     }) 
+ 
+ 
+     //add-friend
+     //khi nhan duoc loi moi ket ban ta se push vao 1 mang va mang nay la 1 phong
+     //mang ten la UsernameAddFriend + UsernameConfig: + .... cong ten dat car thang moi add vao la 1 phong 
+     //do cac username co 1 ten duy nhat nen cong cac ten lai no cung co 1 ten duy nhat
+     var ArrarAddFriend = [];
+     socket.on('add-friend', addFriend => {
+         ArrarAddFriend.push(addFriend.UsernameAddFriend);
+         ArrarAddFriend.push(addFriend.UsernameConfig);
+         console.log('ArrarAddFriend:::::', ArrarAddFriend);
+     }) */
 
 
 });
 
 
 
+app3.get('/image', (req, res) => {
+    res.render('image');
+})
 
 
 var pg = require('pg');
@@ -764,6 +983,15 @@ app3.get('/chatCaNhan', (req, res) => {
 
 app3.get('/status', (req, res) => {
     res.render('status')
+});
+app3.get('/statusPublic', (req, res) => {
+    res.render('StatusPublic');
+});
+app3.get('/statusUser', (req, res) => {
+    res.render('statusUser');
+});
+app3.get('/statusFriend', (req, res) => {
+    res.render('statusFriend');
 })
 
 app3.get('/', (req, res) => {

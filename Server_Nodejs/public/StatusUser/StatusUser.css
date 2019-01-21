@@ -1,0 +1,32 @@
+body{ background-color: black}
+#warpper{
+	width: 800;
+	height: auto;
+	margin: auto;
+	overflow: scroll;
+}
+#avataCaNhan{
+	margin: auto;
+
+}
+#anhbia{
+	
+
+}
+#avatar{
+	border-radius: 200px;
+	border-bottom-left-radius: 100px;
+}
+#block{
+	display: block;
+	width: 100%;
+	clear: both;
+}
+#statusPublic{
+	background-color: blanchedalmond;
+	width: 600px;
+	height: 800px;
+	margin: auto;
+	float: left;
+	overflow: auto;
+}

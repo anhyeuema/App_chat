@@ -55,7 +55,7 @@
             //khi nhay cao chat thi thu nhat la checktoken de lay username ve
             console.log('UsernameNguoiSend:::', UsernameNguoiSend);
 
-            var socket = io.connect('http://localhost:2400');
+            var socket = io.connect('http://localhost:2400/statusPublic');
             socket.on('connect', function (data) {
                 socket.emit('client-send-Username', UsernameNguoiSend); //co ket noi cai la gui luon username
 
@@ -65,42 +65,127 @@
             var ArraySocketIdUsername = [];
             var ArrayStatus = [];
             var ArrayAvatarAnhBia = [
-                { key: JSON.stringify(0), avata: { uri: 'http://192.168.216.2:2400/hotgirls/1.jpg' }, anhbia: { uri: 'http://192.168.216.2:2400/hotgirls/2.jpg' } },
+                // { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') }
             ];
             // var ArrayStatusItem = [ { key: JSON.stringify(0), avata: require('../../../api/ImageAvata/2.jpg'), anhbia: require('../../../api/ImageAvata/1.jpg') } ];
             var ArrayStatusItem = [];
 
             socket.on('socketId-da-disconnect', (socketId) => {
-                //  console.log('socketId-da-disconnect: data la', socketId);
+              //  console.log('socketId-da-disconnect: data la', socketId);
                 socket.emit('client-xoa-Username', socketId + UsernameNguoiSend); //co ket noi cai la gui luon username
-                //  console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', UsernameNguoiSend);
+              //  console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', UsernameNguoiSend);
 
                 socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername_r => {
                     ArraySocketIdUsername = ArraySocketIdUsername_r;
 
                 });
-                //  console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username', ArraySocketIdUsername);
+              //  console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username', ArraySocketIdUsername);
 
             });
             socket.on('server-send-socket.id+Username', ArraySocketIdUsername_r => {
                 ArraySocketIdUsername = ArraySocketIdUsername_r;
-                //    console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username', ArraySocketIdUsername);
+            //    console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username', ArraySocketIdUsername);
             });
 
-            socket.on('server-share-status-public-congKhai', async (DataStatusPublic) => {
-                console.log('DataStatusPublic:::', DataStatusPublic);
-                var ArrayStatus1 = localStorage.getItem('ArrayStatus');
-                var ArrayStatus = (ArrayStatus1);
-                if (ArrayStatus1[0] !== "") {
-                    ArrayStatus = JSON.parse(ArrayStatus1);
+            socket.emit('client-muon-lay-ArrayStatus-public', { StatusPublic: "StatusPublic.docx" })
+            socket.on('server-trave-yeucau-ArrayStatus-public', ArrayStatus_r => {
+                console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus_r);
+                if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                    var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                    //e.setState({ ArrayStatus: [], ArrayStatusItem: c, });
+                    ArrayStatus = [];
+                    ArrayStatusItem = c;
+                    console.log(' ArrayStatus ::', ArrayStatus);
+
+                } else {
+                    var ArrayStatusThem = [];
+                    console.log(' Status cho :' + UsernameNguoiSend, ArrayStatus_r);
+                    var ArrayStatus = JSON.parse(ArrayStatus_r);
+                    for (i = 0; i < ArrayStatus.length; i = i + 1) {
+                        var User = ArrayStatus[i].User;
+                        var StatusMe = ArrayStatus[i].StatusMe;
+                        var imaBase64 = ArrayStatus[i].imaBase64;
+                        var imaPath = ArrayStatus[i].imaPath;
+                        var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                        ArrayStatusThem.push(statePublic);
+                    }
+                    //   console.log('ArrayStatusThem::::', ArrayStatusThem);
+                    // var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
+                    var c = (ArrayAvatarAnhBia).concat(ArrayStatusThem);
+                    // e.setState({ ArrayStatus: ArrayStatus, ArrayStatusItem: c, });
+                    ArrayStatus = ArrayStatus;
+                    ArrayStatusItem = c;
+                    console.log('ReadStatusPublic from server ::', ArrayStatusItem);
+                    console.log('ArrayStatus from server ::', ArrayStatus);
+
+                    $('#listStatus').html('');
+                    ArrayStatusItem.map(function (value, index) {
+                        $('#listStatus').append("<div class='user' >" + value.User + "</div>");
+                        $('.user').css("color", "blue");
+                        $('#listStatus').append("<div class='StatusPublic' >" + value.StatusMe + "</div>");
+                        $('.StatusPublic').css("color", "#7EB3C5");
+                        //can the hien status theo thoi gian hien taji vua dang roi moi toi qua khu nen ta can dao lai gia tri key trong status
+                        //them 1 bien mang  moi de luu chu no
+                    });
                 }
-                console.log('getArrayStatus ArrayStatus0000', ArrayStatus)
+            });
+
+            function getArrayStatus() {
+                socket.emit('client-muon-lay-ArrayStatus-public', { StatusPublic: "StatusPublic.docx" })
+                socket.on('server-trave-yeucau-ArrayStatus-public', ArrayStatus_r => {
+                    console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus_r);
+                    if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r == '') {
+                        var c = (this.state.ArrayAvatarAnhBia).concat([]);
+                        //e.setState({ ArrayStatus: [], ArrayStatusItem: c, });
+                        ArrayStatus = [];
+                        ArrayStatusItem = c;
+                        console.log(' ArrayStatus ::', ArrayStatus);
+
+                    } else {
+                        var ArrayStatusThem = [];
+                        console.log(' Status cho :' + UsernameNguoiSend, ArrayStatus_r);
+                        var ArrayStatus = JSON.parse(ArrayStatus_r);
+                        for (i = 0; i < ArrayStatus.length; i = i + 1) {
+                            var User = ArrayStatus[i].User;
+                            var StatusMe = ArrayStatus[i].StatusMe;
+                            var imaBase64 = ArrayStatus[i].imaBase64;
+                            var imaPath = ArrayStatus[i].imaPath;
+                            var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                            ArrayStatusThem.push(statePublic);
+                        }
+                        //   console.log('ArrayStatusThem::::', ArrayStatusThem);
+                        // var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
+                        var c = (ArrayAvatarAnhBia).concat(ArrayStatusThem);
+                        // e.setState({ ArrayStatus: ArrayStatus, ArrayStatusItem: c, });
+                        ArrayStatus = ArrayStatus;
+                        ArrayStatusItem = c;
+                        console.log('ReadStatusPublic from server ::', ArrayStatusItem);
+                        console.log('ArrayStatus from server ::', ArrayStatus);
+
+                        $('#listStatus').html('');
+                        ArrayStatusItem.map(function (value, index) {
+                            $('#listStatus').append("<div class='user' >" + value.User + "</div>");
+                            $('.user').css("color", "blue");
+                            $('#listStatus').append("<div class='StatusPublic' >" + value.StatusMe + "</div>");
+                            $('.StatusPublic').css("color", "#7EB3C5");
+                            //can the hien status theo thoi gian hien taji vua dang roi moi toi qua khu nen ta can dao lai gia tri key trong status
+                            //them 1 bien mang  moi de luu chu no
+                        });
+                    }
+                });
+                return ArrayStatus;
+            }
+
+
+            socket.on('server-share-status-public-congKhai', DataStatusPublic => {
+                console.log('DataStatusPublic:::', DataStatusPublic);
+                var ArrayStatus = getArrayStatus();
                 var status = { User: DataStatusPublic.User, StatusMe: DataStatusPublic.StatusMe, imaBase64: DataStatusPublic.imaBase64, imaPath: DataStatusPublic.imaPath };
                 // var ArrayStatus = this.state.ArrayStatus;
                 console.log('status:::', status);
-                //  console.log('ArrayStatus:::', ArrayStatus);
+                console.log('ArrayStatus:::', ArrayStatus);
                 ArrayStatus.unshift(status);
-                console.log(' ArrayStatus.unshift::::', ArrayStatus);
+                // console.log(' ArrayStatus.unshift::::', ArrayStatus);
                 var ArrayStatusThem = [];
                 for (i = 0; i < ArrayStatus.length; i = i + 1) {
                     var User = ArrayStatus[i].User;
@@ -115,7 +200,7 @@
                 var c = (ArrayAvatarAnhBia).concat(ArrayStatusThem);
                 //   console.log('CCC::::', c);
                 // e.setState({ ArrayStatus: ArrayStatus,  ArrayStatusItem: c, });
-                localStorage.setItem('ArrayStatus', JSON.stringify(ArrayStatus));
+                ArrayStatus = ArrayStatus;
                 ArrayStatusItem = c; /////////////////////////////////////////////
                 //  console.log(',this.state.ArrayStatus::::', this.state.ArrayStatus);
                 //console.log(',this.state.ArrayStatusItem::::', this.state.ArrayStatusItem);
@@ -137,7 +222,6 @@
 
                 $('#listStatus').html('');
                 ArrayStatusItem.map(function (value, index) {
-
                     $('#listStatus').append("<div class='user' >" + value.User + "</div>");
                     $('.user').css("color", "blue");
                     $('#listStatus').append("<div class='StatusPublic' >" + value.StatusMe + "</div>");
@@ -155,88 +239,13 @@
                 $('.user').click(() => {
                     alert('UsernameNguoiSend');
                 });
-            });
-
-
-            socket.emit('client-muon-lay-ArrayStatus-public', { StatusPublic: "StatusPublic.docx" })
-            socket.on('server-trave-yeucau-ArrayStatus-public', ArrayStatus_r => {
-                console.log('server-trave-yeucau-ArrayStatus-public::', ArrayStatus_r[0]);
-                /*  if (ArrayStatus_r[0] == null || ArrayStatus_r[0] == 'undefined' || ArrayStatus_r[0] == "") {
-                      console.log('vao day chua ')
-                      var c = (ArrayAvatarAnhBia).concat([]);
-                      //e.setState({ ArrayStatus: [], ArrayStatusItem: c, });
-                      ArrayStatus = [];
-                      localStorage.setItem('ArrayStatus', ArrayStatus_r);
-                      ArrayStatusItem = c;
-                      console.log(' ArrayStatus ::', ArrayStatus);
-  
-                  } */
-                var ArrayStatus = (ArrayStatus_r);
-                console.log('ArrayStatus_r[0] !== ""::::', ArrayStatus_r[0] == "")
-                if (ArrayStatus_r[0] !== "") {
-                    ArrayStatus = JSON.parse(ArrayStatus_r);
-                }
-                var ArrayStatusThem = [];
-                console.log(' Status cho :' + UsernameNguoiSend, ArrayStatus_r);
-                var ArrayStatus = JSON.parse(ArrayStatus_r);
-                for (i = 0; i < ArrayStatus.length; i = i + 1) {
-                    var User = ArrayStatus[i].User;
-                    var StatusMe = ArrayStatus[i].StatusMe;
-                    var imaBase64 = ArrayStatus[i].imaBase64;
-                    var imaPath = ArrayStatus[i].imaPath;
-                    var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
-                    ArrayStatusThem.push(statePublic);
-                }
-                //   console.log('ArrayStatusThem::::', ArrayStatusThem);
-                // var c = (this.state.ArrayAvatarAnhBia).concat(ArrayStatusThem);
-                var c = (ArrayAvatarAnhBia).concat(ArrayStatusThem);
-                // e.setState({ ArrayStatus: ArrayStatus, ArrayStatusItem: c, });
-
-                ArrayStatusItem = c;
-                localStorage.setItem('ArrayStatus', ArrayStatus_r);
-
-
-                console.log('ReadStatusPublic from server ::', ArrayStatusItem);
-                //    console.log('ArrayStatus from server ::', ArrayStatus);
-
-                $('#listStatus').html('');
-                //////////////// tu dong nhay trang jquery???????/////// hay nha tim duoc roi
-                ////////////////////////////////////////////////////////////////////////////////
-                ////////////////////////////////////////
-                //   var url = "http://stackoverflow.com";
-                //   $(location).attr('href', url);
-                ///////////////////////////////
-                /////////////////////////////////
-                var url = "http://192.168.216.2:2400/hotgirls/1.jpg";
-                $("#w3s").attr("href", "http://192.168.216.2:2400/hotgirls/1.jpg");
-                $('#listStatus').attr('href', url);
-                //  $(location).css('color', 'red');
-                ArrayStatusItem.map(function (value, index) {
-                    var url = "http://192.168.216.2:2400/hotgirls/1.jpg";
-                    $('#listStatus').attr('src', url);
-                    $('#listStatus').css('color', 'red');
-
-                    console.log('attr("href",value.avata==null ? null : value.avata)', ("src", value.avata == null ? null : value.avata.uri))
-                    $('#listStatus').attr("href", value.avata == null ? null : value.avata.uri);
-                    $('#listStatus').append("<div class='user' >" + index + ": " + value.User + "</div>");
-                    $('.user').css("color", "blue");
-                    $('#listStatus').append("<div class='StatusPublic' >" + value.StatusMe + "</div>");
-                    $('.StatusPublic').css("color", "#7EB3C5");
-                    //can the hien status theo thoi gian hien taji vua dang roi moi toi qua khu nen ta can dao lai gia tri key trong status
-                    //them 1 bien mang  moi de luu chu no
-                });
-               
-
-            });
-
-
-
+            })
 
 
         });
 
     </script>
-    <link rel="stylesheet" media="screen" href="http://localhost:2400/status.css" type="text/css" />
+    <link rel="stylesheet" media="screen" href="StatusFriend.css" type="text/css" />
 
     <style>
         #share{
@@ -247,9 +256,6 @@
 
 <body>
     <div id="warpper">
-
-        <p><a href="http://192.168.216.2:2400/hotgirls/1.jpg" id="w3s">http://localhost:2400</a> </p>
-
         <a id="KetQuaMesseger">...ket KetQuaMesseger....</a>
         <div id="avataCaNhan">
             <div id="NguoiSend">

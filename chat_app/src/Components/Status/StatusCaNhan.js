@@ -88,8 +88,26 @@ export default class StatusCaNhan extends Component {
         };
         global.OnUser = this.getUser.bind(this);
         this.socket = io.connect('http://192.168.216.2:2400', { jsonp: false });
+        console.log('this.state.User::::'. this.state.User);
+        console.log('this.state.ArrayStatusItem::::'. this.state.ArrayStatusItem);
+       
+       
+        this.socket.on('connect', () => {
+            console.log('this.state.User o User.js', this.state.User);
+            this.socket.emit('client-send-Username', this.state.User);
+            //     console.log(' serser app dang emit this.state.User o User.js', this.state.User);
+        });
+        this.socket.on('socketId-da-disconnect', (socketId) => {
+            console.log('socketId-da-disconnect: data la', socketId);
+            this.socket.emit('client-xoa-Username', socketId + this.state.User); //co ket noi cai la gui luon username
+            console.log('tu User.js app dang emit socketId ma server nodejs -da-disconnect: data la', this.state.User);
 
-        
+            this.socket.on('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername => {
+                e.setState({ ArraySocketIdUsername: ArraySocketIdUsername });
+            });
+            //   console.log('ArraySocketIdUsername new sau khi da cap xoa socketId.Username',this.state.ArraySocketIdUsername);
+
+        });
 
     }
 
@@ -277,7 +295,11 @@ export default class StatusCaNhan extends Component {
 
                                     <View style={{ height: (item.avata) == null ? 0 : 40, marginLeft: 40, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', }} >
                                         <TouchableOpacity style={{ height: (item.avata) == null ? 0 : 50, width: (item.avata) == null ? 0 : 100, marginLeft: (item.avata) == null ? 0 : 20 }} onPress={() => {
-                                            if (this.state.User == this.props.User) { //neu nguoi gui ket ban khong  trung nguoi nhan loi moi thi ta se add-friend
+                                            var UsernameAddFriend = this.state.User;
+                                            var UsernameConfig = this.props.User;
+
+                                            if (UsernameAddFriend !== UsernameConfig) { //neu nguoi gui ket ban khong  trung nguoi nhan loi moi thi ta se add-friend
+
                                                 this.socket.emit('add-friend', { UsernameAddFriend: this.state.User, UsernameConfig: this.props.User });
                                             }
                                         }} >
