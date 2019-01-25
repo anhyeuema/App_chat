@@ -1,0 +1,21 @@
+body{ background-color: black}
+
+#warrper{
+    justify-items: center;
+	margin: auto;
+	height: auto;
+    width: 900px;
+    background-color: #007ACC;
+}
+.div-ablum{ 
+    width: 400;
+    height: 500;
+    background-color: darkred;
+}
+#avata{ 
+    width: 400;
+    height: 500;
+}
+hr{
+    visibility: hidden;
+}

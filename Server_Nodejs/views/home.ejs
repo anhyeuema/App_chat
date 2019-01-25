@@ -1,7 +1,7 @@
 <html>
 <header>
-	<script src="jquery.js"></script>
-	<link rel="stylesheet" type="text/css" href="homeView.css">
+	<script src="http://localhost:2400/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://localhost:2400/homeView.css">
 	<script>
 		function getCookie(NameOfCookie) {
 			// First we check to see if there is a cookie stored.
@@ -86,14 +86,18 @@
 							// setTime luu thoi gian ( getTime la lay thi gian len + expriredays thoi gian dat * gio * phut* giay * mili giay)
 							ExpireDate.setTime(ExpireDate.getTime() + (expriredays * 24 * 60 * 60 * 1000));
 							//Hàm escape() loại bỏ các ký tự đặc biệt, mục đích là để trang web hiển thị đúng hơn và tránh được lỗi cross-site scripting
+							var path = "http://localhost:2400/ChatUsername"
 							document.cookie = NameOfCookie + "=" + escape(document.cookie = value) +  // escape loai bo ky tu dac biet
-								((expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString());
+								((expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString()) + "; path=" + path;
 							//toGMTString  la Phương thức cũ - Biến đổi 1 ngày thành 1 chuỗi bởi sử dụng các qui ước Internet GMT. Bạn dùng toUTCString để thay thế.
 						}
 						setCookie("@token", token, 1);
 						$('#ketquaToken').html(token);
 						$('#ketquaToken').css("color", "yellow");
 						window.location.href = $('#LOGIN').attr('href');
+
+						//luu them token local
+						localStorage.setItem('@token',token);
 					}
 				});
 
@@ -180,7 +184,7 @@
 			</div>
 			<div class="block"></div>
 			<div>
-				<input type="button" id="LOGIN" href="http://localhost:2400/FreeSuper"  value="Login" />
+				<input type="button" id="LOGIN" href="http://localhost:2400/ChatUsername/"  value="Login" />
 			</div>
 
 		</div>

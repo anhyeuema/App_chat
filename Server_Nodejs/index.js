@@ -537,7 +537,7 @@ io1.sockets.on('connection', function (socket) {
 var ArraySocketIdUsername = [];
 var ArraySocketId = [];
 var ArraySocketIdOn = [];
-
+var NameArrayMess = [];
 
 io1.on('connect', (socket) => {
     //  console.log("io1..client connect socket io1 :" + socket.id);
@@ -551,31 +551,91 @@ io1.on('connect', (socket) => {
         //     console.log('io1...ArraySocketId.length:::', ArraySocketIdOn.length);
 
         ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
-        //    console.log('io1...ArraySocketUsername:::', ArraySocketIdUsername);
-        // console.log('io1...ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
+        console.log('io1...ArraySocketUsername:::', ArraySocketIdUsername);
+         console.log('io1...ArraySocketUsernam.length:::', ArraySocketIdUsername.length);
         //   io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
         io1.sockets.emit('server-send-socket.id+Username', ArraySocketIdUsername);
         var ArraySocketIdUsername1 = JSON.stringify(ArraySocketIdUsername);
         fs.writeFile(__dirname + "/public/ArraySocketIdUsername/" + "ArraySocketIdUsername.docx", ArraySocketIdUsername1, (err) => {
             if (err) {
-                console.log(' writeFile ArraySocketIdUsername:::', err);
+             //   console.log(' writeFile ArraySocketIdUsername:::', err);
             } else {
-                console.log('luu ArraySocketIdUsername succefully');
+              //  console.log('luu ArraySocketIdUsername succefully');
             }
 
-        })
+        });
+
+        //  DSsocketIdNguoiNhan: dataMessenger.ArraySocketIdThoaMan, //neu khong ton tai socketId THOAN MAN KHI KICH CHUOT O CLIENT(APP or web) thi tien hanhluu tin nhan nay
+        //bo vi co soketId nhan roi thi la co dia chi nhan roi thi khong can luu nua ma gui di ngay
+        /* var dataEmit = { //hien thi de biet dataEmit gom nhungphan tu gi de ta re viet code thui
+             UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+             UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+             messenger: dataMessenger.messenger,
+             imageBase64: dataMessenger.imageBase64,
+             pathIma: dataMessenger.pathIma,
+         }; */
+
+        /////////su ly o day ne
+        //
+
+        //console.log('NameArrayMess::::', NameArrayMess);
+        var ArrMess = [];
+        if (NameArrayMess[0] !== null && NameArrayMess.leng >= 0) {
+            NameArrayMess.map(function (dataEmit, index) {
+                var UsernameNguoiNhan = dataEmit.UsernameNguoiNhan;
+                if (UsernameNguoiNhan.indexOf(Username) > -1) {
+                    //push phan tu thoa nam vao de gui di cho messenger co Username = UsernameNguoiNhan
+                    ArrMess.push(dataEmit); //tuong ung vi tri index trong mang NameArrayMess
+                    //dong thoi coa phan tu ay di trong NameArrayMess (chua tat ca cac messenger da guo xoung ma khong co socketId cua ng Nguoinhan)
+                    NameArrayMess.slice(index, 1); //xoa 1 phan tu o vi tri thu index; neu Username connect != UsernameNguoiNhan thi ArrMess = []
+
+                }
+            });
+
+            //tim trong ArraySocketIdUsername ma co socketId +Username co chua Usermane 
+            // ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
+            var ArrsocketIdMesNhanThoaMan = [];
+            ArraySocketIdUsername.map(function (value, index) {
+                var UserSocketId = value.UserSocketId;
+                if (UserSocketId.indexOf(Username) > -1) {
+                    var socketId = UserSocketId.replace(Username, '');
+                    ArrsocketIdMesNhanThoaMan.push(socketId);
+                }
+            })
+            //emit len cho client nhan tin nhan , mang emit len co the la mang [], [ 1phanTu ], [ 1phanTu, 2phanTu, ...., n phanTu]
+            ArrsocketIdMesNhanThoaMan.map(function (socketId) {
+                io1.to(socketId).emit('server-send-messenger', ArrMess)
+            })
+
+        }
+
+
 
     });
 
     socket.on('disconnect', (data) => {
         //   console.log('io1..data disconnect::::', data);
         //  console.log('io1..socket.id data disconnect', socket.id);
-        io1.sockets.emit('socketId-da-disconnect', socket.id)
-        //   console.log('io1..ArraySocketId:::', ArraySocketId);
-        socket.on('client-xoa-Username', data => {
-            //       console.log('io1..client-xoa-Username', data);
-            //       console.log(socket.id);
-        });
+        io1.sockets.emit('socketId-da-disconnect', socket.id);
+        var socketIdDis = socket.id;
+      //  console.log('io1..disconnect:::', ArraySocketIdUsername);
+        //o day ta ca nhat lai luon socketId = Username cung duoc;
+       // ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
+       console.log('io1...socket.id disconnect',socketIdDis);
+       ArraySocketIdUsername.map( function(value,index) {
+           //neu nhu socketIdDis chuoi nay so sanh lan luot voi UserSocketId
+           //co phan tu nao trong UserSocketId nao ma giong socketIdDis thi la phan tu do can loai bo 
+            if( value.UserSocketId.indexOf(socketIdDis) > -1) {
+                //ArraySocketIdUsername can loai bo UserSocketId thoa nam dk if
+                //loai bo phantu thu index lan thu tu cua UserSocketId trong mang ArraySocketIdUsername
+                ArraySocketIdUsername.splice(index,1); // loai bo phan tu thu index trong
+            }
+       });
+
+       console.log('ArraySocketIdUsername: NEW sau khi-da-disconnect:::',ArraySocketIdUsername);
+       //ArraySocketIdUsername khong can gui client app hoac server chi bo no di vi sau khi run lai ap no se 
+       //cap nhat 1 socket.id + Username ma Ta se gui no o phan socket.on('client-send-Username', Username
+
 
     });
 
@@ -592,18 +652,23 @@ io1.on('connect', (socket) => {
                 break; //ket thuc cau lenh//Lệnh break thoát khỏi vòng lặp chứa nó o day la thoat khoi cong for
             }
         }
-        //    console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername);
-        //    console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername.length);
-        io1.sockets.emit('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername)
+           // console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername);
+          //  console.log('io1..ArraySocketIdUsername new cap nhat khi disconnectLL', ArraySocketIdUsername.length);
+       // io1.sockets.emit('server-capNhat-Danhsach-socketId-new-saukhi-disconnect', ArraySocketIdUsername)
         var ArraySocketIdUsername1 = JSON.stringify(ArraySocketIdUsername);
         fs.writeFile(__dirname + "/public/ArraySocketIdUsername/" + "ArraySocketIdUsername.docx", ArraySocketIdUsername1, (err) => {
             if (err) {
-                console.log(' writeFile ArraySocketIdUsername:::', err);
+              // console.log(' writeFile ArraySocketIdUsername:::', err);
             } else {
-                console.log('luu ArraySocketIdUsername New sau disconnect succefully');
+              //  console.log('luu ArraySocketIdUsername New sau disconnect succefully');
             }
 
         });
+
+        socket.on('client-yeucau-xin-ArrSocketIdUser-sauDisconnect', () => {
+            var padth
+            fs.readFile()
+        })
 
     });
 
@@ -615,22 +680,29 @@ io1.on('connect', (socket) => {
         // 1) SocketIdUsernameNguoiNhan = SocketIdUsername co Username la Username nhan
         //2) tim mang socketIdThoaMan = SocketIdUsernameNguoiNhan - UsernameNguoiNhan;
         //   console.log('client-send-messenger ArraySocketIdUsername::',ArraySocketIdUsername)
-
+// ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
         //nếu có tên UsernameNguoiNhan mà khong có socketId online nao chứa UsernameNguoiNhan thi ta mới lưu mang
         //array tinhan NameArrayMess
         var ArraySocketIdUserNhan = [];
         ArraySocketIdUsername.map(function (socketIdUsername, index) {
             if (socketIdUsername.UserSocketId.indexOf(dataMessenger.UsernameNguoiNhan) > -1) {
-                ArraySocketIdUserNhan.push(socketIdUsername.UserSocketId);
+                var SocketId = (socketIdUsername.UserSocketId).replace(dataMessenger.UsernameNguoiNhan, '');
+                ArraySocketIdUserNhan.push(SocketId);
             }
         });
         console.log('ArraySocketIdUserNhan::::', ArraySocketIdUserNhan); //neu no bang rong ta moi luu tinnhan
+        //truong hop socketId rong thi ta luu tin nhan cua UsernameNguoiNhan tuong ung do
+        //hoac neu ArraySocketIdThoaMan khong ton tai if(ArraySocketIdThoaMan='undefind'){ this se luu tin nhan}
         if (ArraySocketIdUserNhan[0] == "") { //ta moi luu tin nhan khi ma nguoi nhan khong online
-            var NameArrayMess = [];
+            //neu chi co ten nguoi nhan ma khong co socketId cua nguoi nhan ( socketid thoa man)
+            //tien hanh luu tin nhan khi nao co 1 ket noi ma co socketid trung voi socketId cua nguoi ngan duoc lua ta se tien hanh
+            // 1) lay nhung phan tu co trong mang da luu co ten trung ten socket id vua ket noi ta lay ra
+            // 2) lay ra roi tao 1 mang hung no va mang cu xoa phan tu ma nguoi nhan se lay de lai phan tu chua co nguoi nhan online de nhan tin nhan trong mang tin nhan luu o server( NameArrayMess)
             var dataEmit = {
-                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+                UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan, //ten nguoi nhsn lsy de so sach socket id nguoi nhan do
                 UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
-                DSsocketIdNguoiNhan: dataMessenger.ArraySocketIdThoaMan,
+                //  DSsocketIdNguoiNhan: dataMessenger.ArraySocketIdThoaMan, //neu khong ton tai socketId THOAN MAN KHI KICH CHUOT O CLIENT(APP or web) thi tien hanhluu tin nhan nay
+                //bo vi co soketId nhan roi thi la co dia chi nhan roi thi khong can luu nua ma gui di ngay
                 messenger: dataMessenger.messenger,
                 imageBase64: dataMessenger.imageBase64,
                 pathIma: dataMessenger.pathIma,
@@ -642,22 +714,32 @@ io1.on('connect', (socket) => {
             //for ( i=0; i< NameArrayMess.length; i++) {
             //    NameArrayMessThem
             //}
+            /* emit se thuc hien o lang nghe socketId Connect neu vua run client (app) coc socketId+ Username cos trong
+            // ArrMesSave  thi ta se lay messenger thoa man  socketId+ Username ra va push vao thanh mang con khong thoa man thi
+            //cap nhat lai mang ArrMesSave moi 
             ArraySocketIdUserNhan.map(socketId => {
                 io1.to(socketId).emit('server-send-messenger', NameArrayMess);
-            });
+            }); */
         } else {
             var dataEmit = {
                 UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
                 UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
-                //  DSsocketIdNguoiNhan: this.state.ArraySocketIdThoaMan, bo qua cai nay vi ta su dung no de emit toi client
+                //   DSsocketIdNguoiNhan: this.state.ArraySocketIdThoaMan,// bo qua cai nay vi ta su dung no de emit toi client
                 messenger: dataMessenger.messenger,
                 imageBase64: dataMessenger.imageBase64,
                 pathIma: dataMessenger.pathIma,
             };
-            var DSsocketIdNguoiNhan = dataMessenger.DSsocketIdNguoiNhan
-            DSsocketIdNguoiNhan.map(function (socketId, index) {
-                io1.to(socketId).emit('server-send-messenger', dataEmit);
+           
+            var dataEmit1 = JSON.stringify([dataEmit]);
+          // io1.sockets.emit('server-send-messenger','anh test cai')
+            var DSsocketIdNguoiNhan = dataMessenger.DSsocketIdNguoiNhan; //DSsocketIdNguoiNhan: this.state.ArraySocketIdThoaMan duoc gui tu client
+            //  DSsocketIdNguoiNhan.map(function (socketId, index) { //DSsocketIdNguoiNhan lay tu client = ArraySocketIdUserNhan lay tu server 
+            ArraySocketIdUserNhan.map(function (socketId, index) {
+                io1.to(socketId).emit('server-send-messenger', [dataEmit]); //[dataEmit] mang chua 1 phan tu
+               // console.log('[dataEmit];;;;', dataEmit);
+              
             });
+            console.log('[dataEmit];;;;', [dataEmit]);
 
         }
 
@@ -678,20 +760,31 @@ io1.on('connect', (socket) => {
 
     //client-send-ArrayMessUsersendUserItem sau khi da luu tren app
     socket.on('client-send-ArrayMessUsersendUserItem', WriteArrayMessUsersendUserItem => {
-        console.log('ArrayMessUsersendUserItem::::', WriteArrayMessUsersendUserItem);
+        console.log('ArrayMessUsersendUserItem:client-send-ArrayMessUsersendUserItem:::', WriteArrayMessUsersendUserItem);
         // var ArrayMessUsersendUserItem = { 
         //     NameUserSendUserItem: this.state.UsernameNguoiSend + this.state.Username, 
+        //     NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
         //    SaveDataMessengerApp: SaveDataMessengerApp1 
         // }
         var name = WriteArrayMessUsersendUserItem.NameUserSendUserItem;
+        var name1 = WriteArrayMessUsersendUserItem.NameUserSendUserItem1;
         var data = WriteArrayMessUsersendUserItem.SaveDataMessengerApp;
         var path = __dirname + "/public/ChatUsername/" + name;
-        fs.writeFile(path, data, (err) => {
+        var path1 = __dirname + "/public/ChatUsername/" + name1;
+        fs.writeFileSync(path, data, (err) => {
             if (err) {
-                console.log('WriteArrayMessUsersendUserItem say ra err', err);
+                console.log('WriteArrayMessUsersendUserItem err', err);
             }
             else {
-                console.log(' da WriteArrayMessUsersendUserItem  thanh cong');
+                console.log('WriteArrayMessUsersendUserItem : ', path);
+            }
+        });
+        fs.writeFileSync(path1, data, (err) => {
+            if (err) {
+                console.log('WriteArrayMessUsersendUserItem err', err);
+            }
+            else {
+                console.log('WriteArrayMessUsersendUserItem : ', path);
             }
         })
     });
@@ -701,22 +794,73 @@ io1.on('connect', (socket) => {
     socket.on('client-muon-lay-ArrayMess-User', ReadArrayMessUsersendUserItem => {
         // NameUserSendUserItem: this.state.UsernameNguoiSend + this.state.Username + "ChatUsername.doxc",
         // ArrSocketId_UserSend: ArrSocketId_UserSend,
-        console.log('ReadArrayMessUsersendUserItem::::',ReadArrayMessUsersendUserItem)
-        var ArrSocketId_UserSend = ReadArrayMessUsersendUserItem.ArrSocketId_UserSend;
+        //UserYeuCauMess: UserApp,
+        console.log('ReadArrayMessUsersendUserItem:client-muon-lay-ArrayMess-User:::', ReadArrayMessUsersendUserItem)
+        var ArrSocketIdUserYeuCauMess = []; // no la app hoac web can co no de biet tra ve chua socketId nao
+        //ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
+        var UserYeuCauMess = ReadArrayMessUsersendUserItem.UserYeuCauMess;
+        ArraySocketIdUsername.map( function(value,index) {
+            var UserSocketId = value.UserSocketId;
+            if( UserSocketId.indexOf(UserYeuCauMess) > -1 ) {
+                var socketId = UserSocketId.replace(UserYeuCauMess, '');
+                ArrSocketIdUserYeuCauMess.push(socketId);
+            }
+        })
+        console.log('ArrSocketIdUserYeuCauMess',ArrSocketIdUserYeuCauMess);
+
+       // var ArrSocketId_UserSend = ReadArrayMessUsersendUserItem.ArrSocketId_UserSend;
         var name = ReadArrayMessUsersendUserItem.NameUserSendUserItem;
         var path = __dirname + "/public/ChatUsername/" + name;
         fs.readFile(path, (err, data) => {
             if (err) {
                 console.log(' err ReadArrayMessUsersendUserItem::');
-            } else {
-                console.log('ReadArrayMessUsersendUserItem la : ', data);
-                var SaveDataMessengerApp = data.toString(); //chuyen tu buffer sang base64
-                ArrSocketId_UserSend.map(function (SocketId, index) {
-                    io.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
+                ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
+                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', '0');
+                    // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
                 });
+               /* ArrSocketId_UserSend.map(function (SocketId, index) {
+                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', []);
+                    //console.log('server-trave-yeucau-ArrayMess-User la do k find path : ', []);
+                }); */
+                console.log('server-trave-yeucau-ArrayMess-User la do k find path : ', []);
+
+            } else {
+
+                var SaveDataMessengerApp = data.toString(); //chuyen tu buffer sang base64
+                console.log('ReadArrayMessUsersendUserItem la : ', SaveDataMessengerApp);
+                console.log('ReadArrayMessUsersendUserItem path : ', path);
+               
+               /* ArrSocketId_UserSend.map(function (SocketId, index) {
+                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
+                    // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
+                }); */
+                ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
+                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
+                    // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
+                });
+                console.log('server-trave-yeucau-ArrayMess-User la : ' + 
+                '////////////////////////////////////////////////////////////////' + 
+                '//////////////////////////////////////////////////////////////', SaveDataMessengerApp);
             }
         });
 
+    });
+
+    //lnag nghe client-want-dellete-messChatUser
+    socket.on('client-want-dellete-messChatUser',deleteMess => {
+        console.log('client-want-dellete-messChatUser:::', deleteMess);
+       // NameMessDellete: this.state.UsernameNguoiSend + this.state.Username + "ChatUsername.docx",
+        var name = WriteArrayMessUsersendUserItem.NameMessDellete;
+        var data = [];
+        var path = __dirname + "/public/ChatUsername/" + name;
+        fs.writeFile(path, data, (err) => {
+            if (err) {
+                console.log('deleteMess err', err);
+            }
+            else {
+                console.log('deleteMess path : ', path);
+            }
+        })
     })
 
 
@@ -979,6 +1123,10 @@ var pool = new pg.Pool(config)
 app3.get('/chatCaNhan', (req, res) => {
     res.render('chatCaNhan');
 
+});
+
+app3.get('/ChatUsername', (req, res) => {
+    res.render('ChatUsername');
 })
 
 app3.get('/status', (req, res) => {
