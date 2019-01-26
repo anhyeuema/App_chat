@@ -242,9 +242,9 @@ export default class ChatUsername extends Component {
                     //if (SaveDataMessengerApp_r = "" || SaveDataMessengerApp_r[0] == null || SaveDataMessengerApp_r[0] == undefined) {
                     //localStorage.setItem('SaveDataMessengerApp', JSON.stringify([dataEmit]));
                     if (dataMessenger[0] !== null) {
-                        console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
+                      //////  console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
                         var ArrdataMessenger = [];
-                        console.log('verver-trave-yeucau-ArrayMessUser::==0 dataMessenger:::', dataMessenger)
+                    //    console.log('verver-trave-yeucau-ArrayMessUser::==0 dataMessenger:::', dataMessenger)
                         await dataMessenger.map(function (dataEmit, index) {
                             var UserSendKey = {
                                 key: JSON.stringify(ArrdataMessenger.length + index),
@@ -255,7 +255,7 @@ export default class ChatUsername extends Component {
                                 UserNhan: '', //them vao de hien thi thoi
                                 messengerNhan: '',
                             };
-                            console.log('.UserSendKey: ==0:::', UserSendKey);
+                        //    console.log('.UserSendKey: ==0:::', UserSendKey);
 
                             ArrdataMessenger.push(UserSendKey);
 
@@ -279,7 +279,7 @@ export default class ChatUsername extends Component {
 
                 if (SaveDataMessengerApp.length > 1 && SaveDataMessengerApp[0] == '[') { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
                     if (dataMessenger[0] !== null) {
-                        console.log('server-trave-yeucau-ArrayMess-User::!==0', SaveDataMessengerApp);
+                       ///// console.log('server-trave-yeucau-ArrayMess-User::!==0', SaveDataMessengerApp);
 
                        /*
                         var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
@@ -292,7 +292,7 @@ export default class ChatUsername extends Component {
                         var ArrdataMessenger = SaveDataMessengerApp; */
 
                         var ArrdataMessenger = JSON.parse(SaveDataMessengerApp);
-                        console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
+                       // console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
 
                         await dataMessenger.map(function (dataEmit, index) {
                             var UserSendKey = {
@@ -308,7 +308,7 @@ export default class ChatUsername extends Component {
 
                             ArrdataMessenger.push(UserSendKey);
                         })
-                        console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
+                       // console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
                         await e.setState({
                             SaveDataMessengerApp: ArrdataMessenger,
                             ArrUserSendKey: ArrdataMessenger,

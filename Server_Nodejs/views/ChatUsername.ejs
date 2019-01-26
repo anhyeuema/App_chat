@@ -119,7 +119,7 @@
 
             // var socket = io('http://localhost:2400');
 
-            var socket = io.connect('http://localhost:2400');
+            var socket = io.connect('http://localhost:2800');
             socket.on('connect', function () {
                 socket.emit('authenticate', { token: tokenNew });
             });
@@ -129,9 +129,9 @@
                     socket.emit('storeClientInfo', { customId: "000CustomIdHere0000" + UsernameNguoiSend });
                 });  */
 
-            var m = '0';
+            var m = [];
             console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm', m.length)
-            console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm', JSON.parse(m) == '0');
+            console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm', m[0] == null);
             var ArraySocketIdUsername = [];
             var SaveDataMessengerApp = [];
             //  localStorage.setItem('SaveDataMessengerApp', '')
@@ -310,7 +310,7 @@
                                 console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp_r[0]);
                                 console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp_r.length);
                                 var SaveDataMessengerApp = SaveDataMessengerApp_r;
-                                localStorage.setItem('SaveDataMessengerApp',SaveDataMessengerApp)
+                                localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp)
                                 if (SaveDataMessengerApp.length == 1 && SaveDataMessengerApp[0] == '0') {
                                     $('#ListMesseger').html('');
                                     console.log('SaveDataMessengerApp_r rong nhe');
@@ -318,38 +318,37 @@
                                 else if (SaveDataMessengerApp.length > 1 && SaveDataMessengerApp[0] == '[') {
                                     //loi ra hien thi thui
                                     console.log('this.state.SaveDataMessengerApp flatlist;;;;;;', SaveDataMessengerApp);
-                                    if (SaveDataMessengerApp_r !== true || SaveDataMessengerApp_r[0] !== null || SaveDataMessengerApp[0] !== undefined && SaveDataMessengerApp.length > 0) { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
-                                        localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp);
-                                        var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
-                                        // e.setState({ ArrUserSendKey: SaveDataMessengerApp, SaveDataMessengerApp: SaveDataMessengerApp });
-                                        //  var SaveDataMessengerApp1 = localStorage.getItem('SaveDataMessengerApp');
-                                        //  console.log('SaveDataMessengerApp1:::getIem', SaveDataMessengerApp1);
-                                        //   var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1)
-                                        console.log('SaveDataMessengerApp:ListMesseger sau khi parse:', SaveDataMessengerApp)
-                                        // $('#KetQuaMesseger').html('SaveDataMessengerApp');
-                                        // $('#KQMesseger').html( (JSON.parse(localStorage.getItem('SaveDataMessengerApp'))) )
-                                        //  alert(SaveDataMessengerApp[0].key);
-                                        $('#ListMesseger').html('');
-                                        SaveDataMessengerApp.map((value, index) => {
-                                            //  alert(value.key);
-                                            $('#KQMesseger').html(value.key);
-                                            var key = value.key == null ? "" : value.key;
-                                            var msNhan = value.UserSend == null ? "" : value.UserSend;
-                                            var messenger = value.messenger == null ? "" : value.messenger;
-                                            var imageBase64 = value.imageBase64 == null ? "" : value.imageBase64;
-                                            var pathIma = value.pathIma == null ? "" : value.pathIma;
-                                            var msSend = value.UserNhan == null ? "" : value.UserNhan;
-                                            $('#ListMesseger').append("<div class='CmsNhan'>" + "key:" + key + "</div>" + "<br/>");
-                                            $('#ListMesseger').append("<div class='CmsNhan'>" + "msNhan:" + msNhan + "</div>" + "<br/>");
-                                            $('#ListMesseger').append("<div class='messenger'>" + "messenger:" + messenger + "</div>" + "<br/>");
-                                            $('#ListMesseger').append("<div class='imageBase64'>" + "imageBase64:" + imageBase64 + "</div>" + "<br/>");
-                                            $('#ListMesseger').append("<div class='msSend'>" + "msSend:" + msSend + "</div>" + "<br/>");
-                                            $('.CmsNhan').css("color", "black");
-                                            $('.messenger').css("color", "blue");
-                                            $('.imageBase64').css("color", "blue");
-                                            $('.msSend').css("color", "blue");
-                                        });
-                                    }
+                                    localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp);
+                                    var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
+                                    // e.setState({ ArrUserSendKey: SaveDataMessengerApp, SaveDataMessengerApp: SaveDataMessengerApp });
+                                    //  var SaveDataMessengerApp1 = localStorage.getItem('SaveDataMessengerApp');
+                                    //  console.log('SaveDataMessengerApp1:::getIem', SaveDataMessengerApp1);
+                                    //   var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1)
+                                    console.log('SaveDataMessengerApp:ListMesseger sau khi parse:', SaveDataMessengerApp)
+                                    // $('#KetQuaMesseger').html('SaveDataMessengerApp');
+                                    // $('#KQMesseger').html( (JSON.parse(localStorage.getItem('SaveDataMessengerApp'))) )
+                                    //  alert(SaveDataMessengerApp[0].key);
+                                    $('#ListMesseger').html('');
+                                    SaveDataMessengerApp.map((value, index) => {
+                                        //  alert(value.key);
+                                        $('#KQMesseger').html(value.key);
+                                        var key = value.key == null ? "" : value.key;
+                                        var msNhan = value.UserSend == null ? "" : value.UserSend;
+                                        var messenger = value.messenger == null ? "" : value.messenger;
+                                        var imageBase64 = value.imageBase64 == null ? "" : value.imageBase64;
+                                        var pathIma = value.pathIma == null ? "" : value.pathIma;
+                                        var msSend = value.UserNhan == null ? "" : value.UserNhan;
+                                        $('#ListMesseger').append("<div class='CmsNhan'>" + "key:" + key + "</div>" + "<br/>");
+                                        $('#ListMesseger').append("<div class='CmsNhan'>" + "msNhan:" + msNhan + "</div>" + "<br/>");
+                                        $('#ListMesseger').append("<div class='messenger'>" + "messenger:" + messenger + "</div>" + "<br/>");
+                                        $('#ListMesseger').append("<div class='imageBase64'>" + "imageBase64:" + imageBase64 + "</div>" + "<br/>");
+                                        $('#ListMesseger').append("<div class='msSend'>" + "msSend:" + msSend + "</div>" + "<br/>");
+                                        $('.CmsNhan').css("color", "black");
+                                        $('.messenger').css("color", "blue");
+                                        $('.imageBase64').css("color", "blue");
+                                        $('.msSend').css("color", "blue");
+                                    });
+
                                 }
 
                             });
@@ -379,14 +378,14 @@
                                     DSsocketIdNguoiNhan: ArraySocketIdThoaMan,
                                     messenger: $('#messenger').val(),
                                     imageBase64: '',
-                                    pathIma: 'http://192.168.216.2:2400/hotgirls/5.jpg',
+                                    pathIma: 'http://192.168.216.2:2800/hotgirls/3.jpg',
                                 }
 
                                 socket.emit("client-send-messenger", dataEmit);
                                 console.log('dataEmit', dataEmit);
                                 //hien thi tin nhan len app khi emit thi chi hien thi cho chinh no chu k can emit cho chinh no
-                              
-                              
+
+
                                 const SaveDataMessengerApp_r = localStorage.getItem('SaveDataMessengerApp'); //moc gia chi khida setState o this.on('server-send-messenger')
                                 console.log('SaveDataMessengerApp moc tu this.on(server-send-messenger da setState ', SaveDataMessengerApp_r)
                                 //NEU  no bang null thi da luu  SaveDataMessengerApp= dataEmit
@@ -527,7 +526,7 @@
 
                     var SaveDataMessengerApp = SaveDataMessengerApp_r;
                     if (SaveDataMessengerApp[0] == '0' && SaveDataMessengerApp.length == 1) { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
-                        
+
                         console.log('server-trave-yeucau-ArrayMess-User ==0 111111111111111111111111::', SaveDataMessengerApp_r);
                         var ArrdataMessenger = [];
                         await dataMessenger.map(function (dataEmit, index) {
@@ -559,6 +558,7 @@
                     }
 
                     else {
+                        localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp);
                         SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
                         console.log(' server-trave-yeucau SaveDataMessengerApp !==0', SaveDataMessengerApp);
                         var ArrdataMessenger = SaveDataMessengerApp;

@@ -29,7 +29,7 @@ var pool = new pg.Pool(config);
 
 
 
-server.listen(3500, console.log('server_start_port_3500-de-lang-nghe-socket.io-send-image-from-Web-to-App'));
+server.listen(3100, console.log('server_start_port_3500-de-lang-nghe-socket.io-send-image-from-Web-to-App'));
 var io = require('socket.io')(server);
 
 
@@ -165,8 +165,7 @@ var l = 0;
 var n = 0;
 io.on('connection', (socket) => {
 
-    console.log('client-connected-port-3500-de chat:' + socket.id);
-
+    console.log('client-connected-port-3100-de chat:' + socket.id);
     socket.on('App-send-Username-la-phong-dai-dien-socket.phong-ca-nhan', usernamephong => {
         console.log('socket.adapter.rooms::', socket.adapter.rooms);
         socket.phong = usernamephong;
@@ -463,7 +462,7 @@ app.post('/photo',urlencodedParser, (req, res) => {
 //upload file tu App len server nodejs va to web
 var express = require('express');
 var app2 = express();
-app2.listen(1500, console.log('app2-start-port 1500-upload-image-From-app-to-web'))
+app2.listen(1400, console.log('app2-start-port 1400-upload-image-From-app-to-web'))
 
 app2.use('/', express.static(path.join(__dirname, 'public')));
 
@@ -497,7 +496,7 @@ app3.set('views', './views');
 
 //app3.listen(2400, console.log('app-lang-nghe-port-2400-hotGirls'));
 var server1 = require('http').Server(app3);
-server1.listen(2400, console.log('app3 server_start_port_2400-de--lang-nghe-socket.io-send-image-from-Web-to-App'));
+server1.listen(2800, console.log('app3 server_start_port_2800-de--lang-nghe-socket.io-send-image-from-Web-to-App'));
 var io1 = require('socket.io')(server1);
 
 
@@ -636,7 +635,7 @@ io1.on('connect', (socket) => {
         //ArraySocketIdUsername khong can gui client app hoac server chi bo no di vi sau khi run lai ap no se 
         //cap nhat 1 socket.id + Username ma Ta se gui no o phan socket.on('client-send-Username', Username
 
-        
+
 
     });
 
@@ -767,31 +766,100 @@ io1.on('connect', (socket) => {
         //     NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
         //    SaveDataMessengerApp: SaveDataMessengerApp1 
         // }
+
         var name = WriteArrayMessUsersendUserItem.NameUserSendUserItem;
         var name1 = WriteArrayMessUsersendUserItem.NameUserSendUserItem1;
-        var data = WriteArrayMessUsersendUserItem.SaveDataMessengerApp;
+        var dataMessenger = WriteArrayMessUsersendUserItem.SaveDataMessengerApp; //lay 1 phan tu o tin nhan o client 
         var path = __dirname + "/public/ChatUsername/" + name;
         var path1 = __dirname + "/public/ChatUsername/" + name1;
 
         console.log("ArrayMessUsersendUserItem:" + name + " client-send-ArrayMessUsersendUserItem:", WriteArrayMessUsersendUserItem);
-      
 
-        fs.writeFileSync(path, data, (err) => {
+        //2) chi can nhan 1 phan tu mes New tu client gui ve va push no vao tin nhan da luu la duoc
+
+        // a) lay Mang tin nhn len va JSON.parser 
+        //b) push phan tu do vao cai mang vua lay len
+        //  var x = fs.readFileSync(path);
+        //   console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',x);
+        fs.readFileSync(path, (err, data2) => {
             if (err) {
-                console.log('WriteArrayMessUsersendUserItem err', err);
+                console.log(' err ReadArrayMessUsersendUserItem khong co 1PHAN TU TIN NHAN::');
+
+                var SaveDataMessengerApp = [];
+                dataMessenger.map(function (dataEmit, index) {
+                    // var UserSendKey = dataMessenger[index];
+                    // console.log('.UserSendKey: ==0:::', UserSendKey);
+                    //  SaveDataMessengerApp.push(UserSendKey);
+                    SaveDataMessengerApp.push(dataEmit);
+                });
+               // console.log('SaveDataMessengerApp luu khi loi', SaveDataMessengerApp);
+                var dataErr = JSON.stringify(SaveDataMessengerApp);
+                console.log('SaveDataMessengerApp dataErr luu khi loi', dataErr);
+                fs.writeFile(path, dataErr, (err) => {
+                    if (err) {
+                        console.log('WriteArrayMessUsersendUserItem  save ca khi err ERR ERR', err);
+                    }
+                    else {
+                        console.log('WriteArrayMessUsersendUserItem save ca khi err ERR ERR : ', path);
+                    }
+                });
+                fs.writeFile(path1, dataErr, (err) => {
+                    if (err) {
+                        console.log('WriteArrayMessUsersendUserItem  save ca khi err ERR ERR', err);
+                    }
+                    else {
+                        console.log('WriteArrayMessUsersendUserItem save ca khi err ERR ERR : ', path);
+                    }
+                });
+
+            } else {
+                // console.log('data22222222222222222222222222222222222222222222222222222222',data2)
+                console.log('dataMessenger:;;;;;;;;;', dataMessenger);
+                console.log('dataMessenger data2:;;;;;;;;;', data2);
+                var SaveDataMessengerApp1 = data2.toString(); //chuyen tu buffer sang base64
+           
+               console.log('SaveDataMessengerApp1 data2.toString()',SaveDataMessengerApp1)
+                var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1);
+                console.log(' WriteArrayMessUsersendUserItem SaveDataMessengerApp cu:::', SaveDataMessengerApp.length)
+                // var ArrdataMessenger = [];
+                //    console.log('verver-trave-yeucau-ArrayMessUser::==0 dataMessenger:::', dataMessenger)
+                dataMessenger.map(function (dataEmit, index) {
+                    // var UserSendKey = dataMessenger[index];
+                    // console.log('.UserSendKey: ==0:::', UserSendKey);
+                    //  SaveDataMessengerApp.push(UserSendKey);
+                    SaveDataMessengerApp.push(dataEmit);
+
+                });
+                //  console.log('WriteArrayMessUsersendUserItem SaveDataMessengerApp new:::',SaveDataMessengerApp.length);
+                var h = SaveDataMessengerApp.length;
+                console.log('WriteArrayMessUsersendUserItem  SaveDataMessengerApp new :::', SaveDataMessengerApp);
+                // console.log('WriteArrayMessUsersendUserItem  SaveDataMessengerApp phan tu new save:::',h);
+
+                // e.setState({ SaveDataMessengerApp: dataMessenger })
+                // e.setState({ SaveDataMessengerApp: ArrdataMessenger, ArrUserSendKey: ArrdataMessenger });
+                var data = JSON.stringify(SaveDataMessengerApp);
+                console.log('mang tin nhan luu o server: [[[[[[]]]]]]]]]]]]]]', data);
+                fs.writeFile(path, data, (err) => {
+                    if (err) {
+                        console.log('WriteArrayMessUsersendUserItem err', err);
+                    }
+                    else {
+                        console.log('WriteArrayMessUsersendUserItem : ', path);
+                    }
+                });
+                fs.writeFile(path1, data, (err) => {
+                    if (err) {
+                        console.log('WriteArrayMessUsersendUserItem err', err);
+                    }
+                    else {
+                        console.log('WriteArrayMessUsersendUserItem : ', path);
+                    }
+                });
             }
-            else {
-                console.log('WriteArrayMessUsersendUserItem : ', path);
-            }
+
         });
-        fs.writeFileSync(path1, data, (err) => {
-            if (err) {
-                console.log('WriteArrayMessUsersendUserItem err', err);
-            }
-            else {
-                console.log('WriteArrayMessUsersendUserItem : ', path);
-            }
-        })
+
+
     });
 
     //client-muon-lay-ArrayMess-User muon lay thi phai doc ArrayMess da luu o server
@@ -800,7 +868,11 @@ io1.on('connect', (socket) => {
         // NameUserSendUserItem: this.state.UsernameNguoiSend + this.state.Username + "ChatUsername.doxc",
         // ArrSocketId_UserSend: ArrSocketId_UserSend,
         //UserYeuCauMess: UserApp,
+        //	soPage: this.state.soPage, // quan ly so trang muon lay ve
+        // 1) muon lay thi ta tra ve 10 phan tu cuoi cung cua mang da luu
+        //2 ) sau khi no tra ve thi ta chi can lay 1 phan tu tin nhan new tra ve se push vao mang da luu su ky o socket.on('client-send-ArrayMessUsersendUserItem'
         console.log('ReadArrayMessUsersendUserItem:client-muon-lay-ArrayMess-User:::', ReadArrayMessUsersendUserItem)
+        //a) tim socketId nguoi yeu cau xin tin nhan
         var ArrSocketIdUserYeuCauMess = []; // no la app hoac web can co no de biet tra ve chua socketId nao
         //ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
         var UserYeuCauMess = ReadArrayMessUsersendUserItem.UserYeuCauMess;
@@ -813,42 +885,80 @@ io1.on('connect', (socket) => {
         })
         console.log('ArrSocketIdUserYeuCauMess', ArrSocketIdUserYeuCauMess);
 
+        //b) doc tin nhan gui luu o server len
         // var ArrSocketId_UserSend = ReadArrayMessUsersendUserItem.ArrSocketId_UserSend;
         var name = ReadArrayMessUsersendUserItem.NameUserSendUserItem;
         var path = __dirname + "/public/ChatUsername/" + name;
-        console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + name + ":" +
-                    '////////////////////////////////////////////////////////////////' +
-                    '//////////////////////////////////////////////////////////////',)
+        var soPage = ReadArrayMessUsersendUserItem.soPage;
+           // var y = fs.readFileSync(path);
+           // console.log('yyyyyyyyyyy', y);
         fs.readFile(path, (err, data) => {
             if (err) {
-                console.log(' err ReadArrayMessUsersendUserItem::');
+                console.log('err ReadArrayMessUsersendUserItem::');
+
                 ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
-                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', '0');
+                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', { Nms: 'r', Sms: '0' });
                     // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
                 });
                 /* ArrSocketId_UserSend.map(function (SocketId, index) {
                      io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', []);
                      //console.log('server-trave-yeucau-ArrayMess-User la do k find path : ', []);
                  }); */
-                console.log('server-trave-yeucau-ArrayMess-User la do k find path : ', []);
-
+                console.log('server-trave-yeucau-ArrayMess-User la do k find path : ', { Nms: 'r', Sms: '0' });
+                console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + name + ":" +
+                '////////////////////////////////////////////////////////////////' +
+                '//////////////////////////////////////////////////////////////',  { Nms: 'r', Sms: '0' } );
+    
             } else {
 
-                var SaveDataMessengerApp = data.toString(); //chuyen tu buffer sang base64
-                console.log('ReadArrayMessUsersendUserItem la : ', SaveDataMessengerApp);
-                console.log('ReadArrayMessUsersendUserItem path : ', path);
-
-                /* ArrSocketId_UserSend.map(function (SocketId, index) {
-                     io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
-                     // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
-                 }); */
-                ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
-                    io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
-                    // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
-                });
-                console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + ReadArrayMessUsersendUserItem.NameUserSendUserItem + ":" +
+                var SaveDataMessengerApp1 = data.toString(); //chuyen tu buffer sang base64
+                console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + name + ":" +
                     '////////////////////////////////////////////////////////////////' +
-                    '//////////////////////////////////////////////////////////////', SaveDataMessengerApp);
+                    '//////////////////////////////////////////////////////////////');
+                console.log('ReadArrayMessUsersendUserItem la ReadArrayMessUsersendUserItem : ', SaveDataMessengerApp1);
+                // console.log('ReadArrayMessUsersendUserItem path : ', path);
+
+                //1) lay ra 5 phan tu cuoi trong mang nao
+                var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1);
+                //  console.log('ReadArrayMessUsersendUserItem la ReadArrayMessUsersendUserItem : ', SaveDataMessengerApp);
+                var n = SaveDataMessengerApp.length;
+              //  var SaveDataMessengerApp = JSON.stringify(SaveDataMessengerApp2);
+                console.log(' ReadArrayMessUsersendUserItem SaveDataMessengerApp.length: n=:', SaveDataMessengerApp.length)
+                //soPage chi duoc lon hon hoa bang 1 so trang khong cho qua so am hay bang 0
+                var X = 3*soPage; //so phan tu tra ve cho client
+                console.log('XXXXXXXXXXXXXXXXXX So phan tu tai ve la',X);
+                if (n <= X) {
+                    ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
+                        io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', { Nms: n, Sms: (SaveDataMessengerApp1) });
+                        // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
+                    });
+                    console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + ReadArrayMessUsersendUserItem.NameUserSendUserItem + ":" +
+                        '////////////////////////////////////////////////////////////////' +
+                        '//////////////////////////////////////////////////////////////', { Nms: n, Sms: SaveDataMessengerApp1 });
+                }
+                else if (n > X) {
+                    var ArrXphanTuCuoiMs1 = [];
+                    for (i = n - X; i < n; i++) {
+                        var phantu = SaveDataMessengerApp[i];
+                        ArrXphanTuCuoiMs1.push(phantu);
+                    }
+                    console.log('ReadArrayMessUsersendUserItem ArrXphanTuCuoiMs::::', ArrXphanTuCuoiMs1);
+                    var ArrXphanTuCuoiMs = JSON.stringify(ArrXphanTuCuoiMs1);
+                    /* ArrSocketId_UserSend.map(function (SocketId, index) {
+                                   io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', SaveDataMessengerApp);
+                                   // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
+                               }); */
+                    ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
+                        io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', { Nms: n, Sms: (ArrXphanTuCuoiMs) });
+                        // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
+                    });
+                    console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + ReadArrayMessUsersendUserItem.NameUserSendUserItem + ":" +
+                        '////////////////////////////////////////////////////////////////' +
+                        '//////////////////////////////////////////////////////////////', { Nms: n, Sms: (ArrXphanTuCuoiMs) });
+
+                }
+
+
             }
         });
 
@@ -860,9 +970,9 @@ io1.on('connect', (socket) => {
         // NameMessDellete: this.state.UsernameNguoiSend + this.state.Username + "ChatUsername.docx",
         var name = deleteMess.NameMessDellete;
         var name1 = deleteMess.NameMessDellete1;
-        var data ='0';
+        var data = '0';
         var path = __dirname + "/public/ChatUsername/" + name;
-        var path1 = __dirname +"/public/ChatUsername/" + name1;
+        var path1 = __dirname + "/public/ChatUsername/" + name1;
         fs.writeFile(path, data, (err) => {
             if (err) {
                 console.log('deleteMess err', err);
@@ -1750,7 +1860,7 @@ var fs = require('fs');
 var jwt = require('jsonwebtoken');
 var app4 = express();
 
-app4.listen(2600, console.log('connect-port 2600 text jsonwentken'));
+app4.listen(2900, console.log('connect-port 2900 text jsonwentken'));
 
 app4.get('/api', (req, res) => {
     var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiVXNlcm5hbWUiOiJsYW4iLCJQYXNzd29yZCI6IjEyMyIsImVtYWlsIjoidGVvQCIsImlhdCI6MTU0Njg2NjczMywiZXhwIjoxNTQ2ODcwMzMzfQ.z_FrgjZaQoq82CA-4apD8BUbco9ZePsJCm30qBoCOKg';

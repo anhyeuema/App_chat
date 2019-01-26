@@ -15,6 +15,8 @@ import StatusUser from './StatusUser';
 import StatusFriend from './StatusFriend';
 import StatusCaNhan from './StatusCaNhan';
 import ChatUsername from './ChatUsername';
+import ChatUser from './ChatUser';
+import ChatUser1 from './chatUser1';
 
 
 
@@ -53,7 +55,7 @@ export default class Status1 extends Component {
     render() {
         return (
             <NavigationExperimental.Navigator
-                initialRoute={{ name: 'CHAT_USERNAME' }}
+                initialRoute={{ name: 'CHAT_USER1' }}
 
                 renderScene={(route, navigator) => {
                     switch (route.name) {
@@ -61,7 +63,8 @@ export default class Status1 extends Component {
                         case 'STATUS_USER': return <StatusUser navigator={navigator} User={route.User} />;
                         case 'STATUS_CANHAN': return <StatusCaNhan navigator={navigator} User={route.User} StatusUser_item={ route.StatusUser_item } />;
                         case 'CHAT_USERNAME': return <ChatUsername navigator={navigator} User={route.User} StatusUser_item={ route.StatusUser_item } />;
-                       
+                        case 'CHAT_USER': return <ChatUser navigator={navigator} User={route.User} StatusUser_item={ route.StatusUser_item } />;
+                        case 'CHAT_USER1': return <ChatUser1 navigator={ navigator } User={route.User} StatusUser_item={ route.StatusUser_item } />
                         
                         default: return <StatusFriend navigator={navigator} />;
                     
