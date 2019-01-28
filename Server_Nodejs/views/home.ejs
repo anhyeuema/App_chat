@@ -1,7 +1,7 @@
 <html>
 <header>
-	<script src="http://localhost:2400/jquery.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://localhost:2400/homeView.css">
+	<script src="http://localhost:2800/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://localhost:2800/homeView.css">
 	<script>
 		function getCookie(NameOfCookie) {
 			// First we check to see if there is a cookie stored.
@@ -62,7 +62,7 @@
 			$('#LOGIN').click(() => {
 				var us = $('#username').val();
 				var pa = $('#password').val();
-				$.get("http://localhost:2400/LoginHome/" + us + "/" + pa, function (data) {
+				$.get("http://localhost:2800/LoginHome/" + us + "/" + pa, function (data) {
 
 					if (data == 0) {
 						$('#ketquaToken').html('vui long dang nhap lai ten tai khoan hoac mat khau sai');
@@ -86,7 +86,7 @@
 							// setTime luu thoi gian ( getTime la lay thi gian len + expriredays thoi gian dat * gio * phut* giay * mili giay)
 							ExpireDate.setTime(ExpireDate.getTime() + (expriredays * 24 * 60 * 60 * 1000));
 							//Hàm escape() loại bỏ các ký tự đặc biệt, mục đích là để trang web hiển thị đúng hơn và tránh được lỗi cross-site scripting
-							var path = "http://localhost:2400/ChatUsername"
+							var path = "http://localhost:2800/ChatUsername"
 							document.cookie = NameOfCookie + "=" + escape(document.cookie = value) +  // escape loai bo ky tu dac biet
 								((expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString()) + "; path=" + path;
 							//toGMTString  la Phương thức cũ - Biến đổi 1 ngày thành 1 chuỗi bởi sử dụng các qui ước Internet GMT. Bạn dùng toUTCString để thay thế.
@@ -108,7 +108,7 @@
 			$('#usernameR').blur(function () {
 				var us = $(this).val();
 				//alert(us);
-				$.get("http://localhost:2400/checkUsername/" + us, function (data) {
+				$.get("http://localhost:2800/checkUsername/" + us, function (data) {
 					alert(data);
 					if (data == 0) {
 						$('#thongbaoHL').html("username hop le");
@@ -184,7 +184,7 @@
 			</div>
 			<div class="block"></div>
 			<div>
-				<input type="button" id="LOGIN" href="http://localhost:2400/ChatUsername/"  value="Login" />
+				<input type="button" id="LOGIN" href="http://localhost:2800/ChatUsername/"  value="Login" />
 			</div>
 
 		</div>

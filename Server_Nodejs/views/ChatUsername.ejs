@@ -30,13 +30,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:2400/ChatUsername.css" />
-    <script src="http://localhost:2400/jquery.js"></script>
-    <script src="http://localhost:2400/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:2800/ChatUsername.css" />
+    <script src="http://localhost:2800/jquery.js"></script>
+    <script src="http://localhost:2800/socket.io/socket.io.js"></script>
 
-    <script src="http://localhost:2400/lib/react.js"></script>
-    <script src="http://localhost:2400/lib/react-dom.js"></script>
-    <script src="http://localhost:2400/lib/Babel-core-browser.min.js"></script>
+    <script src="http://localhost:2800/lib/react.js"></script>
+    <script src="http://localhost:2800/lib/react-dom.js"></script>
+    <script src="http://localhost:2800/lib/Babel-core-browser.min.js"></script>
 
     <style>
         .CmsSend{
@@ -97,7 +97,7 @@
 
 
 
-        $.get("http://localhost:2400/checkLogin/" + token, function (data) {
+        $.get("http://localhost:2800/checkLogin/" + token, function (data) {
             console.log('data checkLogin::::', data);
             var dataParse = JSON.parse(data);
             var tokenNew = dataParse.tokenNew;

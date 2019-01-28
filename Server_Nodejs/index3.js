@@ -632,7 +632,7 @@ io1.on('connect', (socket) => {
                     //push phan tu thoa nam vao de gui di cho messenger co Username = UsernameNguoiNhan
                     ArrMess.push(dataEmit); //tuong ung vi tri index trong mang NameArrayMess
                     //dong thoi coa phan tu ay di trong NameArrayMess (chua tat ca cac messenger da guo xoung ma khong co socketId cua ng Nguoinhan)
-                    NameArrayMess.slice(index, 1); //xoa 1 phan tu o vi tri thu index; neu Username connect != UsernameNguoiNhan thi ArrMess = []
+                    NameArrayMess.splice(index, 1); //xoa 1 phan tu o vi tri thu index; neu Username connect != UsernameNguoiNhan thi ArrMess = []
                 }
             });
             fs.writeFile(path, NameArrayMess, (err) => {
@@ -835,6 +835,17 @@ io1.on('connect', (socket) => {
 
 
 
+    var SaveDataMessengerApp;
+    var WriteArrayMessUsersendUserItem = [];
+    // var ArrMessSendServer = [];
+    var soOnMess = 0;
+    var ArrMessSendServer = [];
+    socket.on('tao-ArrNameMess-save-messenger', data => {
+        // var data= ArrMessSendServer;
+        // var x = [{ data: ArrMessSendServer }];
+    });
+
+
 
     socket.on('client-send-messenger', dataMessenger => {
         console.log('io1..client-send-messenger :' + dataMessenger);
@@ -907,6 +918,236 @@ io1.on('connect', (socket) => {
 
         }
 
+        /*
+        var dataMessenger = {
+            UsernameNguoiNhan: 'lan',
+            UsernameNguoiSend: 'manh',
+            messenger: '44444444444444444',
+            imageBase64: '',
+            pathIma: 'http://192.168.216.2:2800/hotgirls/3.jpg'
+        } */
+        //  var soOnMess = (soOnMess + 1);
+        var UserWeb = dataMessenger.UsernameNguoiSend;
+        var UserApp = dataMessenger.UsernameNguoiNhan;
+        var NameMessSever = UserApp + UserWeb;
+        //  var soPage = 1, //de hien thi la ra tin nhan moc ve 1 tinh tu length max - 1.m = hien thi so phan tu tu lon nhat toi -m phan tu
+
+
+        //   console.log('NameMessSever ten cua mang la',NameMessSever);
+        //  var NameMessSever= [];
+        //   var NameMessSever = UserApp + UserWeb;
+        //    console.log('NameMessSever ten cua mang la',NameMessSever);
+        //   var NameMessSever= [];
+        //  console.log('NameMessSever00000000000000000000000000000000000',NameMessSever);
+
+        //  var NameMesSaveServer =  [{ data: ArrMessSendServer }];
+
+
+        /*
+        const NameMesSaveServer = async (NameMsSe, ArrMsSendServer) => {
+            try {
+                var xx = [{ NameMsSe: ArrMsSendServer }];
+                AsyncStorage.setItem(NameMsSe, [{ NameMsSe: ArrMsSendServer }]);
+            } catch (e) {
+
+            }
+        } */
+
+  
+        // async function NameMesSaveServer(NameMsSe, ArrMsSendServer) {
+        //     return [{Arr : ArrMsSendServer, Name: NameMsSe }];
+        // }
+        // var DataMeserver = NameMesSaveServer(NameMessSever, ArrMessSendServer);
+        //  console.log('wwwwwwwwwwwwwwwwwwwww',DataMeserver);
+        //  var ArrTinNhan = DataMeserver[0].ArrMsSendServer;
+        //  console.log('wwwwwwwwwwwwwwwwwwwww',ArrTinNhan);
+        // var NameMesSaveServer =  [{ NameMessSever: ArrMessSendServer }];
+        /*
+        var NameMesSaveServer = [{ Name: NameMesSer, Arr: ArrMsSendServer }];
+        NameMesSaveServer.map(function (value, index) {
+            var Name = value.Name;
+            var Arr = value.Arr;
+            if (Name.indexOf(NameMessSever) > -1) {
+                Arr = ArrMessSendServer;
+                name = NameMessSever;
+            } else {
+                var x = { Name: NameMessSever, Arr: ArrMessSendServer }
+                NameMesSaveServer.push
+            }
+        }) */
+
+
+      
+
+
+        var NameUserSendUserItem = UserApp + UserWeb + "ChatUsername.docx";
+        var NameUserSendUserItem1 = UserWeb + UserApp + "ChatUsername.docx";
+        var name = NameUserSendUserItem;
+        var name1 = NameUserSendUserItem1;
+        var path = __dirname + "/public/ChatUsername/" + name;
+        var path1 = __dirname + "/public/ChatUsername/" + name1;
+
+        var path2 = __dirname + "/public/ChatUsername/ArrTong/" + name;
+        var path3 = __dirname + "/public/ChatUsername/ArrTong/" + name1;
+
+        var dataMessenger = [dataEmit];
+
+        if (ArrMessSendServer == false) {
+            
+            dataMessenger.map(async (dataEmit, index) => {
+                var UserSendKey = {
+                    //	key: JSON.stringify(soOnMess + index),
+                    key: JSON.stringify(index),
+                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+                    messenger: dataEmit.messenger,
+                    imageBase64: dataEmit.imageBase64,
+                    pathIma: dataEmit.pathIma,
+                    UserNhan: '', //them vao de hien thi thoi
+                    messengerNhan: '',
+                };
+                //  console.log('.UserSendKey: ==0:::', UserSendKey);
+                ArrMessSendServer.push(UserSendKey);
+                console.log(' ArrMessSendServer:::', ArrMessSendServer);
+
+            });
+
+            var x = {  Name: NameMessSever, Arr: ArrMessSendServer };
+           // var M = [{  Name: NameMsSe, Arr: ArrMessSendServer }];
+            var M = [{  Name: '', Arr: '' }];
+            M.map( function( value, index) {
+                var Name = value.Name;
+                var Arr = value.Arr;
+                if ( Name.indexOf(NameMessSever) > -1 ) {
+                   // M = [{  Name: Name, Arr: Arr }];
+                   //GIONG TEN THI TA KHONG LAM GI CA neu khac ten thi push vao 1 phan tu moi
+                } else {
+                    var pt = { Name: NameMessSever, Arr: ArrMessSendServer}
+                    M.push(pt);
+                  
+                  // M.push(x);
+                }
+            });
+            console.log('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM',M);
+            var M1 = JSON.stringify(M);
+            console.log('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM M[1].Arr M[1].Arr M[1].Arr M[1].Arr vvv',M[1].Arr);
+            var M1 = JSON.stringify(M);
+            console.log('ArrMessSendServerMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM' +
+                '1111111111111111111111111111111111111111111111' +
+                '111111111111111111111111111111111111111111111', M1);
+         //   fs.writeFileSync(path2, M1);
+         //   fs.writeFileSync(path3, M1);
+
+            var M2 = JSON.stringify(M[1].Arr);
+            fs.writeFileSync(path2, M2);
+            fs.writeFileSync(path3,M2);
+            
+         ///   fs.writeFileSync(path1, M1);
+            
+
+            /*
+            function NameMesSaveServer(NameMsSe, dataMessenger) {
+                dataMessenger.map(async (dataEmit, index) => {
+                    var UserSendKey = {
+                        //	key: JSON.stringify(soOnMess + index),
+                        key: JSON.stringify(index),
+                        UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+                        messenger: dataEmit.messenger,
+                        imageBase64: dataEmit.imageBase64,
+                        pathIma: dataEmit.pathIma,
+                        UserNhan: '', //them vao de hien thi thoi
+                        messengerNhan: '',
+                    };
+                    //  console.log('.UserSendKey: ==0:::', UserSendKey);
+                    ArrMessSendServer.push(UserSendKey);
+                    console.log(' ArrMessSendServer:::', ArrMessSendServer);
+    
+                });
+                return [{  Name: NameMsSe, Arr: ArrMessSendServer }];
+            }
+           
+            NameMesSaveServer(NameMessSever, dataMessenger).map(function (value, index) {
+                var Name = value.Name;
+                var Arr = value.Arr;
+                if (Name.indexOf(NameMessSever) > -1) {
+                    //Arr = ArrMessSendServer;
+                   // name = NameMessSever;
+                  // ArrMessSendServer.push(UserSendKey);
+                } else {
+                    var x = { Name: Name, Arr: Arr }
+                    NameMesSaveServer(NameMessSever, ArrMessSendServer).push(x);
+                }
+            });
+            var x = NameMesSaveServer();
+            console.log('NameMesSaveServer:::',NameMesSaveServer);
+            */
+    
+
+            var ArrMessSendServer1 = JSON.stringify(ArrMessSendServer);
+            console.log('ArrMessSendServer:::///////////////////////////////' +
+                '/////////////////////////////////////////////////////////////////' +
+                '////////////////////////////////////////////////////////////////', ArrMessSendServer1);
+            fs.writeFileSync(path, ArrMessSendServer1);
+            fs.writeFileSync(path1, ArrMessSendServer1);
+
+
+        } else {
+            var Nms = ArrMessSendServer.length;
+            dataMessenger.map(async (dataEmit, index) => {
+                var UserSendKey = {
+                    //	key: JSON.stringify(soOnMess + index),
+                    key: JSON.stringify(Nms + index),
+                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+                    messenger: dataEmit.messenger,
+                    imageBase64: dataEmit.imageBase64,
+                    pathIma: dataEmit.pathIma,
+                    UserNhan: '', //them vao de hien thi thoi
+                    messengerNhan: '',
+                };
+                //  console.log('.UserSendKey: ==0:::', UserSendKey);
+                ArrMessSendServer.push(UserSendKey);
+
+            });
+
+            var x = {  Name: NameMessSever, Arr: ArrMessSendServer };
+ 
+           // var M = [{  Name: NameMsSe, Arr: ArrMessSendServer }];
+            var M = [{  Name: '', Arr: '' }];
+            M.map( function( value, index) {
+                var Name = value.Name;
+                var Arr = value.Arr;
+                if ( Name.indexOf(NameMessSever) > -1 ) {
+                   // M = [{  Name: Name, Arr: Arr }];
+                   //GIONG TEN THI TA KHONG LAM GI CA neu khac ten thi push vao 1 phan tu moi
+                } else {
+                    var pt = { Name: NameMessSever, Arr: ArrMessSendServer}
+                    M.push(pt);
+                  // M.push(x);
+                }
+            });
+            console.log('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM',M);
+            
+            console.log('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM M[1].Arr M[1].Arr M[1].Arr M[1].Arr vvv',M[1].Arr);
+            var M1 = JSON.stringify(M);
+            console.log('ArrMessSendServerMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM' +
+                '1111111111111111111111111111111111111111111111' +
+                '111111111111111111111111111111111111111111111', M1);
+            var M2 = JSON.stringify(M[1].Arr);
+            fs.writeFileSync(path2, M2);
+            fs.writeFileSync(path3,M2);
+            
+
+            // e.setState({ SaveDataMessengerApp: dataMessenger })
+            //  e.setState({SaveDataMessengerApp: ArrMessSendServer,//	ArrUserSendKey: ArrdataMessenger,// soOnMess: (soOnMess + 1),});
+            console.log(' ArrMessSendServer:::', ArrMessSendServer);
+            var ArrMessSendServer1 = JSON.stringify(ArrMessSendServer);
+            console.log('ArrMessSendServer:::///////////////////////////////' +
+                '/////////////////////////////////////////////////////////////////' +
+                '////////////////////////////////////////////////////////////////', ArrMessSendServer1);
+            fs.writeFileSync(path, ArrMessSendServer1);
+            fs.writeFileSync(path1, ArrMessSendServer1);
+        }
+
+
         /*  dataMessenger.DSsocketIdNguoiNhan.map(socketId => {
               io1.to(socketId).emit('server-send-messenger', {
                   UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
@@ -926,11 +1167,7 @@ io1.on('connect', (socket) => {
 
 
 
-    var SaveDataMessengerApp = [];
-    var WriteArrayMessUsersendUserItem = [];
-   // var ArrMessSendServer = [];
-    var soOnMess = 0;
-    var ArrMessSendServer = [];
+
     //client-send-ArrayMessUsersendUserItem sau khi da luu tren app
     socket.on('client-send-ArrayMessUsersendUserItem', dataMessenger => {
         console.log('ArrayMessUsersendUserItem:client-send-ArrayMessUsersendUserItem:::', dataMessenger);
@@ -986,101 +1223,8 @@ io1.on('connect', (socket) => {
         console.log('SaveDataMessengerApp:::///////////////////////////////' +
             '/////////////////////////////////////////////////////////////////' +
             '////////////////////////////////////////////////////////////////', SaveDataMessengerApp);
-        var dataMessenger = {
-            UsernameNguoiNhan: 'lan',
-            UsernameNguoiSend: 'manh',
-            messenger: '44444444444444444',
-            imageBase64: '',
-            pathIma: 'http://192.168.216.2:2800/hotgirls/3.jpg'
-        } */
+       
 
-        //  var soOnMess = (soOnMess + 1);
-        //    console.log('verver-trave-yeucau-ArrayMessUser::==0 dataMessenger:::', dataMessenger);
-
-        var UserWeb = dataMessenger[0].UsernameNguoiSend;
-        var UserApp = dataMessenger[0].UsernameNguoiNhan;
-        //  var soPage = 1, //de hien thi la ra tin nhan moc ve 1 tinh tu length max - 1.m = hien thi so phan tu tu lon nhat toi -m phan tu
-
-        var NameUserSendUserItem = UserApp + UserWeb + "ChatUsername.docx";
-        var NameUserSendUserItem1 = UserWeb + UserApp + "ChatUsername.docx";
-        var name = NameUserSendUserItem;
-        var name1 = NameUserSendUserItem1;
-        var path = __dirname + "/public/ChatUsername/" + name;
-        var path1 = __dirname + "/public/ChatUsername/" + name1;
-
-
-        //  console.log('this.state.UsernameNguoiNhan !== "":::', this.state.UserApp);
-        // const { UserWeb, UserApp } = this.state; //UserApp = UsernameNguoiSend, 
-
-        //var Nms = ArrMessSendServer.length;
-        // console.log('ArrMessSendServer[0]=null:::',ArrMessSendServer[0]==null);
-        if ([]) {
-            console.log('dong message nay luon duoc in ra');
-        }
-
-        if ([] == true) {
-            console.log('dong message nay khong bao gio duoc in ra');
-        }
-
-        if ([] == false) {
-            console.log('dong message nay luon luon duoc in ra, hehe');
-        }
-        console.log(' ArrMessSendServer == true::::', ArrMessSendServer == true);
-        console.log('ArrMessSendServer == false::::', ArrMessSendServer == false);
-
-        if (ArrMessSendServer==false) {
-            dataMessenger.map(async (dataEmit, index) => {
-                var UserSendKey = {
-                    //	key: JSON.stringify(soOnMess + index),
-                    key: JSON.stringify(index),
-                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                    messenger: dataEmit.messenger,
-                    imageBase64: dataEmit.imageBase64,
-                    pathIma: dataEmit.pathIma,
-                    UserNhan: '', //them vao de hien thi thoi
-                    messengerNhan: '',
-                };
-                //  console.log('.UserSendKey: ==0:::', UserSendKey);
-                ArrMessSendServer.push(UserSendKey);
-                console.log(' ArrMessSendServer:::', ArrMessSendServer);
-
-            });
-
-            var ArrMessSendServer1 = JSON.stringify(ArrMessSendServer);
-            console.log('ArrMessSendServer:::///////////////////////////////' +
-                '/////////////////////////////////////////////////////////////////' +
-                '////////////////////////////////////////////////////////////////', ArrMessSendServer1);
-            fs.writeFileSync(path,ArrMessSendServer1);
-            fs.writeFileSync(path1,ArrMessSendServer1);
-
-
-        } else {
-            var Nms = ArrMessSendServer.length;
-            dataMessenger.map(async (dataEmit, index) => {
-                var UserSendKey = {
-                    //	key: JSON.stringify(soOnMess + index),
-                    key: JSON.stringify(Nms + index),
-                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                    messenger: dataEmit.messenger,
-                    imageBase64: dataEmit.imageBase64,
-                    pathIma: dataEmit.pathIma,
-                    UserNhan: '', //them vao de hien thi thoi
-                    messengerNhan: '',
-                };
-                //  console.log('.UserSendKey: ==0:::', UserSendKey);
-                ArrMessSendServer.push(UserSendKey);
-
-            });
-            // e.setState({ SaveDataMessengerApp: dataMessenger })
-            //  e.setState({SaveDataMessengerApp: ArrMessSendServer,//	ArrUserSendKey: ArrdataMessenger,// soOnMess: (soOnMess + 1),});
-            console.log(' ArrMessSendServer:::', ArrMessSendServer);
-            var ArrMessSendServer1 = JSON.stringify(ArrMessSendServer);
-            console.log('ArrMessSendServer:::///////////////////////////////' +
-                '/////////////////////////////////////////////////////////////////' +
-                '////////////////////////////////////////////////////////////////', ArrMessSendServer1);
-            fs.writeFileSync(path, ArrMessSendServer1);
-            fs.writeFileSync(path1, ArrMessSendServer1);
-        }
 
         /*
          fs.readFile(path, 'UTF-8', async (err, data2) => {
@@ -1194,6 +1338,11 @@ io1.on('connect', (socket) => {
         // var ArrSocketId_UserSend = ReadArrayMessUsersendUserItem.ArrSocketId_UserSend;
         var name = ReadArrayMessUsersendUserItem.NameUserSendUserItem;
         var path = __dirname + "/public/ChatUsername/" + name;
+        console.log('path:::::////////////////////////////////////////', path);
+        var path2 = __dirname + "public/ChatUsername/ArrTong/" + name;
+        console.log('path2::::::////////////////////////////////////////', path2);
+      //  var path3 = __dirname + "/public/ChatUsername/ArrTong/" + name1;
+
         var soPage = ReadArrayMessUsersendUserItem.soPage;
         // var y = fs.readFileSync(path);
         // console.log('yyyyyyyyyyy', y);
@@ -1218,16 +1367,15 @@ io1.on('connect', (socket) => {
 
                 // var SaveDataMessengerApp1 = data.toString(); //chuyen tu buffer sang base64
                 var SaveDataMessengerApp1 = data;
-                console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + name + ":" +
-                    '////////////////////////////////////////////////////////////////' +
-                    '//////////////////////////////////////////////////////////////');
-                console.log('ReadArrayMessUsersendUserItem la ReadArrayMessUsersendUserItem : ', SaveDataMessengerApp1);
+
+                //  console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + name + ":" +'////////////////////////////////////////////////////////////////' +'//////////////////////////////////////////////////////////////');
+                //  console.log('ReadArrayMessUsersendUserItem la ReadArrayMessUsersendUserItem : ', SaveDataMessengerApp1);
                 // console.log('ReadArrayMessUsersendUserItem path : ', path);
 
                 //1) lay ra 5 phan tu cuoi trong mang nao
 
-            //    var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1);
-                var SaveDataMessengerApp =ArrMessSendServer;
+                 var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1);
+               // var SaveDataMessengerApp = ArrMessSendServer;
 
 
                 //  console.log('ReadArrayMessUsersendUserItem la ReadArrayMessUsersendUserItem : ', SaveDataMessengerApp);
@@ -1237,9 +1385,17 @@ io1.on('connect', (socket) => {
                 //soPage chi duoc lon hon hoa bang 1 so trang khong cho qua so am hay bang 0
                 var X = 3 * soPage; //so phan tu tra ve cho client
                 console.log('XXXXXXXXXXXXXXXXXX So phan tu tai ve la', X);
-                if( soPage < 1) {
-                    soPage = 1;
-                } else {
+                if (X <= 0) {
+                    var X1 = 3;
+                    ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
+                        io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', { Nms: n, Sms: (SaveDataMessengerApp1), TH1: (n + ' <= ' + X1) });
+                        // console.log('server-trave-yeucau-ArrayMess-User la : ', SaveDataMessengerApp);
+                    });
+                    console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + ReadArrayMessUsersendUserItem.NameUserSendUserItem + ":" +
+                        '///////////////////////////////X <= 0/////////////////////////////////' +
+                        '///////////////////////////////X <= 0/////////////////X <= 0//////////////', { Nms: n, Sms: SaveDataMessengerApp1, TH1: (n + ' <= ' + X1) });
+
+                } else if (X > 0) {
                     if (n <= X) {
                         ArrSocketIdUserYeuCauMess.map(function (SocketId, index) {
                             io1.to(SocketId).emit('server-trave-yeucau-ArrayMess-User', { Nms: n, Sms: (SaveDataMessengerApp1), TH1: (n + ' <= ' + X) });
@@ -1254,11 +1410,11 @@ io1.on('connect', (socket) => {
                         for (i = n - X; i < n; i++) {
                             var phantu = SaveDataMessengerApp[i];
                             ArrXphanTuCuoiMs1.push(phantu);
-                        } 
-                       /* SaveDataMessengerApp.map( function(dataEmit,imdex) {
-                            var n = index + X;
-                            var phanTu = SaveDataMessengerApp[n];
-                        }) */
+                        }
+                        /* SaveDataMessengerApp.map( function(dataEmit,imdex) {
+                             var n = index + X;
+                             var phanTu = SaveDataMessengerApp[n];
+                         }) */
                         console.log('ReadArrayMessUsersendUserItem ArrXphanTuCuoiMs::::', ArrXphanTuCuoiMs1);
                         var ArrXphanTuCuoiMs = JSON.stringify(ArrXphanTuCuoiMs1);
                         /* ArrSocketId_UserSend.map(function (SocketId, index) {
@@ -1272,9 +1428,9 @@ io1.on('connect', (socket) => {
                         console.log('server-trave-Client-yeucau-ArrayMess-User la: ' + ReadArrayMessUsersendUserItem.NameUserSendUserItem + ":" +
                             '////////////////////////////////////////////////////////////////' +
                             '//////////////////////////////////////////////////////////////', { Nms: n, Sms: (ArrXphanTuCuoiMs), TH2: (n + ' > ' + X) });
-    
+
                     }
-    
+
                 }
             }
         });

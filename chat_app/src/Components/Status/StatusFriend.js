@@ -133,7 +133,11 @@ export default class StatusUser extends Component {
 
             //can the hien status theo thoi gian hien taji vua dang roi moi toi qua khu nen ta can dao lai gia tri key trong status
             //them 1 bien mang  moi de luu chu no
-            var status = { User: DataStatusPublic.User, StatusMe: DataStatusPublic.StatusMe, imaBase64: DataStatusPublic.imaBase64, imaPath: DataStatusPublic.imaPath };
+            var status = { User: DataStatusPublic.User, 
+                StatusMe: DataStatusPublic.StatusMe, 
+                imaBase64: DataStatusPublic.imaBase64, 
+                imaPath: DataStatusPublic.imaPath 
+            };
             var ArrayStatus = this.state.ArrayStatus;
             ArrayStatus.unshift(status);
             // console.log(' ArrayStatus.unshift::::', ArrayStatus);
@@ -143,7 +147,12 @@ export default class StatusUser extends Component {
                 var StatusMe = ArrayStatus[i].StatusMe;
                 var imaBase64 = ArrayStatus[i].imaBase64;
                 var imaPath = ArrayStatus[i].imaPath;
-                var statePublic = { key: JSON.stringify(i + 1), User: User == null ? null : User, StatusMe: StatusMe = null ? null : StatusMe, imaBase64: imaBase64 == null ? null : imaBase64, imaPath: imaPath == null ? null : imaPath };
+                var statePublic = { key: JSON.stringify(i + 1), 
+                    User: User == null ? null : User, 
+                    StatusMe: StatusMe = null ? null : StatusMe, 
+                    imaBase64: imaBase64 == null ? null : imaBase64, 
+                    imaPath: imaPath == null ? null : imaPath 
+                };
                 ArrayStatusThem.push(statePublic);
             }
             //   console.log('ArrayStatusThem::::', ArrayStatusThem);

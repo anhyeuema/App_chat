@@ -190,153 +190,194 @@ export default class ChatUser1 extends Component {
 				// alert('server-send-socket.id+Username')
 				//    console.log('dataMessenger: on server-send-socket.id+Username::', dataMessenger);
 				//});
-			});
 
 
 
-			//lang nghe server send tin nhan
-            /* var dataEmit = { //hien thi de biet dataEmit gom nhungphan tu gi de ta re viet code thui
-              UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
-              UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
-              messenger: dataMessenger.messenger,
-              imageBase64: dataMessenger.imageBase64,
-              pathIma: dataMessenger.pathIma,
-              }; */
-			//da co thay doi data dataMessenger = dataEmit || dataMessenger= ArrMess la 1 cai mang 
-			// xu ly mang [], hoac mang [ 1phan tu], [ nhieu phan tu], mang chua rong [] ta bo qua khong lam gi ca
-			//1) tao mang co key chua no
-			// var dataMessengerKey = [];
-			this.socket.on('server-send-messenger', async (dataMessenger) => {
-				console.log('dataMessenger:::', dataMessenger);
-				//web send thi ti nua emit la nhan   // app nhan ti emit la send ta dat ten bi nguoc
-				await e.setState({
-					UserWeb: dataMessenger[0].UsernameNguoiSend,
-					UserApp: dataMessenger[0].UsernameNguoiNhan,
-					soPage: 1,
 
-				});
-				//  console.log('this.state.UsernameNguoiNhan !== "":::', this.state.UserApp);
-				const { UserWeb, UserApp } = this.state; //UserApp = UsernameNguoiSend, 
+				//lang nghe server send tin nhan
+				/* var dataEmit = { //hien thi de biet dataEmit gom nhungphan tu gi de ta re viet code thui
+				  UsernameNguoiNhan: dataMessenger.UsernameNguoiNhan,
+				  UsernameNguoiSend: dataMessenger.UsernameNguoiSend,
+				  messenger: dataMessenger.messenger,
+				  imageBase64: dataMessenger.imageBase64,
+				  pathIma: dataMessenger.pathIma,
+				  }; */
+				//da co thay doi data dataMessenger = dataEmit || dataMessenger= ArrMess la 1 cai mang 
+				// xu ly mang [], hoac mang [ 1phan tu], [ nhieu phan tu], mang chua rong [] ta bo qua khong lam gi ca
+				//1) tao mang co key chua no
+				// var dataMessengerKey = [];
+				this.socket.on('server-send-messenger', async (dataMessenger) => {
+					console.log('dataMessenger:::', dataMessenger);
+					//web send thi ti nua emit la nhan   // app nhan ti emit la send ta dat ten bi nguoc
+					await e.setState({
+						UserWeb: dataMessenger[0].UsernameNguoiSend,
+						UserApp: dataMessenger[0].UsernameNguoiNhan,
+						soPage: 1, //de hien thi la ra tin nhan moc ve 1 tinh tu length max - 1.m = hien thi so phan tu tu lon nhat toi -m phan tu
 
-				//lay socketId cua app tuc la lay socketId o day da dat la socketIdNguoiSend
-				// var UsernameNguoiSend = this.state.UsernameNguoiSend;
-				//can tim socketIdUsername co UserApp chua no thi moi emit ve no duoc
-				ArrSocketId_UserSend = [];
-				//  var UsernameNguoiSend = this.state.UsernameNguoiSend;
-				var ArraySocketUsername = this.state.ArraySocketUsername;
-				ArraySocketUsername.map(function (value, index) {
-					var UserSocketId = value.UserSocketId;
-					if (UserSocketId.indexOf(UserApp) > -1) {
-						var ArrSocketId = UserSocketId.replace(UserApp, '');
-						ArrSocketId_UserSend.push(ArrSocketId);
-					}
-				});
+					});
+					//  console.log('this.state.UsernameNguoiNhan !== "":::', this.state.UserApp);
+					const { UserWeb, UserApp } = this.state; //UserApp = UsernameNguoiSend, 
 
-				e.setState({ ArrSocketId_UserSend: ArrSocketId_UserSend });
-				//  console.log('ArrSocketId_UserSend this.state.ArrSocketId_UserSend:::', this.state.ArrSocketId_UserSend);
-
-
-				// var ArrSocketId_UserSend = 
-				await this.socket.emit('client-muon-lay-ArrayMess-User', {
-					NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx", //luu ten cua messger de de quan ly
-					ArrSocketId_UserSend: this.state.ArrSocketId_UserSend,
-					UserYeuCauMess: UserApp, //tu thang nay o server cung co the tim ra socket id thoa man, //nen su dung se chi can viet o server la su lu ca o app va web duoc
-					soPage: this.state.soPage, // quan ly so trang muon lay ve
-				});
-				await this.socket.on('server-trave-yeucau-ArrayMess-User', (DataMessengerApp_r) => {
-					//{Nms: n, Sms: SaveDataMessengerApp}
-					console.log('server-trave-yeucau-ArrayMess-User::', DataMessengerApp_r);
-					var Nms = DataMessengerApp_r.Nms;
-					var SaveDataMessengerApp_r = DataMessengerApp_r.Sms;
-					var SaveDataMessengerApp = SaveDataMessengerApp_r;
-					console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp.length);
-					console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp[0]);
-					if (SaveDataMessengerApp.length == 1 && SaveDataMessengerApp[0] == '0') { //neu ton tai SaveDataMessengerApp_r
-						//if (SaveDataMessengerApp_r = "" || SaveDataMessengerApp_r[0] == null || SaveDataMessengerApp_r[0] == undefined) {
-						//localStorage.setItem('SaveDataMessengerApp', JSON.stringify([dataEmit]));
-						if (dataMessenger[0] !== null) {
-							//////  console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
-							var ArrdataMessenger = [];
-							//    console.log('verver-trave-yeucau-ArrayMessUser::==0 dataMessenger:::', dataMessenger)
-							dataMessenger.map(function (dataEmit, index) {
-								var UserSendKey = {
-									key: JSON.stringify(ArrdataMessenger.length + index),
-									UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-									messenger: dataEmit.messenger,
-									imageBase64: dataEmit.imageBase64,
-									pathIma: dataEmit.pathIma,
-									UserNhan: '', //them vao de hien thi thoi
-									messengerNhan: '',
-								};
-								//    console.log('.UserSendKey: ==0:::', UserSendKey);
-
-								ArrdataMessenger.push(UserSendKey);
-
-							});
-							// e.setState({ SaveDataMessengerApp: dataMessenger })
-							e.setState({
-								SaveDataMessengerApp: ArrdataMessenger,
-								ArrUserSendKey: ArrdataMessenger
-							});
-
-
+					//lay socketId cua app tuc la lay socketId o day da dat la socketIdNguoiSend
+					// var UsernameNguoiSend = this.state.UsernameNguoiSend;
+					//can tim socketIdUsername co UserApp chua no thi moi emit ve no duoc
+					ArrSocketId_UserSend = [];
+					//  var UsernameNguoiSend = this.state.UsernameNguoiSend;
+					var ArraySocketUsername = this.state.ArraySocketUsername;
+					ArraySocketUsername.map(function (value, index) {
+						var UserSocketId = value.UserSocketId;
+						if (UserSocketId.indexOf(UserApp) > -1) {
+							var ArrSocketId = UserSocketId.replace(UserApp, '');
+							ArrSocketId_UserSend.push(ArrSocketId);
 						}
-					}
+					});
 
-					else if (SaveDataMessengerApp.length > 1 && SaveDataMessengerApp[0] == '[') { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
+					e.setState({ ArrSocketId_UserSend: ArrSocketId_UserSend });
+					//  console.log('ArrSocketId_UserSend this.state.ArrSocketId_UserSend:::', this.state.ArrSocketId_UserSend);
+
+
+					// var ArrSocketId_UserSend = 
+					await this.socket.emit('client-muon-lay-ArrayMess-User', {
+						NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx", //luu ten cua messger de de quan ly
+						ArrSocketId_UserSend: this.state.ArrSocketId_UserSend,
+						UserYeuCauMess: UserApp, //tu thang nay o server cung co the tim ra socket id thoa man, //nen su dung se chi can viet o server la su lu ca o app va web duoc
+						soPage: this.state.soPage, // quan ly so trang muon lay ve
+					});
+					await this.socket.on('server-trave-yeucau-ArrayMess-User', (DataMessengerApp_r) => {
 						//{Nms: n, Sms: SaveDataMessengerApp}
-						if (dataMessenger[0] !== null) {
+						console.log('server-trave-yeucau-ArrayMess-User::', DataMessengerApp_r);
+						var Nms = DataMessengerApp_r.Nms;
+						var SaveDataMessengerApp_r = DataMessengerApp_r.Sms;
+						var SaveDataMessengerApp = SaveDataMessengerApp_r;
+						console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp.length);
+						console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp[0]);
+						if (SaveDataMessengerApp.length == 1 && SaveDataMessengerApp[0] == '0') { //neu ton tai SaveDataMessengerApp_r
+							//if (SaveDataMessengerApp_r = "" || SaveDataMessengerApp_r[0] == null || SaveDataMessengerApp_r[0] == undefined) {
+							//localStorage.setItem('SaveDataMessengerApp', JSON.stringify([dataEmit]));
+							if (dataMessenger[0] !== null) {
+								//////  console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
+								var ArrdataMessenger = [];
+								//    console.log('verver-trave-yeucau-ArrayMessUser::==0 dataMessenger:::', dataMessenger)
+								dataMessenger.map(function (dataEmit, index) {
+									var UserSendKey = {
+										key: JSON.stringify(ArrdataMessenger.length + index),
+										UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+										messenger: dataEmit.messenger,
+										imageBase64: dataEmit.imageBase64,
+										pathIma: dataEmit.pathIma,
+										UserNhan: '', //them vao de hien thi thoi
+										messengerNhan: '',
+									};
+									//    console.log('.UserSendKey: ==0:::', UserSendKey);
 
-							var ArrdataMessenger = JSON.parse(SaveDataMessengerApp);
-							// console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
-							var ArrMessSendServer = []; // ArrMessSendServer chi lay 1 phan tu hay vai phan tu tu tin nhan new duoc web gui toi
-							dataMessenger.map(function (dataEmit, index) {
-								//Nms la so phan tu tinnhan luu o server 
-								var UserSendKey = {
-									key: JSON.stringify(Nms + index),
-									UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-									messenger: dataEmit.messenger,
-									imageBase64: dataEmit.imageBase64,
-									pathIma: dataEmit.pathIma,
-									UserNhan: '', //them vao de hien thi thoi
-									messengerNhan: '',
-								};
-								// console.log('.UserSendKey::::', UserSendKey);
+									ArrdataMessenger.push(UserSendKey);
 
-								ArrdataMessenger.push(UserSendKey);
-								ArrMessSendServer.push(UserSendKey);
-							})
-							// console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
-							e.setState({
-								SaveDataMessengerApp: ArrMessSendServer,
-								ArrUserSendKey: ArrdataMessenger,
-							});
+								});
+								// e.setState({ SaveDataMessengerApp: dataMessenger })
+								e.setState({
+									SaveDataMessengerApp: ArrdataMessenger,
+									ArrUserSendKey: ArrdataMessenger
+								});
+
+								// var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+								console.log('(this.state.SaveDataMessengerApp);:::', this.state.SaveDataMessengerApp);
+								var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+								var ArrayMessUsersendUserItem = {
+									//dao ten so coi app nguoi send thanh nguoi nhan va nguoi nahn thanh nguoi send
+									//  NameUserSendUserItem: UsernameNguoiSend + localStorage.getItem('Username') + "ChatUsername.docx",
+									NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
+									NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
+									SaveDataMessengerApp: this.state.SaveDataMessengerApp, // dataMessenger la mang san roi
+								}
+								this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
+								console.log('ArrayMessUsersendUserItem truong hop == 011111111111111 tra ve', ArrayMessUsersendUserItem);
+
+							}
+						}
+
+						else if (SaveDataMessengerApp.length > 1 && SaveDataMessengerApp[0] == '[') { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
+							//{Nms: n, Sms: SaveDataMessengerApp}
+							if (dataMessenger[0] !== null) {
+
+								var ArrdataMessenger = JSON.parse(SaveDataMessengerApp);
+								// console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
+								var ArrMessSendServer = []; // ArrMessSendServer chi lay 1 phan tu hay vai phan tu tu tin nhan new duoc web gui toi
+								dataMessenger.map(function (dataEmit, index) {
+									//Nms la so phan tu tinnhan luu o server 
+									var UserSendKey = {
+										key: JSON.stringify(Nms + index), //do index gia tri bat dau tu 0, index=0 MIN
+										UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+										messenger: dataEmit.messenger,
+										imageBase64: dataEmit.imageBase64,
+										pathIma: dataEmit.pathIma,
+										UserNhan: '', //them vao de hien thi thoi
+										messengerNhan: '',
+									};
+									// console.log('.UserSendKey::::', UserSendKey);
+
+									ArrdataMessenger.push(UserSendKey);
+									ArrMessSendServer.push(UserSendKey);
+								})
+								// console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
+								e.setState({
+									SaveDataMessengerApp: ArrMessSendServer,
+									ArrUserSendKey: ArrdataMessenger,
+								});
+
+								// var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+								console.log('(this.state.SaveDataMessengerApp);:::', this.state.SaveDataMessengerApp);
+								var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+								var ArrayMessUsersendUserItem = {
+									//dao ten so coi app nguoi send thanh nguoi nhan va nguoi nahn thanh nguoi send
+									//  NameUserSendUserItem: UsernameNguoiSend + localStorage.getItem('Username') + "ChatUsername.docx",
+									NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
+									NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
+									SaveDataMessengerApp: this.state.SaveDataMessengerApp, // dataMessenger la mang san roi
+								}
+
+								this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
+								console.log('ArrayMessUsersendUserItem truong hop == 011111111111111 tra ve', ArrayMessUsersendUserItem);
+
+
+
+							}
 
 						}
 
-					}
+						/*
+						// var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+						console.log('(this.state.SaveDataMessengerApp);:::', this.state.SaveDataMessengerApp);
+						var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+						var ArrayMessUsersendUserItem = {
+							//dao ten so coi app nguoi send thanh nguoi nhan va nguoi nahn thanh nguoi send
+							//  NameUserSendUserItem: UsernameNguoiSend + localStorage.getItem('Username') + "ChatUsername.docx",
+							NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
+							NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
+							SaveDataMessengerApp: this.state.SaveDataMessengerApp, // dataMessenger la mang san roi
+						}
 
+						this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
+						console.log('ArrayMessUsersendUserItem truong hop == 011111111111111 tra ve', ArrayMessUsersendUserItem);
+						*/
 
-					// var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
-					console.log('(this.state.SaveDataMessengerApp);:::', this.state.SaveDataMessengerApp);
-					var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
-					var ArrayMessUsersendUserItem = {
-						//dao ten so coi app nguoi send thanh nguoi nhan va nguoi nahn thanh nguoi send
-						//  NameUserSendUserItem: UsernameNguoiSend + localStorage.getItem('Username') + "ChatUsername.docx",
-						NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
-						NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
-						SaveDataMessengerApp: this.state.SaveDataMessengerApp, // dataMessenger la mang san roi
-					}
-
-					this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
-					console.log('ArrayMessUsersendUserItem truong hop == 011111111111111 tra ve', ArrayMessUsersendUserItem);
-
+					});
 
 				});
 
 
 
+
+
+
+
+
+
+
 			});
+
+
+
+
 
 
 
@@ -539,20 +580,20 @@ export default class ChatUser1 extends Component {
 			console.log('server-trave-yeucau-ArrayMess-User onYeuCauMess::', SaveDataMessengerApp[0]);
 			//chi hien thi ra thoi
 			if (SaveDataMessengerApp.length == 1 && SaveDataMessengerApp[0] == '0') { //neu ton tai SaveDataMessengerApp_r
-					//////  console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
-					var ArrdataMessenger = [];
-					e.setState({
-						SaveDataMessengerApp: ArrdataMessenger,
-						ArrControlItemMess: ArrdataMessenger,  // da nhan vao chon Username roi
-					});
+				//////  console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
+				var ArrdataMessenger = [];
+				e.setState({
+					SaveDataMessengerApp: ArrdataMessenger,
+					ArrControlItemMess: ArrdataMessenger,  // da nhan vao chon Username roi
+				});
 			}
 			if (SaveDataMessengerApp.length > 1 && SaveDataMessengerApp[0] == '[') { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
 				//{Nms: n, Sms: SaveDataMessengerApp}
-					var ArrdataMessenger = JSON.parse(SaveDataMessengerApp);
-					e.setState({
-						ArrUserSendKey: ArrdataMessenger,
-						ArrControlItemMess: ArrdataMessenger, // da nhan vao chon Username roi
-					});
+				var ArrdataMessenger = JSON.parse(SaveDataMessengerApp);
+				e.setState({
+					ArrUserSendKey: ArrdataMessenger,
+					ArrControlItemMess: ArrdataMessenger, // da nhan vao chon Username roi
+				});
 			}
 			// var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
 			console.log('(this.state.SaveDataMessengerApp);onYeuCauMess:::', this.state.ArrUserSendKey);
