@@ -273,24 +273,24 @@ export default class ChatUser3 extends Component {
                             arrThemOnMes.unshift(dataEmit);
                         });
                         console.log('arrThemOnMes sau khi unshift splice(m, 1)', arrThemOnMes);
-                      //  console.log('arrThemOnMes', arrThemOnMes);
-                         if (arrThemOnMes.length >= (m + 1 )) {
-                            var ptuXoa  =  m- this.state.a;///m- this.state.a=1; //m  = this.state.a
-                          //  console.log('ptuXoa:::::::::',m);      
-                            console.log('ptuXoa:::::::::',ptuXoa);
+                        //  console.log('arrThemOnMes', arrThemOnMes);
+                        if (arrThemOnMes.length >= (m + 1)) {
+                            var ptuXoa = 1;///m- this.state.a=1; //m  = this.state.a
+                            //  console.log('ptuXoa:::::::::',m);      
+                            console.log('ptuXoa:::::::::', ptuXoa);
                             //    console.log('so phantu khong lap :', m);
                             //    console.log('var xoa phan tu thu 2 nao', arrThemOnMes.length + ">=" + (m));
                             // neu m tang len 1 thi phan tu xoa cung tang 1 = m- this.state.a
                             arrThemOnMes.splice(ptuXoa, 1); // XOA 1 PHAN TU O VI TRI THU 2, de lai vi tri thu nhat
                             // co the dung unshift() / shift() — thêm/xóa phần tử từ vị trí đầu mảng
                             //dao gia tri them hien thi
-                            e.setState({ arrThemOnMes: arrThemOnMes,});
-                            e.setState({  a: arrThemOnMes.length, })
+                            e.setState({ arrThemOnMes: arrThemOnMes, });
+                            e.setState({ a: arrThemOnMes.length, })
                             console.log('this.state.aaaaaaaaaaaaaaaaaa sau khi splice(m, 1)', this.state.a);
                             console.log('arrThemOnMes sau khi splice(m, 1)', arrThemOnMes);
                             //  e.setState({  arrThemOnMes: arrThemOnMes, });
-                           // e.setState({ arrThemOnMes: arrThemOnMes, });
-                           var arrThemOnMesKetQua = [];
+                            // e.setState({ arrThemOnMes: arrThemOnMes, });
+                            var arrThemOnMesKetQua = [];
                             arrThemOnMes.map(function (dataEmit, index) {
                                 //Nms la so phan tu tinnhan luu o server 
                                 //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
@@ -351,16 +351,16 @@ export default class ChatUser3 extends Component {
                         // SaveDataMessengerApp: ArrMessSendServer,
                         ArrUserSendKey: ArrdataMessenger,
                         ArrControlItemMess: ArrdataMessenger,
-                       
+
 
                     });
                     // var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
 
-                 //   console.log('(this.state.ArrUserSendKey);:::', this.state.ArrUserSendKey)
-                  //  console.log('(this.state.ArrControlItemMess);:::', this.state.ArrControlItemMess)
-                   
-                  
-                  //   this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
+                    //   console.log('(this.state.ArrUserSendKey);:::', this.state.ArrUserSendKey)
+                    //  console.log('(this.state.ArrControlItemMess);:::', this.state.ArrControlItemMess)
+
+
+                    //   this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
                     // console.log('ArrayMessUsersendUserItem truong hop == 011111111111111 tra ve', ArrayMessUsersendUserItem);
                 }
 
@@ -643,6 +643,105 @@ export default class ChatUser3 extends Component {
 
     }
 
+    hienthiMess1() {
+
+        const { UserWeb, UsernameNguoiSend } = this.state;
+        this.socket.emit('client-muon-lay-ArrayMess-User', {
+            NameUserSendUserItem: (UsernameNguoiSend + UserWeb + "ChatUsername.docx"),
+            //  ArrSocketId_UserSend: ArrSocketId_UserSend,
+            UserYeuCauMess: UsernameNguoiSend, //UserApp,
+            soPage: this.state.soPage,
+        });
+        this.socket.on('server-trave-yeucau-ArrayMess-User', DataMessengerApp_r => {
+            console.log('server-trave-yeucau-ArrayMess-User hienthiMess chuyen cho flatlist::', DataMessengerApp_r);
+            //console.log('SaveDataMessengerApp[0] !== undefined:::',SaveDataMessengerApp[0] !== 'undefined')
+            var Nms = DataMessengerApp_r.Nms;
+            var Sms = DataMessengerApp_r.Sms;
+            var SaveDataMessengerApp_r = Sms;
+            e.setState({
+                YeuCauArrMess: SaveDataMessengerApp_r,
+                Nms: Nms,
+
+            });
+            var SaveDataMessengerApp = SaveDataMessengerApp_r;
+            //var x= '[]' x.length=1
+            if (SaveDataMessengerApp[0] == '0' && SaveDataMessengerApp.length == 1) {
+                //khong lam gi ca nhe
+                console.log('flalist khong lam gi ca voi SaveDataMessengerApp');
+                // e.setState({ 
+                //     ArrControlItemMess: [],
+                /// });
+            }
+            else if (SaveDataMessengerApp[0] == '[' && SaveDataMessengerApp.length > 1) { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
+                var SaveDataMessengerApp1 = JSON.parse(SaveDataMessengerApp_r);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
+                const { Nms } = this.state;
+                e.setState({
+                    ArrUserSendKey: SaveDataMessengerApp1,
+                    //  SaveDataMessengerApp: SaveDataMessengerApp,
+                    SoKey: Nms - SaveDataMessengerApp1.length,
+                });
+                console.log('this.state.SaveDataMessengerApp flatlist; !==0;;;;;', this.state.ArrUserSendKey);
+                console.log('this.state.SoKey flatlist;;;;;;', this.state.SoKey);//////
+                //nhan duoc ket qua SaveDataMessengerApp tu server tra ve ta moi setState no cho phep mang duoc set moi
+                if (this.state.ArrUserSendKey[0] !== null) { //ca mang server tra tin nhan ve moi thuc su cap nhat mang lhac rong vao faltlist cua faltlist danh sach tin nhan
+                    e.setState({
+                        //khi kich chuot vao username muon chat ta moi moc du lieu ti nhan tu server nodejs hien thij len cho nguoi
+                        // dungva gio dim cah co ng gui tin nhan la hien thong bao co tin nhan
+                        ArrControlItemMess: this.state.ArrUserSendKey,
+                        //SoKey: (Nms -ArrdataMessenger.length) 
+
+
+                    });
+                    console.log('this.state.ArrControlItemMess flatlist;;;;;;', this.state.ArrControlItemMess);
+
+                }
+            }
+
+        });
+
+        /*
+        var UserWeb = this.state.UsernameNguoiSend;
+        var UserApp = this.state.Username;
+        this.socket.emit('client-muon-lay-ArrayMess-User', {
+            NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx", //luu ten cua messger de de quan ly
+            //	ArrSocketId_UserSend: this.state.ArrSocketId_UserSend,
+            UserYeuCauMess: UserApp, //tu thang nay o server cung co the tim ra socket id thoa man, //nen su dung se chi can viet o server la su lu ca o app va web duoc
+            soPage: this.state.soPage, // quan ly so trang muon lay ve
+        });
+        this.socket.on('server-trave-yeucau-ArrayMess-User', (DataMessengerApp_r) => {
+            //{Nms: n, Sms: SaveDataMessengerApp}
+            console.log('server-trave-yeucau-ArrayMess-User: hienthiMess:', DataMessengerApp_r);
+            var Nms = DataMessengerApp_r.Nms;
+            var SaveDataMessengerApp_r = DataMessengerApp_r.Sms;
+            var SaveDataMessengerApp = SaveDataMessengerApp_r;
+            e.setState({ Nms: Nms, });
+            //   console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp.length);
+            //   console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp[0]);
+
+            if (SaveDataMessengerApp.length == 1 && SaveDataMessengerApp[0] == '0') { //neu ton tai SaveDataMessengerApp_r
+                //////  console.log('server-trave-yeucau-ArrayMess-User::==0', SaveDataMessengerApp_r);
+                var ArrdataMessenger = [];
+                e.setState({
+                    // SaveDataMessengerApp: ArrdataMessenger,
+                    ArrUserSendKey: ArrdataMessenger,
+                    ArrControlItemMess: ArrdataMessenger,  // da nhan vao chon Username roi
+                });
+            }
+            if (SaveDataMessengerApp.length > 1 && SaveDataMessengerApp[0] == '[') { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
+                //{Nms: n, Sms: SaveDataMessengerApp}
+                var ArrdataMessenger = JSON.parse(SaveDataMessengerApp);
+                e.setState({
+                    ArrUserSendKey: ArrdataMessenger,
+                    ArrControlItemMess: ArrdataMessenger, // da nhan vao chon Username roi
+                });
+            }
+            // var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
+            console.log('(this.state.SaveDataMessengerApp);onYeuCauMess:::', this.state.ArrUserSendKey);
+           
+        }); */
+
+    }
+
     onYeuCauMess() {
 
         //truong hop hay de hien thi thoi khi  da nhan chuot chon username
@@ -691,6 +790,7 @@ export default class ChatUser3 extends Component {
 
     render() {
 
+
         var JSXmesseger = this.state.UserSendEmit + ": " + this.state.messenger;
         const ketQuaJSX = this.state.messenger == null ? null : JSXmesseger;
         var ima1 = 'http://192.168.216.2:2800/hotgirls/1.jpg'
@@ -699,7 +799,7 @@ export default class ChatUser3 extends Component {
                 <Text>{this.state.soPage}</Text>
                 <View style={{ flex: 1, backgroundColor: '#fff', flexDirection: 'row' }} >
                     <Text style={styles.styleText} >User00000000000</Text>
-                    <Text style={styles.UserOnline}>ChatUser3333: {this.state.Username === null ? null : this.state.Username}</Text>
+                    <Text style={styles.UserOnline}>ChatUser44: {this.state.Username === null ? null : this.state.Username}</Text>
                     <TouchableOpacity onPress={() => {
                         const { UsernameNguoiSend, Username } = this.state;
                         this.socket.emit('client-want-dellete-messChatUser', {
@@ -865,106 +965,216 @@ export default class ChatUser3 extends Component {
                                     data={this.state.ArrControlItemMess} // dieu hien hien thi tin nhan neu kich chuot va Username chat chua kich thi chi luu o server
                                     renderItem={({ item }) =>
 
+
                                         <View style={{ flex: 1 }}>
-                                            <View style={{ flexDirection: 'column' }} >
-                                                <View style={{ flex: 1, flexDirection: 'row', }}>
-                                                    {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
-                                                    <View style={{ flex: 1 }}>
-                                                        <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                                            <View style={{ flex: 2, backgroundColor: 'blue', }} >
-                                                                <Text key={item.key} style={{ color: 'red', fontSize: 10, }}>{item.key} {item.UserSend}</Text>
+                                            <TouchableOpacity onPress={() => {
+                                                //  e.setstate({ key: item.key, UserSend: item.UserSend, messenger: item.messenger, pathIma: item.pathIma })
+                                                // var Username = item.Userkey;
+                                                // e.setState({ Username: Username, }); //de hien thi Username duoc kich chuot// ArrControlItemMess: this.state.ArrUserSendKey,//LOAD LUON SE CHI HIEN THI CAI MESS moi doc nhan o socket.on('server-send-messenger') //khi kich chuot vao username muon chat ta moi moc du lieu ti nhan tu server nodejs hien thij len cho nguoi dungva gio dim cah co ng gui tin nhan la hien thong bao co tin nhan
+                                                //Username = UserWeb
+
+                                                e.setState({ UserWeb: item.UserSend });
+
+                                                const { UserWeb, UsernameNguoiSend } = this.state;
+                                             //   alert(UserWeb);
+                                                console.log('this.state.Username:::::', this.state.Username)
+                                                //can tim socketIdUsername co UsernameNguoiSend chua no thi moi emit  tra lai chinh no duoc
+                                                ArrSocketId_UserSend = [];
+                                                var ArraySocketUsername = this.state.ArraySocketUsername;
+                                                ArraySocketUsername.map(function (value, index) {
+                                                    var UserSocketId = value.UserSocketId;
+                                                    if (UserSocketId.indexOf(UsernameNguoiSend) > -1) {
+                                                        var ArrSocketId = UserSocketId.replace(UsernameNguoiSend, '');
+                                                        ArrSocketId_UserSend.push(ArrSocketId);
+                                                    }
+                                                });
+                                                console.log('ArrSocketId_UserSend:::', ArrSocketId_UserSend);
+                                                e.setState({ ArrSocketId_UserSend: ArrSocketId_UserSend });
+                                                var ArrSocketId_UserSend = this.state.ArrSocketId_UserSend;
+                                                console.log('this.state.UserWeb:::::', this.state.UserWeb)
+                                                if (UserWeb !== "") {
+                                                    this.hienthiMess1();
+                                                }
+                                                var ArraySocketIdThoaMan1 = []; // moi lan nha class = skidUS thi set mang ArraySocketIdThoaMan rong neu khong cac mang truoc se conc cac manh username sau
+                                                this.state.ArrayUserSocketId.map(function (value, index) {
+                                                    if (value.indexOf(UserWeb) > -1) {
+                                                        var SocketId = value.replace(UserWeb, '');
+                                                        ArraySocketIdThoaMan1.push(SocketId);
+                                                        e.setState({ ArraySocketIdThoaMan: ArraySocketIdThoaMan1 })
+                                                    }
+                                                });
+                                                //   console.log('this.state.ArraySocketIdThoaMan1:::', (this.state.ArraySocketIdThoaMan));
+
+                                            }}>
+
+                                                {this.state.Username == null ?
+
+
+                                                  //  this.state.UserSend == null ? null
+                                                  //      :
+                                                        <View style={{ flexDirection: 'column' }} >
+
+
+                                                            <View >
+                                                                <Text>{console.log('this.state.Username !==null ')}</Text>
+                                                                <Text>{console.log('this.state.Username:::: view', this.state.Username)}</Text>
 
                                                             </View>
 
-                                                            <Text key={item.key} style={{ flex: 7, fontSize: 8 }}>{":  " + item.messenger}</Text>
-                                                            <Text style={{ flex: 1 }} />
 
-                                                        </View>
-                                                        <View />
+                                                            <View style={{ flex: 1, flexDirection: 'row', }}>
+                                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                                <View style={{ flex: 1 }}>
+                                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                                    </View>
-                                                    {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
-                                                </View>
-                                                <View style={{ flex: 1 }} />
+                                                                        <View style={{ flex: 2, backgroundColor: 'blue', }} >
+                                                                            <Text key={item.key} style={{ color: 'red', fontSize: 10, }}>{item.key} {item.UserSend}</Text>
+
+                                                                        </View>
 
 
 
-                                                <View style={{ flex: 1, flexDirection: 'row', }}>
-                                                    {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
-                                                    <View style={{ flex: 1 }}>
-                                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                                        <Text key={item.key} style={{ flex: 7, fontSize: 8 }}>{":  " + item.messenger}</Text>
+                                                                        <Text style={{ flex: 1 }} />
 
-                                                            <View style={{ flex: 2, backgroundColor: 'blue', }} >
+                                                                    </View>
+                                                                    <View />
 
-                                                            </View>
-
-                                                            <View style={{ flex: 7, backgroundColor: 'red', width: (item.pathIma == null ? 0 : avataWidth), height: (item.pathIma == null ? 0 : avataHeight), }} >
-
-                                                                <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
-                                                                </Image>
+                                                                </View>
+                                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
                                                             </View>
                                                             <View style={{ flex: 1 }} />
 
+
+
+                                                            <View style={{ flex: 1, flexDirection: 'row', }}>
+                                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                                <View style={{ flex: 1 }}>
+                                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                                                                        <View style={{ flex: 2, backgroundColor: 'blue', }} >
+
+                                                                        </View>
+                                                                        <View style={{ flex: 7, backgroundColor: 'red', width: (item.pathIma == null ? 0 : avataWidth), height: (item.pathIma == null ? 0 : avataHeight), }} >
+
+                                                                            <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
+                                                                            </Image>
+                                                                        </View>
+                                                                        <View style={{ flex: 1 }} />
+
+                                                                    </View>
+                                                                    <View />
+
+                                                                </View>
+                                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
+                                                            </View>
+
+
                                                         </View>
-                                                        <View />
-
-                                                    </View>
-                                                    {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
-                                                </View>
-
-
-                                            </View>
 
 
 
-                                            <View style={{ flex: 1, flexDirection: 'column' }}>
 
-                                                <View style={{ flex: 1, flexDirection: 'row' }}>
-                                                    <Text style={{ flex: 2 }} />
 
-                                                    <View style={{ flex: 3, backgroundColor: '#E61A5F', }} >
-                                                        {/*}
+                                                    :
+
+                                                    <View style={{ flex: 1 }}>
+                                                        <View style={{ flexDirection: 'column' }} >
+                                                            <View style={{ flex: 1, flexDirection: 'row', }}>
+                                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                                <View style={{ flex: 1 }}>
+                                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                                                                        <View style={{ flex: 2, backgroundColor: 'blue', }} >
+                                                                            <Text key={item.key} style={{ color: 'red', fontSize: 10, }}>{item.key} {item.UserSend}</Text>
+
+                                                                        </View>
+
+                                                                        <Text key={item.key} style={{ flex: 7, fontSize: 8 }}>{":  " + item.messenger}</Text>
+                                                                        <Text style={{ flex: 1 }} />
+
+                                                                    </View>
+                                                                    <View />
+
+                                                                </View>
+                                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
+                                                            </View>
+                                                            <View style={{ flex: 1 }} />
+
+
+
+                                                            <View style={{ flex: 1, flexDirection: 'row', }}>
+                                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                                <View style={{ flex: 1 }}>
+                                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                                                                        <View style={{ flex: 2, backgroundColor: 'blue', }} >
+
+                                                                        </View>
+
+                                                                        <View style={{ flex: 7, backgroundColor: 'red', width: (item.pathIma == null ? 0 : avataWidth), height: (item.pathIma == null ? 0 : avataHeight), }} >
+
+                                                                            <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
+                                                                            </Image>
+                                                                        </View>
+                                                                        <View style={{ flex: 1 }} />
+
+                                                                    </View>
+                                                                    <View />
+
+                                                                </View>
+                                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
+                                                            </View>
+                                                        </View>
+
+                                                        <View style={{ flex: 1, flexDirection: 'column' }}>
+                                                            <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                                <Text style={{ flex: 2 }} />
+                                                                <View style={{ flex: 3, backgroundColor: '#E61A5F', }} >
+                                                                    {/*}
                                                         <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
                                                         </Image>
                                                                 */}
-                                                        <Text key={item.key} style={styles.styleUserSend_FromApp_Send}>
-                                                            {
-                                                                // this.state.messenger == null ? null : (item.UserNhan + item.messengerNhan)
-                                                                item.key + (item.UserNhan == null ? "" : item.UserNhan + ": ") + (item.messengerNhan == null ? "" : item.messengerNhan)
-                                                                //  item.key + item.UserNhan + item.messengerNhan
-                                                            }
-                                                        </Text>
-                                                    </View>
-                                                </View>
+                                                                    <Text key={item.key} style={styles.styleUserSend_FromApp_Send}>
+                                                                        {
+                                                                            // this.state.messenger == null ? null : (item.UserNhan + item.messengerNhan)
+                                                                            item.key + (item.UserNhan == null ? "" : item.UserNhan + ": ") + (item.messengerNhan == null ? "" : item.messengerNhan)
+                                                                            //  item.key + item.UserNhan + item.messengerNhan
+                                                                        }
+                                                                    </Text>
+                                                                </View>
+                                                            </View>
+                                                            <View />
 
-                                                <View />
+                                                            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#E61A5F', }}>
+                                                                <View style={{ flex: 2 }} />
+                                                                <View style={{ flex: 3, }} >
 
+                                                                    <View style={{ flex: 3, backgroundColor: 'yellow', height: (item.pathIma == null ? 0 : avataHeight), width: (item.pathIma == null ? 0 : avataWidth) }} >
+                                                                        <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
+                                                                        </Image>
 
-                                                <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#E61A5F', }}>
-                                                    <View style={{ flex: 2 }} />
+                                                                    </View>
+                                                                </View>
+                                                            </View>
 
-                                                    <View style={{ flex: 3, }} >
-
-
-                                                        <View style={{ flex: 3, backgroundColor: 'yellow', height: (item.pathIma == null ? 0 : avataHeight), width: (item.pathIma == null ? 0 : avataWidth) }} >
-                                                            <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
-                                                            </Image>
 
                                                         </View>
 
+
+
                                                     </View>
 
-                                                </View>
 
+                                                }
+                                            </TouchableOpacity>
 
-
-
-                                            </View>
 
 
 
                                         </View>
+
                                     }
 
                                 />
@@ -1060,94 +1270,3 @@ const styles = StyleSheet.create({
 
 })
 
-
-///// console.log('server-trave-yeucau-ArrayMess-User::!==0', SaveDataMessengerApp);
-
-
-//    var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
-//    await e.setState({
-//        ArrUserSendKey: SaveDataMessengerApp,
-//        SaveDataMessengerApp: SaveDataMessengerApp
-//    });
-//    const { SaveDataMessengerApp } = this.state;
-//    console.log('ArrdataMessenger ::::',SaveDataMessengerApp);
-//    var ArrdataMessenger = SaveDataMessengerApp; 
-
-//  console.log('this.state.SaveDataMessengerApp::::', SaveDataMessengerApp);
-//  ArrarySaveDataMessenger.push(UserSendKey);
-
-
-// //can ArrUserSendKey1 la thi ,muon thay doi key cua ArrdataMessenger 
-// var ArrUserSendKey1 = [];
-// for (i = 0; i < ArrdataMessenger.length; i++) {
-//    // var UserSend = ArrdataMessenger[i].UserSend;
-//    // var messenger = ArrdataMessenger[i].messenger;  //tam thoi lay bien UserSendEmit de thai the bien UserNhan nhan duoc tu lnag ngh
-//    // var UserNhan = ArrdataMessenger[i].UserNhan;  //thay the de khi chia nhan iet ta chua setstate UserSendEmit thi no chua hien len flastlist  
-//    // var messengerNhan = ArrdataMessenger[i].messengerNhan;    //UserNhan se la ng emit tu ap xuong  ,messengerNhan la ng emit tin nhan xuong ap
-//    // var imageBase64 = ArrdataMessenger[i].imageBase64;
-//    // var pathIma = ArrdataMessenger[i].pathIma;
-//     var UserSendKey = {
-//         key: JSON.stringify(i), 
-//         UserSend: ArrdataMessenger[i].UserSend==null? '' : ArrdataMessenger[i].UserSend,
-//         messenger: ArrdataMessenger[i].messenger==null? '' : ArrdataMessenger[i].messenger,
-//         imageBase64: ArrdataMessenger[i].imageBase64 == null ? '' : ArrdataMessenger[i].imageBase64,
-//         pathIma: ArrdataMessenger[i].pathIma==null? '' : ArrdataMessenger[i].pathIma,
-//         UserNhan: ArrdataMessenger[i].UserNhan==null ? '' : ArrdataMessenger[i].UserNhan,
-//         messengerNhan: ArrdataMessenger[i].messengerNhan==null? '' : ArrdataMessenger[i].messengerNhan,
-//     };
-//     ArrUserSendKey1.push(UserSendKey);
-// }
-// //  console.log('ArrUserSendKey1::::', ArrUserSendKey1); //ArrUserSendKey1 maga nay gui len server de luu chu nha
-// await e.setState({
-//     ArrUserSendKey: ArrUserSendKey1,
-//     SaveDataMessengerApp: ArrUserSendKey1
-// });
-//   console.log('this.state.ArrUserSendKey::::', this.state.ArrUserSendKey);
-// // console.log('this.state.SaveDataMessengerApp: socket.on.server-send-messenger:::', this.state.SaveDataMessengerApp);
-
-
-{/*
-
-
-  SaveTinNhan(this.state.Username, SaveDataMessengerApp1); //luu tin nha cho ten duoc tich
-              GetTinNhan(this.state.Username) //khi kich chuot vao Username chon thi getTinNhan mang nay se suoc load ra
-                  .then(SaveDataMessengerApp1 => {
-                      console.log('SaveDataMessengerApp get tinnhan sendemit  ::', SaveDataMessengerApp1);
-                  }); 
-
-
-
-            
-              console.log('this.state.ArrControlItemMess sendEmit::::', this.state.ArrControlItemMess);
-             var SaveDataMessengerApp1 = JSON.stringify(SaveDataMessengerApp);
-                   if (Username !== null) {
-                 //  var YeuCauArrMess = this.state.YeuCauArrMess;
-                 if (YeuCauArrMess.length > 1 && YeuCauArrMess[0] == '[') {
-                     var ArrayMessUsersendUserItem = {
-                         NameUserSendUserItem: UsernameNguoiSend + Username + "ChatUsername.docx",
-                         NameUserSendUserItem1: Username + UsernameNguoiSend + "ChatUsername.docx",
-                         SaveDataMessengerApp: SaveDataMessengerApp1
-                     }
-                     this.socket.emit('client-send-ArrayMessUsersendUserItem33333333333333', (ArrayMessUsersendUserItem));
- 
-                 }
- 
-                 else { //neu ton tai SaveDataMessengerApp_r
- 
-                     // e.setState({ SaveDataMessengerApp: dataMessenger })
-                     e.setState({
-                         SaveDataMessengerApp: [dataEmit],
-                         ArrUserSendKey: [dataEmit],
-                     });
-                     var SaveDataMessengerApp2 = JSON.stringify(this.state.SaveDataMessengerApp);
-                     var ArrayMessUsersendUserItem = {
-                         //dao ten so coi app nguoi send thanh nguoi nhan va nguoi nahn thanh nguoi send
-                         //  NameUserSendUserItem: UsernameNguoiSend + localStorage.getItem('Username') + "ChatUsername.docx",
-                         NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
-                         NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
-                         SaveDataMessengerApp: SaveDataMessengerApp2, // dataMessenger la mang san roi
-                     }
-                     socket.emit('client-send-ArrayMessUsersendUserItem4444444444444', ArrayMessUsersendUserItem);
-              
-             
-*/}
