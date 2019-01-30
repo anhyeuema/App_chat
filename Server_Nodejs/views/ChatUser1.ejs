@@ -30,7 +30,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:2800/ChatUsername.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:2800/Reactjs/chatcss/ChatUser.css" />
     <script src="http://localhost:2800/jquery.js"></script>
     <script src="http://localhost:2800/socket.io/socket.io.js"></script>
 
@@ -56,6 +56,8 @@
         } 
     </style>
 
+
+
     <script>
 
 
@@ -63,13 +65,13 @@
         function getCookie(NameCookie) {
             ArrayTokenThoanMan = [];
             var dataCookie = document.cookie;
-            console.log('dataCookie:::', dataCookie)
+        //    console.log('dataCookie:::', dataCookie)
             var ArrayCookie = dataCookie.split(" "); //loai bo dau cach va tao mang
             $(ArrayCookie).each((index, value) => {
                 if (value.indexOf(NameCookie) > -1) {
                     var token1 = value.replace(NameCookie, ''); //loai bo ky tu @token= chi lay gia tri token thui
                     ArrayTokenThoanMan.push(token1);
-                    console.log('ArrayTokenThoanMan[0]::', ArrayTokenThoanMan[0]);
+        //            console.log('ArrayTokenThoanMan[0]::', ArrayTokenThoanMan[0]);
                 }
             });
             if (ArrayTokenThoanMan[0] == null || ArrayTokenThoanMan[0] == 'undefined') {
@@ -78,19 +80,19 @@
 
             if (ArrayTokenThoanMan[0].indexOf(";") > -1) {
                 var token = ArrayTokenThoanMan[0].replace(";", ''); //loai bo dau phay
-                console.log('token:::4444', token);
+        //        console.log('token:::4444', token);
                 return token;
             }
             return ArrayTokenThoanMan[0];
 
         }
-        console.log('token::111111');
+       // console.log('token::111111');
         var token = getCookie("@token=") == null ? (getCookie("@token=")) : (localStorage.getItem("@token"));
         //  var token = localStorage.getItem('@token') ;
 
-        console.log('token::', token);
+      //  console.log('token::', token);
         var io1 = getCookie("io=");
-        console.log('IOioioioioioioioioioioioi::', io1);
+      //  console.log('IOioioioioioioioioioioioi::', io1);
         var dataCookie = document.cookie;
         console.log('dataCookie::', dataCookie);
 
@@ -98,7 +100,7 @@
 
 
         $.get("http://localhost:2800/checkLogin/" + token, function (data) {
-            console.log('data checkLogin::::', data);
+     //       console.log('data checkLogin::::', data);
             var dataParse = JSON.parse(data);
             var tokenNew = dataParse.tokenNew;
             var UsernameNguoiSend = dataParse.Username;
@@ -115,15 +117,15 @@
             $('#ketquaCheckLogin').html(data);
             $('#ketquaCheckLogin').css("color", "yellow");
             //khi nhay cao chat thi thu nhat la checktoken de lay username ve
-            console.log('UsernameNguoiSend:::', UsernameNguoiSend);
+    //        console.log('UsernameNguoiSend:::', UsernameNguoiSend);
 
-            // var socket = io('http://localhost:2400');
+           //  var socket = io('http://localhost:2400');
 
             var socket = io.connect('http://localhost:2800');
             socket.on('connect', function () {
                 socket.emit('authenticate', { token: tokenNew });
             });
-            console.log('11111111111111111111111111', { query: "token=" + tokenNew });
+   //         console.log('11111111111111111111111111', { query: "token=" + tokenNew });
 
             /*    socket.on('connect', function (data) {
                     socket.emit('storeClientInfo', { customId: "000CustomIdHere0000" + UsernameNguoiSend });
@@ -502,253 +504,7 @@
 
             var OnManSendMs = [];
             //lang nghe server send tin nhan
-            socket.on('server-send-messenger', async (dataMessenger) => {
-                console.log('dataMessenger:::', dataMessenger);
-                console.log('dataMessenger.length:', dataMessenger.length);
-                //  var msSend = dataMessenger.UsernameNguoiNhan + ": " + dataMessenger.messenger;
-                //  var msNhan = dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger;
-
-
-
-                var UserWeb = dataMessenger[0].UsernameNguoiNhan;
-                var UserApp = dataMessenger[0].UsernameNguoiSend;
-                var soPage = 1;
-                console.log('UserWeb;;;', UserWeb);
-                console.log('UserApp;;;', UserApp);
-                //     const { UserApp, Nms, Username, OnManSendMs, UserWeb, SoKey } = this.state; //UserApp = UsernameNguoiSend, 
-                OnManSendMs.push(UserWeb);
-                console.log('OnManSendMs::lap', OnManSendMs);
-
-
-                function deduplicate(arr) {
-                    var isExist = (arr, x) => {
-                        for (let i = 0; i < arr.length; i++) {
-                            if (arr[i] === x) return true;
-                        }
-                        return false;
-                    }
-                    var ans = [];
-                    arr.forEach(element => {
-                        if (!isExist(ans, element)) ans.push(element);
-                    });
-                    return ans;
-                }
-                var OnManSendMs_r = deduplicate(OnManSendMs);
-                var m = OnManSendMs_r.length;
-                // e.setState({ OnManSendMs: OnManSendMs_r });
-                console.log('OnManSendMs::ArrDoneLap', m);
-
-                if (dataMessenger[0] !== null) {
-                    var ArrdataMessenger = this.state.ArrUserSendKey;
-                    // console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
-                    var ArrMessSendServer = []; // ArrMessSendServer chi lay 1 phan tu hay vai phan tu tu tin nhan new duoc web gui toi
-                    console.log('Username:::', Username);
-                    var { arrThemOnMes } = this.state;
-                    console.log('arrThemOnMes', arrThemOnMes);
-                    if (Username == '') { //chua chon ten nguoi chat nguoi nhan tin nhan
-                        dataMessenger.map(function (dataEmit, index) {
-                            //Nms la so phan tu tinnhan luu o server 
-                            arrThemOnMes.unshift(dataEmit);
-                        });
-                        console.log('arrThemOnMes sau khi unshift splice(m, 1)', arrThemOnMes);
-                        //  console.log('arrThemOnMes', arrThemOnMes);
-                        if (arrThemOnMes.length >= (m + 1)) {
-                            var ptuXoa = 1;///m- this.state.a=1; //m  = this.state.a
-                            //  console.log('ptuXoa:::::::::',m);      
-                            console.log('ptuXoa:::::::::', ptuXoa);
-                            //    console.log('so phantu khong lap :', m);
-                            //    console.log('var xoa phan tu thu 2 nao', arrThemOnMes.length + ">=" + (m));
-                            // neu m tang len 1 thi phan tu xoa cung tang 1 = m- this.state.a
-                            arrThemOnMes.splice(ptuXoa, 1); // XOA 1 PHAN TU O VI TRI THU 2, de lai vi tri thu nhat
-                            // co the dung unshift() / shift() — thêm/xóa phần tử từ vị trí đầu mảng
-                            //dao gia tri them hien thi
-                            e.setState({ arrThemOnMes: arrThemOnMes, });
-                            e.setState({ a: arrThemOnMes.length, })
-                            console.log('this.state.aaaaaaaaaaaaaaaaaa sau khi splice(m, 1)', this.state.a);
-                            console.log('arrThemOnMes sau khi splice(m, 1)', arrThemOnMes);
-                            //  e.setState({  arrThemOnMes: arrThemOnMes, });
-                            // e.setState({ arrThemOnMes: arrThemOnMes, });
-                            var arrThemOnMesKetQua = [];
-                            arrThemOnMes.map(function (dataEmit, index) {
-                                //Nms la so phan tu tinnhan luu o server 
-                                //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
-                                var UserSendKey = {
-                                    // key: JSON.stringify(SoKey + ArrdataMessenger.length + index), //do index gia tri bat dau tu 0, index=0 MIN
-                                    key: JSON.stringify(index), //do index gia tri bat dau tu 0, index=0 MIN
-                                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                                    messenger: dataEmit.messenger,
-                                    imageBase64: dataEmit.imageBase64,
-                                    pathIma: dataEmit.pathIma,
-                                    UserNhan: '', //them vao de hien thi thoi
-                                    messengerNhan: '',
-                                };
-                                // console.log('.UserSendKey::::', UserSendKey);
-                                arrThemOnMesKetQua.push(UserSendKey);
-                                //  ArrMessSendServer.push(UserSendKey);
-                                ArrdataMessenger = arrThemOnMesKetQua;
-                                ArrUserSendKey = arrThemOnMesKetQua;
-
-                            });
-
-                            //   console.log('ArrdataMessenger', ArrdataMessenger);
-
-
-                            console.log('ArrdataMessenger xoa phan tu thu ' + m + 'con :', ArrdataMessenger);
-                        }
-
-                    } else if (Username !== '') {
-                        if (Username == UserWeb) { //cho cho thang duoc kich chuot hien thi tren flatlist hien tai => Username == Username gui tin nha cho o day la web
-                            dataMessenger.map(function (dataEmit, index) {
-
-                                //Nms la so phan tu tinnhan luu o server 
-                                //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
-                                var UserSendKey = {
-                                    //key: JSON.stringify(Nms + index), //do index gia tri bat dau tu 0, index=0 MIN
-                                    key: JSON.stringify(SoKey + ArrdataMessenger.length + index), //do index gia tri bat dau tu 0, index=0 MIN
-                                    // key: JSON.stringify((Nms -ArrdataMessenger.length) + ArrdataMessenger.length + index_goc)// so lenth max mang tin nhan server - so phan tu truyen len client=sokey //SoKey = Nms - ArrdataMessenger.length // key: JSON.stringify((Nms -ArrdataMessenger.length) + ArrdataMessenger.length + index_goc), //do index gia tri bat dau tu 0, index=0 MIN
-                                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                                    messenger: dataEmit.messenger,
-                                    imageBase64: dataEmit.imageBase64,
-                                    pathIma: dataEmit.pathIma,
-                                    UserNhan: '', //them vao de hien thi thoi
-                                    messengerNhan: '',
-                                };
-                                // console.log('.UserSendKey::::', UserSendKey);
-                                ArrdataMessenger.push(UserSendKey);
-                                ArrMessSendServer.push(UserSendKey);
-                            });
-
-                        } else if (Username !== UserWeb) {
-                            ///truong hop la 1 cai ten nguoi tich khong phai nguoi gui tu web thi khong lam gi ca
-                            console.log('nguoi gui tin nhan khong hien thi o day vi chua kich chuot vao nguoi do');
-                        }
-                    }
-
-                    // console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
-                    e.setState({
-                        // SaveDataMessengerApp: ArrMessSendServer,
-                        ArrUserSendKey: ArrdataMessenger,
-                        ArrControlItemMess: ArrdataMessenger,
-
-
-                    });
-                    // var SaveDataMessengerApp1 = JSON.stringify(this.state.SaveDataMessengerApp);
-
-                    //   console.log('(this.state.ArrUserSendKey);:::', this.state.ArrUserSendKey)
-                    //  console.log('(this.state.ArrControlItemMess);:::', this.state.ArrControlItemMess)
-
-
-                    //   this.socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
-                    // console.log('ArrayMessUsersendUserItem truong hop == 011111111111111 tra ve', ArrayMessUsersendUserItem);
-                }
-
-
-
-                var yeucauMess = {
-                    NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx", //luu ten cua messger de de quan ly
-                    // ArrSocketId_UserSend: this.state.ArrSocketId_UserSend,
-                    UserYeuCauMess: UserWeb, //tu thang nay o server cung co the tim ra socket id thoa man, 
-                    //nen su dung se chi can viet o server la su lu ca o app va web duoc
-                }
-                console.log('yeucauMess;;;', yeucauMess);
-                await socket.emit('client-muon-lay-ArrayMess-User', yeucauMess);
-                await socket.on('server-trave-yeucau-ArrayMess-User', async (SaveDataMessengerApp_r) => {
-                    console.log('server-trave-yeucau-ArrayMess-User::', SaveDataMessengerApp_r);
-                    console.log('server-trave-yeucau-ArrayMess-User SaveDataMessengerApp_r[0]::', SaveDataMessengerApp_r[0]);
-                    console.log('server-trave-yeucau-ArrayMess-User SaveDataMessengerApp_r.length::', SaveDataMessengerApp_r.length == 1);
-                    console.log('server-trave-yeucau-ArrayMess-User:=SaveDataMessengerApp_r===[]:', (SaveDataMessengerApp_r[0] == '0'));
-
-                    var SaveDataMessengerApp = SaveDataMessengerApp_r;
-                    if (SaveDataMessengerApp[0] == '0' && SaveDataMessengerApp.length == 1) { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
-
-                        console.log('server-trave-yeucau-ArrayMess-User ==0 111111111111111111111111::', SaveDataMessengerApp_r);
-                        var ArrdataMessenger = [];
-                        await dataMessenger.map(function (dataEmit, index) {
-                            var UserSendKey = {
-                                key: JSON.stringify(ArrdataMessenger.length + index),
-                                UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                                messenger: dataEmit.messenger,
-                                imageBase64: dataEmit.imageBase64,
-                                pathIma: dataEmit.pathIma,
-                                UserNhan: '', //them vao de hien thi thoi
-                                messengerNhan: '',
-                            };
-                            console.log('.UserSendKey::::', UserSendKey);
-
-                            ArrdataMessenger.push(UserSendKey);
-
-                        });
-                        // e.setState({ SaveDataMessengerApp: dataMessenger })
-                        //  e.setState({ SaveDataMessengerApp: ArrdataMessenger, ArrUserSendKey: ArrdataMessenger });
-                        var SaveDataMessengerApp1 = await JSON.stringify(ArrdataMessenger);
-                        localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp1);
-                        var ArrayMessUsersendUserItem = await {      //app                       //wed
-                            NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
-                            NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
-                            SaveDataMessengerApp: SaveDataMessengerApp1
-                        }
-                        socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
-                        console.log('client-send-ArrayMessUsersendUserItem:Tuong hop tra ve11111111 ==0:::', ArrayMessUsersendUserItem);
-                    }
-
-                    else {
-                        localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp);
-                        SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
-                        console.log(' server-trave-yeucau SaveDataMessengerApp !==0', SaveDataMessengerApp);
-                        var ArrdataMessenger = SaveDataMessengerApp;
-                        console.log('server-trave-yeuca ArrdataMessenger !==0::', ArrdataMessenger)
-                        await dataMessenger.map(function (dataEmit, index) {
-                            var UserSendKey = {
-                                key: JSON.stringify(ArrdataMessenger.length + index),
-                                UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                                messenger: dataEmit.messenger,
-                                imageBase64: dataEmit.imageBase64,
-                                pathIma: dataEmit.pathIma,
-                                UserNhan: '', //them vao de hien thi thoi
-                                messengerNhan: '',
-                            };
-                            console.log('UserSendKey::', UserSendKey);
-                            ArrdataMessenger.push(UserSendKey);
-                        })
-                        console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
-                        //await e.setState({ SaveDataMessengerApp: ArrdataMessenger,ArrUserSendKey: ArrdataMessenger, });
-                        var SaveDataMessengerApp1 = await JSON.stringify(ArrdataMessenger);
-                        localStorage.setItem('SaveDataMessengerApp', SaveDataMessengerApp1);
-
-                        //sua chua tich vao chon username cung phai luu nhe UsernameNguoiNhan
-                        // o day UsernameNguoiSend=Userapp , UsernameNguoiNhan = web o ham sendEmit thi nguoc lai nha
-                        var ArrayMessUsersendUserItem = await {      //app                       //wed
-                            NameUserSendUserItem: UserApp + UserWeb + "ChatUsername.docx",
-                            NameUserSendUserItem1: UserWeb + UserApp + "ChatUsername.docx",
-                            SaveDataMessengerApp: SaveDataMessengerApp1
-                        }
-                        socket.emit('client-send-ArrayMessUsersendUserItem', ArrayMessUsersendUserItem);
-                        console.log('client-send-ArrayMessUsersendUserItem2222222222222222::::', ArrayMessUsersendUserItem);
-                    }
-
-                });
-
-                //hien thi messenger cho nguoi dung 
-                /*  var SaveDataMessengerApp1 = (localStorage.getItem('SaveDataMessengerApp'));
-                  console.log('SaveDataMessengerApp1;;;', SaveDataMessengerApp1);
-                  console.log('(SaveDataMessengerApp1 !== null && S', (SaveDataMessengerApp1 !== null && SaveDataMessengerApp1 !== undefined));
-                  if (SaveDataMessengerApp1 !== null && SaveDataMessengerApp1[0] !== undefined) {
-                      var SaveDataMessengerApp = JSON.parse(SaveDataMessengerApp1);
-                      console.log('SaveDataMessengerApp:ListMesseger:', SaveDataMessengerApp)
-                      if (SaveDataMessengerApp !== "") {
-                          SaveDataMessengerApp.map((value, index) => {
-                              var msNhan = value.UserSend == null ? null : value.UserSend + ": " +
-                                  value.messenger == null ? null : value.messenger +
-                                      value.imageBase64 == null ? null : value.imageBase64 +
-                                          value.pathIma == null ? null : value.pathIma;
-                              $('#ListMesseger').append("<div class='CmsNhan'>" + msNhan + "</div>" + "<br/>");
-                              $('.CmsNhan').css("color", "blue");
-                              //  $('#NguoiSend').append("<div class='' >" + UsernameNguoiSend + "</div>");
-  
-                          })
-                      }
-                  } */
-            });
+           
 
 
             /*   socket.on('socketId-da-disconnect', socketId => {
@@ -887,18 +643,18 @@
 </style>
 
 <body>
+
+
+
     <div>
 
         <div id="warrper">
-            <div>
-                <a id="KQMesseger">...Msseger....</a>
-            </div>
+            
+                <div>react-domsssss</div>
+                <div id="root1"></div>
+                <script type="text/babel" src="http://localhost:2800/Reactjs/ReactChatUser2.js"></script>
+            
 
-            <a id="KetQuaMesseger">...ket KetQuaMesseger....</a>
-            <form name="message" action="">
-                <input name="usermsg" type="text" id="usermsg" size="63" />
-                <input name="submitmsg" type="submit" id="submitmsg" value="Send" />
-            </form>
         </div>
 
         <div>
@@ -944,7 +700,6 @@
         <div></div>
     </div>
 
-    <div id="root"></div>
 
 </body>
 

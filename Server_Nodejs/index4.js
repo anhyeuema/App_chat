@@ -849,6 +849,8 @@ io1.on('connect', (socket) => {
 
     socket.on('client-send-messenger', dataMessenger => {
         console.log('io1..client-send-messenger :' + dataMessenger);
+     //   io1.sockets.emit('server-send-messenger', [dataMessenger]); //[dataEmit] mang chua 1 phan tu //DE TEST THUI
+               
         //  var msSend = dataMessenger.UsernameNguoiNhan + ": " + dataMessenger.messenger;
         //  var msNhan = dataMessenger.UsernameNguoiSend + ": " + dataMessenger.messenger;
         // 1) SocketIdUsernameNguoiNhan = SocketIdUsername co Username la Username nhan
@@ -1727,13 +1729,16 @@ app3.get('/chatCaNhan', (req, res) => {
 
 });
 
-app3.get('/ChatUser', (req, res)=> {
-    res.render('ChatUser');
+app3.get('/React/ChatUser', (req, res)=> {
+    res.render('ChatUser1');
+});
+app3.get('/ChatUser1', (req, res) => {
+    res.render('chatUser1');
 })
 
 app3.get('/ChatUsername', (req, res) => {
     res.render('ChatUsername');
-})
+});
 
 app3.get('/status', (req, res) => {
     res.render('status')

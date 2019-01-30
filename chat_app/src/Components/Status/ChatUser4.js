@@ -646,12 +646,15 @@ export default class ChatUser3 extends Component {
     hienthiMess1() {
 
         const { UserWeb, UsernameNguoiSend } = this.state;
-        this.socket.emit('client-muon-lay-ArrayMess-User', {
+        var dataYeuCau = {
             NameUserSendUserItem: (UsernameNguoiSend + UserWeb + "ChatUsername.docx"),
             //  ArrSocketId_UserSend: ArrSocketId_UserSend,
             UserYeuCauMess: UsernameNguoiSend, //UserApp,
             soPage: this.state.soPage,
-        });
+        };
+        this.socket.emit('client-muon-lay-ArrayMess-User', dataYeuCau);
+        console.log('client-muon-lay-ArrayMess-User datayeaucau', dataYeuCau);
+        
         this.socket.on('server-trave-yeucau-ArrayMess-User', DataMessengerApp_r => {
             console.log('server-trave-yeucau-ArrayMess-User hienthiMess chuyen cho flatlist::', DataMessengerApp_r);
             //console.log('SaveDataMessengerApp[0] !== undefined:::',SaveDataMessengerApp[0] !== 'undefined')
