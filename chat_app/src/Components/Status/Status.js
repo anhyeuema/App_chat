@@ -20,6 +20,9 @@ import ChatUser1 from './chatUser1';
 import ChatUser2 from './chatUser2';
 import ChatUser3 from './ChatUser3';
 import ChatUser4 from './ChatUser4';
+import ChatUser5 from './ChatUser5';
+import ChatUser6 from './ChatUser6';
+
 
 
 export default class Status1 extends Component {
@@ -57,7 +60,7 @@ export default class Status1 extends Component {
     render() {
         return (
             <NavigationExperimental.Navigator
-                initialRoute={{ name: 'CHAT_USER4' }}
+                initialRoute={{ name: 'CHAT_USER6' }}
 
                 renderScene={(route, navigator) => {
                     switch (route.name) {
@@ -70,6 +73,8 @@ export default class Status1 extends Component {
                         case 'CHAT_USER2': return <ChatUser2 navigator={ navigator } User={route.User} StatusUser_item={ route.StatusUser_item } />
                         case 'CHAT_USER3': return <ChatUser3 navigator={ navigator } User={route.User} StatusUser_item={ route.StatusUser_item } />
                         case 'CHAT_USER4': return <ChatUser4 navigator={ navigator }  />
+                        case 'CHAT_USER5': return <ChatUser5 navigator={ navigator }  />
+                        case 'CHAT_USER6': return <ChatUser6 navigator={ navigator }  />
                         
                         default: return <StatusFriend navigator={navigator} />;
                     

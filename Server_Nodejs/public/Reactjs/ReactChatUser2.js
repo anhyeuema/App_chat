@@ -68,10 +68,113 @@ var User = getUser(token);
 console.log('User: User User v v User User User User  v User', User);
 
 
+
+var Note = React.createClass({
+
+    getInitialState() {
+
+        return {
+            mang: [
+                { srcHinh: "http://localhost:2800/hotgirls/1.jpg", noidung: "hello" },
+                { srcHinh: "http://localhost:2800/hotgirls/2.jpg", noidung: "anh yeu em" },
+                { srcHinh: "http://localhost:2800/hotgirls/3.jpg", noidung: "nhe " },
+                { srcHinh: "http://localhost:2800/hotgirls/4.jpg", noidung: "tinh " },
+                { srcHinh: "http://localhost:2800/hotgirls/5.jpg", noidung: "tianh" },
+            ],
+        }
+    },
+    render: function () {
+        return (
+            <div>
+                <div>
+                    <h1 className="mauvang">chao em</h1>
+                </div>
+                {
+                    this.state.mang.map(function (value, index) {
+                        return (
+                            <div key={index}>
+                                {
+                                    <div id="avatar">
+                                        <img src={value.srcHinh} />
+                                    </div>
+
+                                }
+                                {
+                                    <a>: {value.noidung}</a>
+                                }
+                            </div>
+                        );
+                    })
+                }
+            </div>
+        );
+    },
+
+});
+
 var e;
 var U;
 var CheckUser = React.createClass({
 
+    testHam(){
+        alert('testham');
+    },
+    LoadMess() {
+        const { UserWeb, UsernameNguoiSend } = this.state;
+        var dataYeuCau = {
+            NameUserSendUserItem: (UsernameNguoiSend + UserWeb + "ChatUsername.docx"),
+            //  ArrSocketId_UserSend: ArrSocketId_UserSend,
+            UserYeuCauMess: UsernameNguoiSend, //UserApp,
+            soPage: this.state.soPage,
+        };
+        this.socket.emit('client-muon-lay-ArrayMess-User', dataYeuCau);
+        console.log('client-muon-lay-ArrayMess-User datayeaucau', dataYeuCau);
+        
+        this.socket.on('server-trave-yeucau-ArrayMess-User', DataMessengerApp_r => {
+            console.log('server-trave-yeucau-ArrayMess-User hienthiMess chuyen cho flatlist::', DataMessengerApp_r);
+            //console.log('SaveDataMessengerApp[0] !== undefined:::',SaveDataMessengerApp[0] !== 'undefined')
+            var Nms = DataMessengerApp_r.Nms;
+            var Sms = DataMessengerApp_r.Sms;
+            var SaveDataMessengerApp_r = Sms;
+            e.setState({
+                YeuCauArrMess: SaveDataMessengerApp_r,
+                Nms: Nms,
+
+            });
+            var SaveDataMessengerApp = SaveDataMessengerApp_r;
+            //var x= '[]' x.length=1
+            if (SaveDataMessengerApp[0] == '0' && SaveDataMessengerApp.length == 1) {
+                //khong lam gi ca nhe
+                console.log('flalist khong lam gi ca voi SaveDataMessengerApp');
+                // e.setState({ 
+                //     ArrControlItemMess: [],
+                /// });
+            }
+            else if (SaveDataMessengerApp[0] == '[' && SaveDataMessengerApp.length > 1) { //neu ArrayMessUsersendUserItem[0]  khac rong thi ta JSON.parser
+                var SaveDataMessengerApp1 = JSON.parse(SaveDataMessengerApp_r);// Neu ArrayMessUsersendUserItem[0] == rong thi ta bo qua cau lenh trong if
+                const { Nms } = this.state;
+                e.setState({
+                    ArrUserSendKey: SaveDataMessengerApp1,
+                    //  SaveDataMessengerApp: SaveDataMessengerApp,
+                    SoKey: Nms - SaveDataMessengerApp1.length,
+                });
+                console.log('this.state.SaveDataMessengerApp flatlist; !==0;;;;;', this.state.ArrUserSendKey);
+                console.log('this.state.SoKey flatlist;;;;;;', this.state.SoKey);//////
+                //nhan duoc ket qua SaveDataMessengerApp tu server tra ve ta moi setState no cho phep mang duoc set moi
+                if (this.state.ArrUserSendKey[0] !== null) { //ca mang server tra tin nhan ve moi thuc su cap nhat mang lhac rong vao faltlist cua faltlist danh sach tin nhan
+                    e.setState({
+                        //khi kich chuot vao username muon chat ta moi moc du lieu ti nhan tu server nodejs hien thij len cho nguoi
+                        // dungva gio dim cah co ng gui tin nhan la hien thong bao co tin nhan
+                        ArrControlItemMess: this.state.ArrUserSendKey,
+                        //SoKey: (Nms -ArrdataMessenger.length) 
+                    });
+                    console.log('this.state.ArrControlItemMess flatlist;;;;;;', this.state.ArrControlItemMess);
+
+                }
+            }
+
+        });
+    },
     onMess() {
         e = this;
         //  alert(this.state.UsernameNguoiSend);
@@ -119,7 +222,7 @@ var CheckUser = React.createClass({
             });
             console.log('ArrayUserSocketId Reactjs REACTJS REACTJS REACTJS REACTJS:::', ArrayUserSocketId1);
             console.log('arrayUsername1 Reactjs REACTJS REACTJS REACTJS REACTJS:::', arrayUsername1);
-            
+
             e.setState({
                 ArrayUserSocketId: ArrayUserSocketId1,
                 arrayUsername: arrayUsername1,
@@ -140,28 +243,28 @@ var CheckUser = React.createClass({
             }
             var mangU1 = deduplicate(this.state.arrayUsername);
             console.log('mangU1111111 REACTJS REACTJS REACTJSREACTJS', mangU1); //mang Username khong co phan tu lap
-           
-           /*
-            var MangUserKey = [];
-            var m = mangU1.length;
-            for (i = 0; i < m; i++) {
-                MangUserKey.push({ key: JSON.stringify(i), Userkey: mangU1[i] });
-                // console.log('MangUserKey::::', MangUserKey);
-            }
-            console.log('MangUserKey REACTJS REACTJS REACTJS REACTJS REACTJS::::', MangUserKey); 
 
-            //loai bo ky Username = [] trong danh sach caht neu co
-            var mangU2 = [];
-            for (i = 0; i < mangU1.length; i++) {
-                var User = mangU1[i];
-                if (User === '' || User === []) {
-
-                }
-                else if (User !== '' || User !== []) {
-                    mangU2.push(User);
-                }
-            }
-            console.log('mangU2 REACTJS REACTJS REACTJS REACTJS loai bo username rong::::', mangU2); */
+            /*
+             var MangUserKey = [];
+             var m = mangU1.length;
+             for (i = 0; i < m; i++) {
+                 MangUserKey.push({ key: JSON.stringify(i), Userkey: mangU1[i] });
+                 // console.log('MangUserKey::::', MangUserKey);
+             }
+             console.log('MangUserKey REACTJS REACTJS REACTJS REACTJS REACTJS::::', MangUserKey); 
+ 
+             //loai bo ky Username = [] trong danh sach caht neu co
+             var mangU2 = [];
+             for (i = 0; i < mangU1.length; i++) {
+                 var User = mangU1[i];
+                 if (User === '' || User === []) {
+ 
+                 }
+                 else if (User !== '' || User !== []) {
+                     mangU2.push(User);
+                 }
+             }
+             console.log('mangU2 REACTJS REACTJS REACTJS REACTJS loai bo username rong::::', mangU2); */
 
             //mang hung du lieu mangU1 ma tao mang moi ArrUserKey co chua key 
             var ArrUserKey = [];
@@ -173,7 +276,7 @@ var CheckUser = React.createClass({
 
             });
             console.log('ArrUserKey1 REACTJSREACTJSREACTJSREACTJS::::', ArrUserKey);
-             e.setState({
+            e.setState({
                 mangU: ArrUserKey
             });
 
@@ -375,18 +478,19 @@ var CheckUser = React.createClass({
                         return (
                             <div key={value.key} id="ListMesseger">
                                 {
-                                    <button onClick={() =>{
-
+                                    <button onClick={() => {
+                                        alert(value.messenger);
+                                        this.testHam();
                                     }}>
-                                    <div id="avatar">
-                                        <img src={value.pathIma} />
-                                        <a>{value.messenger}</a>
-                                    </div>
+                                        <div id="avatar">
+                                            <img src={value.pathIma} />
+                                            <a>{value.messenger}</a>
+                                        </div>
                                     </button>
 
                                 }
                                 {
-                                    <a >: {value.messenger}</a>
+                                    // <a >: {value.messenger}</a>
                                 }
                             </div>
 
@@ -471,48 +575,6 @@ var CheckUser = React.createClass({
 })
 
 
-var Note = React.createClass({
-
-    getInitialState() {
-
-        return {
-            mang: [
-                { srcHinh: "http://localhost:2800/hotgirls/1.jpg", noidung: "hello" },
-                { srcHinh: "http://localhost:2800/hotgirls/2.jpg", noidung: "anh yeu em" },
-                { srcHinh: "http://localhost:2800/hotgirls/3.jpg", noidung: "nhe " },
-                { srcHinh: "http://localhost:2800/hotgirls/4.jpg", noidung: "tinh " },
-                { srcHinh: "http://localhost:2800/hotgirls/5.jpg", noidung: "tianh" },
-            ],
-        }
-    },
-    render: function () {
-        return (
-            <div>
-                <div>
-                    <h1 className="mauvang">chao em</h1>
-                </div>
-                {
-                    this.state.mang.map(function (value, index) {
-                        return (
-                            <div key={index}>
-                                {
-                                    <div id="avatar">
-                                        <img src={value.srcHinh} />
-                                    </div>
-
-                                }
-                                {
-                                    <a>: {value.noidung}</a>
-                                }
-                            </div>
-                        );
-                    })
-                }
-            </div>
-        );
-    },
-
-});
 
 
 
@@ -559,7 +621,7 @@ var ListMess = React.createClass({
 
                 <div>{console.log(' uuuuuuuuu this.state.UserWeb REACTJS REACTJS REACJS:::', this.state.UserWeb)}</div>
                 <div>
-                    <CheckUser></CheckUser>
+                    {/*  <CheckUser></CheckUser> */}
                 </div>
                 <div>
                     <h1 className="mauvang">chao em</h1>
@@ -786,7 +848,7 @@ ReactDOM.render(
             <ListMess></ListMess>
         </div>
         <div>
-            <Note>{}</Note>
+            {/*  <Note></Note> */}  
         </div>
         <div>
 

@@ -1,0 +1,25 @@
+<html>
+<head>
+        <meta charset="UTF-8">
+    <script src="http://localhost:2800/jquery.js"></script>
+   <script  type="text/javascript" src="http://localhost:2800/socket.io/socket.io.js"></script>
+    
+    <title>WebCam</title>
+    </head>
+    <body>
+    <p>Bienvenido</p>
+        <img id="play"  style="width: 500px;height: 500px; background-color: yellowgreen"/>
+        <div id="logger"></div>
+        
+        <script>
+            var socket = io();
+            socket.on('stream',function(image){
+                var i = document.getElementById("play");
+                i.src = image;
+               $('#logger').text(image);
+            });
+        
+        
+        </script>
+    </body>
+</html>

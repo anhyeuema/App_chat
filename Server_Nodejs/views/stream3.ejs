@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Khoa Pham WebRTC</title>
+    <script src="http://localhost:2800/jquery.js"></script>
+    <script src="http://localhost:2800/socket.io/socket.io.js"></script>
+    <script>
+        $(document).ready(() => {
+            //alert(1)
+        });
+
+
+    </script>
+</head>
+
+<body>
+    hello
+    <div>
+        <div>
+            <video id="video1" width="640" height="480" autoplay></video>
+            <button id="snap">Snap Photo</button>
+            <canvas id="canvas1" width="640" height="480"></canvas>
+            <script>
+
+                var video = document.getElementById('video1');
+
+                // Get access to the camera!
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    // Not adding `{ audio: true }` since we only want video now
+                    navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+                        //video.src = window.URL.createObjectURL(stream);
+                        video.srcObject = stream;
+                        video.play();
+                    });
+                }
+
+
+
+                // Elements for taking the snapshot
+                var canvas1 = document.getElementById('canvas1');
+                var context = canvas1.getContext('2d');
+                var video = document.getElementById('video1');
+
+                addEventListener("click", function () {
+                    context.drawImage(video, 0, 0, 640, 480);
+                }); 
+                
+            </script>
+        </div>
+
+        <div>
+            <button id="snap">Snap Photo</button>
+            <video muted="muted" src="" id="video" style="width: 680px; height:320px; background-color: chartreuse"
+                autoplay="true"></video>
+            <canvas id="preview" style="display:none" width='750' height='500'> </canvas>
+            <div id="logger"></div>
+        </div>
+
+
+    </div>
+
+    <script>
+
+
+/*
+     
+            // BƯỚC 1: KHỞI TẠO CÁC BIẾN
+            var video = document.getElementById('video');
+            var canvas = document.getElementById('preview');
+            var context = canvas.getContext('2d');
+            var vendoUrl = window.URL || window.webkitURL;
+
+            // BƯỚC 2: XỬ LÝ HIỂN THỊ WEBCAM BAN ĐẦU
+            canvas.style.display = 'none'; // Ẩn thẻ canvas khi vừa tải trang
+
+            // Biến chưa hình ảnh webcam tuỳ theo loại từng trình duyệt
+            navigator.getMedia = navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia;
+
+            // Hàm lấy hình ảnh webcam
+            navigator.getMedia({
+                video: true, // Có hình ảnh
+                audio: false // Không có âm thanh
+                // Hàm chèn đường dẫn webcam vào thẻ video
+            }, function (stream) {
+                video.src = window.URL== window.URL ? window.URL : window.webkitURL .createObjectURL(stream);
+                video.play(); // Phát thẻ video
+                // Hàm thông báo khi xảy lỗi hoặc không hỗ trợ trên trình duyệt này
+            }, function (error) {
+                alert('Rất tiếc đã xảy ra lỗi, có thể do trình duyệt của bạn không hỗ trợ chức năng này hoặc trang này chưa kết nối riêng tư https.');
+            });
+
+            // XỬ LÝ SỰ KIỆN CLICK VÀO NÚT CHỤP ẢNH
+            canvas.style.display = 'block'; // Hiện thẻ canas
+            // In hình ảnh lên thẻ canvas ở x = 0, y = 0, width = 400, height = 300
+            context.drawImage(video, 0, 0, 400, 300);
+            data = canvas.toDataURL(); // Tạo một đường dẫn hình ảnh của canvas
+            // Gửi dữ liệu ảnh đến file saveimg.php thông qua phương thức POST
+            console.log('data:::::::::',data);
+
+*/
+
+
+    </script>
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("preview");
+        var context = canvas.getContext('2d');
+        //  var context = canvas.getContext("2d");
+        canvas.width = 800;
+        canvas.height = 600;
+
+        
+      //  var video = document.querySelector('video');
+
+        var video = document.getElementById('video');
+
+        var socket = io();
+
+        function logger(msg) {
+            $('#logger').text(msg);
+        }
+
+
+        /*
+                function loadCam(file) {
+                    if (window.webkitURL) {
+                        return  window.webkitURL.createObjectURL(file);
+                    } else if (window.URL && window.URL.createObjectURL) {
+                        return  window.URL.createObjectURL(file);
+                    } else {
+                        return null;
+                    }
+                }
+        */
+
+
+        function loadCam(stream) {
+            //  var vendoUrl = window.URL || window.webkitURL;
+            //  video.src = vendoUrl.createObjectURL(stream);
+            // video.play(); // Phát thẻ video
+
+            //  video.srcObject = stream;
+            //   video.play();
+            // Put video listeners into place
+
+
+            /*
+            video.src = stream;
+                video.play();
+            if (navigator.getUserMedia) { // Standard
+                video.src = stream;
+                video.play();
+            } else if (navigator.webkitGetUserMedia) { // WebKit-prefixed
+                video.src = window.webkitURL.createObjectURL(stream);
+                video.play();
+            }
+            else if (navigator.mozGetUserMedia) { // Firefox-prefixed
+                video.src = window.URL.createObjectURL(stream);
+                video.play();
+                flag = true;
+            } 
+            */
+
+
+            /*
+             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                 // Not adding `{ audio: true }` since we only want video now
+                 navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+                     //video.src = window.URL.createObjectURL(stream);
+                     video.srcObject = stream;
+                     video.play();
+                 });
+             } */
+
+
+            var video = document.querySelector('video');
+         //   video.src = window.URL.createObjectURL(stream);
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+                video.play();
+            };
+
+  
+
+
+
+
+        }
+
+
+        function loadFail(stream) {
+            console.log('cammera no connectada');
+            logger('camera cargada corecction OK[]');
+        }
+
+        function viewVideo(video, context) {
+            context.drawImage(video, 0, 0, context.width, context.height);
+            // socket.emit('stream', canvas.toDataURL('image/webp'));
+            // socket.emit('stream', canvas.toDataURL());
+            // Trigger photo take
+            
+            /*
+            document.getElementById("snap").addEventListener("click", function () {
+                    context.drawImage(video, 0, 0, 640, 480);
+                });   */
+            
+            context.drawImage(video, 0, 0, 640, 480);
+
+            var dataIma = canvas.toDataURL();
+            console.log('dataIma dataIma dataIma V dataIma dataIma  V dataIma', dataIma);
+            socket.emit('stream', dataIma);
+
+
+        }
+        $(function () {
+            navigator.getUserMedia = (navigator.getUserMedia || navigator.
+                webkitGetUserMedia || navigator.mozGetUserMedia || navigator.
+                    msgGetUserMedia);
+
+            if (navigator.getUserMedia) {
+                navigator.getUserMedia(
+                    { video: true, audio: true },
+                    loadCam,
+                    loadFail
+                )
+            }
+
+
+
+
+            setInterval(function () { viewVideo(video, context) },300);
+        })
+    </script>
+
+    <div>
+
+        <div>
+            <img id="play" style="width: 680px; height:320px; background-color: chartreuse" src="">
+            <img width="500px" src="" alt="...." id="img1">
+
+        </div>
+        <div id="logger1"> </div>
+        <script>
+            var socket = io();
+
+            socket.on('stream', image => {
+                console.log('image socket.on 3333333(::::', image);
+                //   $("#play").attr("src", "data:image/png;base64," + (base.base64));
+                //   $("#play").attr("src",image);
+                $("#img1").attr("src", image);
+                $("#play").attr("src", `${image}`);
+                //  alert(1)
+
+
+                /*   document.getElementById('img')
+                       .setAttribute(
+                           'src',
+                           `${image}`
+                       );
+               */
+
+                var img = document.getElementById("play");
+                img.src = image;
+                $("#logger1").text(image);
+
+                //      document.getElementById("play").src =  `${image}`;
+
+
+                //    $("#img").attr('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==');
+
+
+                //  var log = document.getElementById("logger1");
+                //  log.text(image)
+
+            })
+
+
+        </script>
+    </div>
+
+
+
+</body>
+
+</html>

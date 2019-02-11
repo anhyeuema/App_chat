@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>Khoa Pham WebRTC</title>
+    <script src="http://localhost:2800/jquery.js"></script>
+    <script src="http://localhost:2800/Stream/peer.js"></script>
+    <script src="http://localhost:2800/socket.io/socket.io.js"></script>
+    <script>
+        $(document).ready(() => {
+            //alert(1)
+        });
+
+
+    </script>
+</head>
+
+<body>
+    hello
+    <div>
+        <div>
+            <video src="" id="video" style="width: 680px; height:320px; background-color: chartreuse" autoplay="true"></video>
+            <canvas id="preview" style="display:none" width='750' height='500'> </canvas>
+            <div id="logger"></div>
+        </div>
+
+
+    </div>
+
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("preview");
+        var context = canvas.getContext('2d');
+        //  var context = canvas.getContext("2d");
+        canvas.width = 800;
+        canvas.height = 600;
+
+        var video = document.getElementById('video');
+
+        var socket = io();
+
+        function logger(msg) {
+            $('#logger').text(msg);
+        }
+
+
+        /*
+                function loadCam(file) {
+                    if (window.webkitURL) {
+                        return  window.webkitURL.createObjectURL(file);
+                    } else if (window.URL && window.URL.createObjectURL) {
+                        return  window.URL.createObjectURL(file);
+                    } else {
+                        return null;
+                    }
+                }
+        */
+
+
+        function loadCam(stream) {
+
+            //video.src= window.webkitURL.createObjectURL(stream);
+            //   var createObjectURL = (window.URL || window.webkitURL || {}).createObjectURL || function () { };
+
+            //  video.src = stream;
+            //  video.play();
+
+
+                video.srcObject = stream;
+                video.play();
+
+
+            // const mediaSource = new MediaSource();
+            // const video = document.createElement('video');
+            //  video.srcObject = mediaSource;
+            //  video.src = URL.createObjectURL(mediaSource);
+
+
+            /*
+                        video.srcObject = stream;
+                        video.onloadedmetadata = function (e) {
+                            video.play();
+                            video.muted = true;
+                        };
+            */
+
+
+/*
+            const video = document.getElementById("video");
+            // window.localStream = stream;
+            video.srcObject = stream;
+            video.onloadedmetadata = function (e) {
+                video.play();
+                video.muted = true;
+            };
+*/
+
+
+            //const video = document.createElement('video');
+            // video.srcObject = stream;
+            //video.src = URL.createObjectURL(stream);
+            //video.play();
+
+
+
+            /*
+    const mediaSource = new MediaSource();
+    const video = document.createElement('video');
+    try {
+        video.srcObject = mediaSource;
+    } catch (error) {
+        video.src = URL.createObjectURL(mediaSource);
+    }
+    */
+
+
+            // this.src = window.URL.createObjectURL(stream);
+            // video.src = window.URL.createObjectURL(stream);
+            //   console.log('camera [OK] ');
+        }
+
+
+        function loadFail(stream) {
+            console.log('cammera no connectada');
+            logger('camera cargada corecction OK[]');
+        }
+
+        function viewVideo(video, context) {
+            context.drawImage(video, 0, 0, context.width, context.height);
+            // socket.emit('stream', canvas.toDataURL('image/webp'));
+            socket.emit('stream', canvas.toDataURL());
+
+        }
+        $(function () {
+            navigator.getUserMedia = (navigator.getUserMedia || navigator.
+                webkitGetUserMedia || navigator.mozGetUserMedia || navigator.
+                    msgGetUserMedia);
+
+            if (navigator.getUserMedia) {
+                navigator.getUserMedia(
+                    { video: true },
+                    loadCam,
+                    loadFail
+                )
+            }
+
+            setInterval(function () { viewVideo(video, context); }, 6);
+        })
+    </script>
+
+    <div>
+
+        <div>
+            <img id="play" style="width: 680px; height:320px; background-color: chartreuse" src="">
+            <img width="500px" src="" alt="...." id="img1">
+
+        </div>
+        <div id="logger1"> </div>
+        <script>
+            var socket = io();
+
+            socket.on('stream', image => {
+                console.log('image socket.on(::::', image);
+                //   $("#play").attr("src", "data:image/png;base64," + (base.base64));
+                //   $("#play").attr("src",image);
+                $("#img1").attr("src", image);
+                $("#play").attr("src", `${image}`);
+                //  alert(1)
+
+
+                /*   document.getElementById('img')
+                       .setAttribute(
+                           'src',
+                           `${image}`
+                       );
+               */
+
+                var img = document.getElementById("play");
+                img.src = image;
+                $("#logger1").text(image);
+
+                //      document.getElementById("play").src =  `${image}`;
+
+
+                //    $("#img").attr('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==');
+
+
+                //  var log = document.getElementById("logger1");
+                //  log.text(image)
+
+            })
+
+
+        </script>
+    </div>
+
+
+
+</body>
+
+</html>

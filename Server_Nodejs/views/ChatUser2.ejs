@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <script>
+
+                /*
+                var dataCookie = document.cookie;
+                var ArrayCookie = dataCookie.split(" "); //loai bo dau cach va tao mang
+                console.log('ArrayCookie:::', ArrayCookie);
+                //tim  ten cookie can tim
+                ArrayTokenThoanMan = [];
+                ArrayCookie.forEach(i => {
+                    if (i.indexOf("@token=") > -1) {
+                        var token = i.replace("@token=", ''); //loai bo ky tu @token= chi lay gia tri token thui
+                        ArrayTokenThoanMan.push(token);
+                        var token1 = ArrayTokenThoanMan[0];
+                        console.log('token1::', token1);
+                        if (token1.indexOf(";") > -1) {
+                            var token = token1.replace(";", ''); //loai bo dau phay
+                            ArrayTokenThoanMan.push(token);
+                        }
+                    }
+                });
+                var token = ArrayTokenThoanMan[0];
+                console.log('token::::', token); */
+    </script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:2800/Reactjs/chatcss/ChatUser.css" />
+    <script src="http://localhost:2800/jquery.js"></script>
+    <script src="http://localhost:2800/socket.io/socket.io.js"></script>
+
+    <script src="http://localhost:2800/lib/react.js"></script>
+    <script src="http://localhost:2800/lib/react-dom.js"></script>
+    <script src="http://localhost:2800/lib/Babel-core-browser.min.js"></script>
+
+    <script src="http://localhost:2800/Stream/peer.js"></script>
+
+    <style>
+        .CmsSend{
+            float: left;
+            font-size: 20;
+            width: 300px;
+           
+        }
+        .CmsNhan{
+            float: right;
+            font-size: 20px;
+            width: 300px;
+           
+        } 
+        .ClassNguoiSend{
+            font-size: 40px
+        } 
+    </style>
+
+
+
+    <script>
+
+
+
+        function getCookie(NameCookie) {
+            ArrayTokenThoanMan = [];
+            var dataCookie = document.cookie;
+            //    console.log('dataCookie:::', dataCookie)
+            var ArrayCookie = dataCookie.split(" "); //loai bo dau cach va tao mang
+            $(ArrayCookie).each((index, value) => {
+                if (value.indexOf(NameCookie) > -1) {
+                    var token1 = value.replace(NameCookie, ''); //loai bo ky tu @token= chi lay gia tri token thui
+                    ArrayTokenThoanMan.push(token1);
+                    //            console.log('ArrayTokenThoanMan[0]::', ArrayTokenThoanMan[0]);
+                }
+            });
+            if (ArrayTokenThoanMan[0] == null || ArrayTokenThoanMan[0] == 'undefined') {
+                return [];
+            }
+
+            if (ArrayTokenThoanMan[0].indexOf(";") > -1) {
+                var token = ArrayTokenThoanMan[0].replace(";", ''); //loai bo dau phay
+                //        console.log('token:::4444', token);
+                return token;
+            }
+            return ArrayTokenThoanMan[0];
+
+        }
+        // console.log('token::111111');
+        var token = getCookie("@token=") == null ? (getCookie("@token=")) : (localStorage.getItem("@token"));
+        //  var token = localStorage.getItem('@token') ;
+
+        //  console.log('token::', token);
+        var io1 = getCookie("io=");
+        //  console.log('IOioioioioioioioioioioioi::', io1);
+        var dataCookie = document.cookie;
+        console.log('dataCookie::', dataCookie);
+
+
+/*
+        var peer = new Peer({ key: 'tk5g2acaree6666669udi' }); //thay no la;  key: socket.id
+        function setCookie(NameCookie, value, expiredays) {
+            var ExpireDate = new Date;
+            ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 60 * 60 * 1000));
+            return document.cookie = NameCookie + "= " + escape(document.cookie = value) +
+                (ExpireDate == null ? "" : "; expires =" + ExpireDate.toUTCString());
+        }
+        peer.on('open', id => {
+          //  $("#my-peer").append(id);
+            console.log('id:;: open pree', id);
+            setCookie("@peerId", id); // luu peerId
+        }); */
+
+
+
+        $.get("http://localhost:2800/checkLogin/" + token, function (data) {
+            //       console.log('data checkLogin::::', data);
+            var dataParse = JSON.parse(data);
+            var tokenNew = dataParse.tokenNew;
+            var UsernameNguoiSend = dataParse.Username;
+            $('#NguoiSend').append("<div class='ClassNguoiSend' >" + UsernameNguoiSend + "</div>");
+            $('#NguoiSend').css("color", "#00BF00");
+            function setCookie(NameCookie, value, expiredays) {
+                var ExpireDate = new Date;
+                ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 60 * 60 * 1000));
+                return document.cookie = NameCookie + "= " + escape(document.cookie = value) +
+                    (ExpireDate == null ? "" : "; expires =" + ExpireDate.toUTCString());
+            }
+            setCookie("@token", tokenNew);
+            //luu token moi
+            $('#ketquaCheckLogin').html(data);
+            $('#ketquaCheckLogin').css("color", "yellow");
+        });
+
+
+        $(document).ready( () => {
+
+        });
+
+    // <div id="root"></div>
+    // type="text/babel" src="Messenger.js"><script
+    </script>
+
+
+</head>
+
+<style>
+    #listSocket_id_User{
+        overflow-y: scroll;
+        height: 500px;
+    }
+    .mauvang {
+        background-color: yellow;
+
+    }
+    #DanhSachUserOnline{ 
+        width: 300px;
+        background: #1E1E1E;
+        float: left;
+        height: 800px;
+
+    }
+    #UserOnline{
+        background-color: #1E1E1E;
+    
+    }
+    #chat{
+        width: 400px;
+        background-color: #EEDB90;
+        float: left;
+    }
+    #messenger{
+        width: 600px;
+        border: 3px solid aqua; 
+        padding: 5px; width: 300px; 
+        word-wrap: break-word; 
+        white-space:normal;
+        word-break: break-all;
+        white-space: pre;
+       
+      
+    }
+    textarea{
+        overflow: auto;
+    }
+    #mstxt-div{
+        word-wrap: break-word;
+    }
+    #ListMesseger{
+        width: 400px;
+        height: 600px;
+        overflow-y: scroll;
+        word-wrap:  break-word;
+    }
+    .container {
+    width: 50%;
+    margin: auto;
+    }
+    
+.icon-bar {
+    width: 100%;
+    background-color: #F0F0F0;
+    overflow: auto;
+}
+ 
+.icon-bar a {
+    float: left;
+    width: 20%;
+    text-align: center;
+    padding: 12px 0;
+    transition: all 0.3s ease;
+    color: blue;
+    font-size: 36px;
+}
+ 
+.icon-bar a:hover {
+    background-color: #007ACC;
+}
+ 
+.active {
+    background-color: yellow !important;
+}
+
+</style>
+
+<body>
+
+
+
+    <div>
+
+        <div id="warrper">
+
+            <div id="root">ooooo</div>
+            <script type="text/babel" src="http://localhost:2800/Reactjs/ReactUpLoad.js">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </script>
+
+
+            <div>react-domsssss</div>
+            <div id="root1"></div>
+            <script type="text/babel" src="http://localhost:2800/Reactjs/ReactChatUser11.js"></script>
+
+
+        </div>
+
+        <div>
+
+        </div>
+        <div>
+            <a id="ketquaCheckLogin">...ket qua....</a>
+
+        </div>
+        <div id="DanhSachUserOnline">
+            <div id="ListUser"></div>
+            <div id="listSocket_id_User"></div>
+        </div>
+
+        <div id="chat">
+            <div id="UserOnline"></div>
+            <div id="ListMesseger"></div>
+            <div>
+
+                <div id="mstxt">
+                    <textarea wrap="off" cols="30" rows="5" type="text" id="messenger" placeholder="vui long nhap text chat"></textarea>
+                    <br />
+
+                </div>
+
+                <input type="button" id="send" value="send">
+            </div>
+
+        </div>
+        <div id="NguoiSend"></div>
+
+
+
+        <div></div>
+    </div>
+
+
+</body>
+
+</html>
+
+<script>
+
+    /*
+
+     var ObjUser = { dsUser: arrayUsername.join() };
+            console.log('ObjUser:::', ObjUser);
+
+            console.log('ccccccc', 1 === 1);
+
+            console.log('arrayUsername:::', arrayUsername);
+            var m = arrayUsername.length;
+            console.log('M::::', m);
+
+            var mangU = [];
+            var x = "manh";
+            var arr = arrayUsername;
+            var isExist = (arr, x) => {
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i] === x) {
+                        console.log('arr[i] === x:::', arr[i] === x);
+
+                        return true
+                    }
+                }
+                return false;
+            }
+            console.log('isExist(arr,x):::', isExist(arrayUsername, x));
+
+     function deduplicate(arr) {
+                var isExist = (arr, x) => {
+                    for (let i = 0; i < arr.length; i++) {
+                      //  console.log('arr[i] === x deduplicate', arr[i] === x)
+                        if (arr[i] === x) return true;
+                    }
+                    return false;
+                }
+               // console.log('isExist::: deduplicate', isExist(arr, x));
+                var ans = [];
+                arr.forEach(element => {
+                    if (!isExist(arr, element)) ans.push(element); //!isExist chua ton tai  //return true; 
+                        //return true; true cho vao vi du so 2 lam mau
+                        // tat ca cac so khasc hai so sanh deu cho false gap 2 la true cho vao 
+                      //  console.log('manguuuuuu:::', mang);
+                        
+                    
+                });
+                return mang;
+        }
+
+     for (i = 0; i < m; i++) {
+                if (arrayUsername[i].indexOf(arrayUsername[0]) > -1) {
+                    mangU.push(arrayUsername[i])
+                    // if( arrayUsername[i].indexOf(arrayUsername[0]) >-1 ){
+                    //   arrayUsername.splice(i);
+                    console.log('mangU5555::::', mangU);
+                } else {
+                    mangU.push(arrayUsername[i]);
+
+                }
+            }
+            console.log('mangUssssssss::::', mangU);
+            console.log('arrayUsernameasasasasasas:::', arrayUsername.splice(1, 2));
+
+    */
+
+</script>

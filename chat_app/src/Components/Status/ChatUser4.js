@@ -38,7 +38,7 @@ var ArrarySaveDataMessenger = [];
 
 
 //lay tu FreeSuper.js goc
-export default class ChatUser3 extends Component {
+export default class ChatUser4 extends Component {
     constructor(props) {
         super(props);
 
@@ -394,6 +394,9 @@ export default class ChatUser3 extends Component {
 
 
     sendEmit() {
+
+        this.uploadImage(); // de setState({ pathImag: });///
+
         var YeuCauArrMess = this.state.YeuCauArrMess;
         if (YeuCauArrMess == null) {
             console.log('chua chon nguoi nhan nhe!!!!', YeuCauArrMess)
@@ -546,6 +549,7 @@ export default class ChatUser3 extends Component {
 
     hienthiMess() {
 
+        //lay du lieu tin nhan khi duoc kcih chuot vao
         const { Username, UsernameNguoiSend } = this.state;
         this.socket.emit('client-muon-lay-ArrayMess-User', {
             NameUserSendUserItem: (UsernameNguoiSend + Username + "ChatUsername.docx"),
@@ -645,6 +649,7 @@ export default class ChatUser3 extends Component {
 
     hienthiMess1() {
 
+        //lay khi co nguoi gui toi UserWeb gui toi la nguoi gui tin nhan toi
         const { UserWeb, UsernameNguoiSend } = this.state;
         var dataYeuCau = {
             NameUserSendUserItem: (UsernameNguoiSend + UserWeb + "ChatUsername.docx"),
@@ -654,7 +659,7 @@ export default class ChatUser3 extends Component {
         };
         this.socket.emit('client-muon-lay-ArrayMess-User', dataYeuCau);
         console.log('client-muon-lay-ArrayMess-User datayeaucau', dataYeuCau);
-        
+
         this.socket.on('server-trave-yeucau-ArrayMess-User', DataMessengerApp_r => {
             console.log('server-trave-yeucau-ArrayMess-User hienthiMess chuyen cho flatlist::', DataMessengerApp_r);
             //console.log('SaveDataMessengerApp[0] !== undefined:::',SaveDataMessengerApp[0] !== 'undefined')
@@ -977,10 +982,13 @@ export default class ChatUser3 extends Component {
                                                 // e.setState({ Username: Username, }); //de hien thi Username duoc kich chuot// ArrControlItemMess: this.state.ArrUserSendKey,//LOAD LUON SE CHI HIEN THI CAI MESS moi doc nhan o socket.on('server-send-messenger') //khi kich chuot vao username muon chat ta moi moc du lieu ti nhan tu server nodejs hien thij len cho nguoi dungva gio dim cah co ng gui tin nhan la hien thong bao co tin nhan
                                                 //Username = UserWeb
 
-                                                e.setState({ UserWeb: item.UserSend });
+                                                e.setState({
+                                                    UserWeb: item.UserSend,
+                                                    Username: item.UserSend,
+                                                });
 
                                                 const { UserWeb, UsernameNguoiSend } = this.state;
-                                             //   alert(UserWeb);
+                                                //   alert(UserWeb);
                                                 console.log('this.state.Username:::::', this.state.Username)
                                                 //can tim socketIdUsername co UsernameNguoiSend chua no thi moi emit  tra lai chinh no duoc
                                                 ArrSocketId_UserSend = [];
@@ -1014,67 +1022,67 @@ export default class ChatUser3 extends Component {
                                                 {this.state.Username == null ?
 
 
-                                                  //  this.state.UserSend == null ? null
-                                                  //      :
-                                                        <View style={{ flexDirection: 'column' }} >
+                                                    //  this.state.UserSend == null ? null
+                                                    //      :
+                                                    <View style={{ flexDirection: 'column' }} >
 
 
-                                                            <View >
-                                                                <Text>{console.log('this.state.Username !==null ')}</Text>
-                                                                <Text>{console.log('this.state.Username:::: view', this.state.Username)}</Text>
-
-                                                            </View>
-
-
-                                                            <View style={{ flex: 1, flexDirection: 'row', }}>
-                                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
-                                                                <View style={{ flex: 1 }}>
-                                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
-
-                                                                        <View style={{ flex: 2, backgroundColor: 'blue', }} >
-                                                                            <Text key={item.key} style={{ color: 'red', fontSize: 10, }}>{item.key} {item.UserSend}</Text>
-
-                                                                        </View>
-
-
-
-                                                                        <Text key={item.key} style={{ flex: 7, fontSize: 8 }}>{":  " + item.messenger}</Text>
-                                                                        <Text style={{ flex: 1 }} />
-
-                                                                    </View>
-                                                                    <View />
-
-                                                                </View>
-                                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
-                                                            </View>
-                                                            <View style={{ flex: 1 }} />
-
-
-
-                                                            <View style={{ flex: 1, flexDirection: 'row', }}>
-                                                                {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
-                                                                <View style={{ flex: 1 }}>
-                                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
-
-                                                                        <View style={{ flex: 2, backgroundColor: 'blue', }} >
-
-                                                                        </View>
-                                                                        <View style={{ flex: 7, backgroundColor: 'red', width: (item.pathIma == null ? 0 : avataWidth), height: (item.pathIma == null ? 0 : avataHeight), }} >
-
-                                                                            <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
-                                                                            </Image>
-                                                                        </View>
-                                                                        <View style={{ flex: 1 }} />
-
-                                                                    </View>
-                                                                    <View />
-
-                                                                </View>
-                                                                {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
-                                                            </View>
-
+                                                        <View >
+                                                            <Text>{console.log('this.state.Username !==null ')}</Text>
+                                                            <Text>{console.log('this.state.Username:::: view', this.state.Username)}</Text>
 
                                                         </View>
+
+
+                                                        <View style={{ flex: 1, flexDirection: 'row', }}>
+                                                            {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                            <View style={{ flex: 1 }}>
+                                                                <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                                                                    <View style={{ flex: 2, backgroundColor: 'blue', }} >
+                                                                        <Text key={item.key} style={{ color: 'red', fontSize: 10, }}>{item.key} {item.UserSend}</Text>
+
+                                                                    </View>
+
+
+
+                                                                    <Text key={item.key} style={{ flex: 7, fontSize: 8 }}>{":  " + item.messenger}</Text>
+                                                                    <Text style={{ flex: 1 }} />
+
+                                                                </View>
+                                                                <View />
+
+                                                            </View>
+                                                            {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
+                                                        </View>
+                                                        <View style={{ flex: 1 }} />
+
+
+
+                                                        <View style={{ flex: 1, flexDirection: 'row', }}>
+                                                            {/* <View style={{ flex: 4, flexDirection: 'row' }}> */}
+                                                            <View style={{ flex: 1 }}>
+                                                                <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                                                                    <View style={{ flex: 2, backgroundColor: 'blue', }} >
+
+                                                                    </View>
+                                                                    <View style={{ flex: 7, backgroundColor: 'red', width: (item.pathIma == null ? 0 : avataWidth), height: (item.pathIma == null ? 0 : avataHeight), }} >
+
+                                                                        <Image source={{ uri: (item.pathIma == null ? ima1 : item.pathIma) }} style={styles.pathImaStyle} >
+                                                                        </Image>
+                                                                    </View>
+                                                                    <View style={{ flex: 1 }} />
+
+                                                                </View>
+                                                                <View />
+
+                                                            </View>
+                                                            {/* neu la coloum ta them the nay chen giua de tao khoang cach <Text style={{ flex: 1 }} />  */}
+                                                        </View>
+
+
+                                                    </View>
 
 
 
@@ -1205,9 +1213,28 @@ export default class ChatUser3 extends Component {
 
 
                     <View style={{ flex: 1, flexDirection: 'row', height: 100, }}>
+                        <TouchableOpacity onPress={()=>{
+                            this.ShowImage_piker();
+                        }}>
+                            <Image source={require('../../../api/Images/cameraIcon.png')} style={styles.styleIcon} />
+                        </TouchableOpacity>
+
+                         <TouchableOpacity onPress={()=>{
+
+                         }}>
+                            <Image source={require('../../../api/Images/microphone.png')} style={styles.styleIcon} />
+                        </TouchableOpacity>
+
                         <TouchableOpacity onPress={() => { this.sendEmit() }}>
                             <Image source={require('../../../api/Images/sendIcon.png')} style={styles.styleIcon} />
                         </TouchableOpacity>
+
+                         <TextInput
+                            onChangeText={text => this.setState({ messenger: text })}
+                            value={this.state.messenger}
+                            placeholder={"vui long nhap text"}
+                            style={{ height: 80, width: 100 }}
+                        />
 
                         <Image source={{ uri: 'http://192.168.216.2:2400/hotgirls/1.jpg' }} style={styles.styleIcon} >
 
@@ -1265,6 +1292,7 @@ const styles = StyleSheet.create({
     styleIcon: {
         width: 24,
         height: 24,
+        marginLeft: 16,
     },
     pathImaStyle: {
         width: 140,

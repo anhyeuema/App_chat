@@ -1729,6 +1729,10 @@ app3.get('/chatCaNhan', (req, res) => {
 
 });
 
+app3.get('/React/ChatUser2', (req, res) => {
+    res.render('ChatUser2');
+})
+
 app3.get('/React/ChatUser', (req, res)=> {
     res.render('ChatUser1');
 });

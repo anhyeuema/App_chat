@@ -34,8 +34,8 @@ export default class Main extends Component {
                 <View style={{ flex: 1, backgroundColor: '#F2F2F2', flexDirection: 'row' }} >
                     <Text style={styles.styleText} >Main</Text>
                     <TouchableOpacity onPress={() => this.OnContolPanal()} style={styles.btnStyle} >
-                        <Text style={styles.styleText} > OnContolPanal</Text>
-                        <Image source={require('../../api/Images/BackIcon.png')} style={styles.styleIcon} />
+              
+                        <Image source={require('../../api/Images/BackIcon.png')} style={{ width: 20, height: 20 }} />
                     </TouchableOpacity>
                 </View>
 
@@ -121,8 +121,8 @@ styles = StyleSheet.create({
         fontSize: 6,
     },
     styleIcon: {
-        width: 20,
-        height: 20,
+        width: 40,
+        height: 40,
         backgroundColor: '#81B945'
     },
     btnStyle: {
