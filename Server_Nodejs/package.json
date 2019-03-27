@@ -20,14 +20,24 @@
     "jsonwebtoken": "^8.4.0",
     "multer": "^1.4.1",
     "pg": "^7.7.1",
+    "pg-connection-string": "^2.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "simple-peer": "^9.2.1",
     "socket.io": "^2.2.0",
     "uid": "^0.0.2",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14"
   },
+
+  
+
+  
+  "scripts": {
+    "start": "node index8.js"
+  },
+
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.5",

@@ -368,7 +368,7 @@ export default class StatusUser extends Component {
 
         return (
             <View style={{ flex: 1, backgroundColor: '#ffff' }} >
-                <Text>Component StatusUser {": " + this.state.User}</Text>
+                <Text>Component StatusUser11 {": " + this.state.User}</Text>
                 <TouchableOpacity onPress={() => { this.Delete() }}>
                     <Text>XOA Status</Text>
                 </TouchableOpacity>

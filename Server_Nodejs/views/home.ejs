@@ -86,7 +86,8 @@
 							// setTime luu thoi gian ( getTime la lay thi gian len + expriredays thoi gian dat * gio * phut* giay * mili giay)
 							ExpireDate.setTime(ExpireDate.getTime() + (expriredays * 24 * 60 * 60 * 1000));
 							//Hàm escape() loại bỏ các ký tự đặc biệt, mục đích là để trang web hiển thị đúng hơn và tránh được lỗi cross-site scripting
-							var path = "http://localhost:2800/ChatUsername"
+							var path = "http://localhost:2800/ChatUser3/ReactChatUser12";
+							
 							document.cookie = NameOfCookie + "=" + escape(document.cookie = value) +  // escape loai bo ky tu dac biet
 								((expriredays == null) ? "" : "; expires=" + ExpireDate.toUTCString()) + "; path=" + path;
 							//toGMTString  la Phương thức cũ - Biến đổi 1 ngày thành 1 chuỗi bởi sử dụng các qui ước Internet GMT. Bạn dùng toUTCString để thay thế.
@@ -184,7 +185,7 @@
 			</div>
 			<div class="block"></div>
 			<div>
-				<input type="button" id="LOGIN" href="http://localhost:2800/ChatUsername/"  value="Login" />
+				<input type="button" id="LOGIN" href="http://localhost:2800/ChatUser3/ReactChatUser12"  value="Login" />
 			</div>
 
 		</div>

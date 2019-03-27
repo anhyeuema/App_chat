@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="http://localhost:2100/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+    hello cac ban
+
+    <div>
+        <input type="button" id="emitSpd" value="Emit-SDP">
+    </div>
+    <div>
+
+        <video id="video2" width="300" controls></video>
+    </div>
+    <div>
+        <video id="localstream" width="300" controls></video>
+        <video id="answerstream1" width="300" controls></video>
+        <br /><br />
+        <label>My Connection peer</label>
+        <textarea rows="3" cols="100" id="txtMysignal"></textarea>
+        <br /><br />
+        <input type="text" placeholder=" your frienr signal " id="txtFriendSignal">
+        <br /><br />
+        <button id="btnConnect">Connection</button>
+        <br /><br />
+        <label>My Connection Answer</label>
+        <textarea rows="3" cols="100" id="txtAnswer"></textarea>
+        <br /><br />
+    </div>
+
+    <div>
+        <div>
+            <video width="300px" id="yourvideo" controls></video>
+        </div>
+        <div>
+            <video width="400px" id="friendsVideo" controls></video>
+        </div>
+        <div>
+
+            <video id="answerstream" width="300" controls></video>
+        </div>
+
+    </div>
+    <script>
+        var socket = io('http://localhost:2100');
+
+        const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+        var yourVideo = document.getElementById("yourVideo");
+
+
+        /*
+
+        var config = {
+            apiKey: "AIzaSyAi2YNagT8DE8BusrJg4vDj91tyAlz4TrI",
+            authDomain: "seminar-8448e.firebaseapp.com",
+            databaseURL: "https://seminar-8448e.firebaseio.com",
+            projectId: "seminar-8448e",
+            storageBucket: "",
+            messagingSenderId: "915525042957"
+        };
+        firebase.initializeApp(config);
+
+        var database = firebase.database().ref();
+        var yourVideo = document.getElementById("yourVideo");
+        var friendsVideo = document.getElementById("friendsVideo");
+        var yourId = Math.floor(Math.random() * 1000000000);
+        var servers = { 'iceServers': [{ 'urls': 'stun:stun.services.mozilla.com' }, { 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'turn:numb.viagenie.ca', 'credential': 'webrtc', 'username': 'websitebeaver@mail.com' }] };
+        var pc = new RTCPeerConnection(servers);
+        pc.onicecandidate = (event => event.candidate ? sendMessage(yourId, JSON.stringify({ 'ice': event.candidate })) : console.log("Sent All Ice"));
+        pc.onaddstream = (event => friendsVideo.srcObject = event.stream);
+
+        function sendMessage(senderId, data) {
+            var msg = database.push({ sender: senderId, message: data });
+            msg.remove();
+        }
+
+        function readMessage(data) {
+            var msg = JSON.parse(data.val().message);
+            var sender = data.val().sender;
+            if (sender != yourId) {
+                if (msg.ice != undefined) {
+                    pc.addIceCandidate(new RTCIceCandidate(msg.ice));
+                }
+                else if (msg.sdp.type == "offer") {
+                    var r = confirm("Answer call?");
+                    if (r == true) {
+                        pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+                            .then(() => pc.createAnswer())
+                            .then(answer => pc.setLocalDescription(answer))
+                            .then(() => sendMessage(yourId, JSON.stringify({ 'sdp': pc.localDescription })));
+                    } else {
+                        alert("Rejected the call");
+                    }
+                }
+                else if (msg.sdp.type == "answer") {
+                    pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                }
+            }
+        };
+
+        database.on('child_added', readMessage);
+
+        function showMyFace() {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                .then(stream => yourVideo.srcObject = stream)
+                .then(stream => pc.addStream(stream));
+        }
+
+        function showFriendsFace() {
+            pc.createOffer()
+                .then(offer => pc.setLocalDescription(offer))
+                .then(() => sendMessage(yourId, JSON.stringify({ 'sdp': pc.localDescription })));
+        }
+        */
+        var yourId = Math.floor(Math.random() * 1000000000);
+        Peer = new RTCPeerConnection(configuration);
+
+        //    e.setState({ localStream: localStream });
+        //   const { localStream } = this.state;
+        //       console.log('this.state.localStream::::', this.state.localStream);
+        // peer.addStream(localStream);
+
+        function showFriendsFace() {
+            Peer.createOffer()
+                .then(offer => Peer.setLocalDescription(offer))
+                .then(() => {
+
+                    //sendMessage(yourId, JSON.stringify({ 'sdp': pc.localDescription }))
+                    console.log('yourIdbvbvbvbvbvbvbvbvbvbvb', JSON.stringify({ 'sdp': Peer.localDescription }));
+                    var datEmit = {
+                        'sdp': Peer.localDescription
+                    }
+                    socket.emit('client-send-sdp', datEmit)
+                });
+        }
+
+        showFriendsFace();
+
+        /*
+        socket.on('server-send-sdp', data => {
+            console.log('server-send-sdp', data);
+            console.log('(data.sdp.type == "offer") ', (data.sdp.type == "offer"));
+
+            Peer.onaddstream = (event => {
+                console.log('event', event);
+                console.log('event.stream', event.stream);
+                var friendsVideo = document.getElementById("friendsVideo");
+                friendsVideo.srcObject = event.stream;
+                friendsVideo.onloadedmetadata = function (e) {
+                    friendsVideo.play();
+                };
+            });
+
+            if (data.sdp.type == "offer") {
+                Peer = new RTCPeerConnection(configuration);
+                Peer.setRemoteDescription(new RTCSessionDescription(data.sdp)) //9999 Goi ham setRemoteDecription sau do goi createAnswer
+                    .then(() =>
+                        // {
+                        Peer.createAnswer()
+
+                    )
+                    .then(answer => {
+                        //pc.setLocalDescription(answer)
+                        Peer.setLocalDescription(answer); //10 goi setLocalDescripttion
+                        console.log('answer::::answer answer answer answer ', answer);
+                        // peer.onaddstream = (event => {
+                        //     friendsVideo.srcObject = event.stream
+                        //  });
+
+
+                      //  socket.emit('exchange', {
+                            //'to': fromId, 
+                       //     'sdp': Peer.localDescription
+                      //  }); //10 gui lai cho thang R
+
+                       
+
+                    })
+                    .then(() => {
+                        // console.log('stream1 stream1 stream1::::::::', stream1);
+                        // sendMessage(yourId, JSON.stringify({ 'sdp': peer.localDescription }))
+                        // console.log(' JSON.stringify({ sdp: peer.localDescription })', JSON.stringify({ 'sdp': Peer.localDescription }));
+
+                    });
+            } else if (data.sdp.type == "answer") {
+                Peer.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            }
+
+        })
+        */
+
+
+        /*
+        Peer.onaddstream = (event => {
+            console.log('event', event);
+            console.log('event.stream', event.stream);
+            var friendsVideo = document.getElementById("friendsVideo");
+            friendsVideo.srcObject = event.stream;
+            friendsVideo.onloadedmetadata = function (e) {
+                friendsVideo.play();
+            };
+        });
+        */
+
+
+        Peer.onaddstream = function (event) {
+            console.log("this function is called");
+            console.log('event event', event);
+            var video2 = document.getElementById("video2")
+            video2.src = window.URL.createObjectURL(event.stream)
+            video2.play()
+        }
+
+        Peer.onicecandidate = (event => event.candidate ?  socket.emit('client-send-candidate',{ 'ice': event.candidate }) : console.log("Sent All Ice"));
+
+
+        socket.on('exchange', function (data) {
+            console.log(' data.videoURL::::', data);
+            console.log(' data.videoURL::::', data.videoURL);
+            //   console.log('exchange exchange exchange exchange', data)
+            // exchange(data);
+            var localStream = data.videoURL;
+            const fromId = data.from;
+            let peer;
+            // if (fromId in pcPeers) {
+            //     console.log('peer exchange0000000111');
+            //     peer = pcPeers[fromId];
+            //     console.log('peer exchange0', peer);
+            //   } else {
+            //    console.log('peer exchange111111111111');
+            //  peer = createPC(fromId, false); //fromid la socket id do
+
+            peer = new RTCPeerConnection(configuration);
+
+            //    e.setState({ localStream: localStream });
+            //   const { localStream } = this.state;
+            //       console.log('this.state.localStream::::', this.state.localStream);
+            // peer.addStream(localStream);
+
+
+
+            function showMyFace() {
+
+                /*
+                                navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+                                    .then(stream => {
+                                        console.log('stream stream stream', stream)
+                                        var video = document.getElementById('answerstream');
+                
+                                        video.onloadedmetadata = function (e) {
+                                            video.play();
+                                        };
+                                    })
+                                    .then(stream => {
+                                        peer.addStream(stream);
+                                        console.log('stream:::::', stream)
+                                    });
+                */
+
+
+
+                navigator.getUserMedia = navigator.getUserMedia ||
+                    navigator.webkitGetUserMedia ||
+                    navigator.mozGetUserMedia;
+
+                if (navigator.getUserMedia) {
+                    navigator.getUserMedia({ audio: false, video: { width: 1280, height: 720 } },
+                        function (stream) {
+                            console.log('stream stream stream', stream)
+                            var video = document.getElementById('answerstream');
+                            video.srcObject = stream;
+                            video.onloadedmetadata = function (e) {
+                                video.play();
+                            };
+                        },
+                        function (err) {
+                            console.log("The following error occurred: " + err.name);
+                        }
+                    );
+                } else {
+                    console.log("getUserMedia not supported");
+                }
+
+            }
+
+            var friendsVideo = document.getElementById("friendsVideo");
+            peer.onaddstream = (event => {
+                console.log('event', event);
+                console.log('event.stream', event.stream);
+                friendsVideo.srcObject = event.stream;
+                friendsVideo.onloadedmetadata = function (e) {
+                    friendsVideo.play();
+                };
+            });
+
+            //    peer.onicecandidate = (event => event.candidate ? sendMessage(yourId, JSON.stringify({ 'ice': event.candidate })) : console.log("Sent All Ice"));
+            //   peer.onicecandidate = (event => event.candidate ? socket.emit('yourId', JSON.stringify({ 'ice': event.candidate })) : console.log("Sent All Ice"));
+
+
+            showMyFace()
+
+
+            //     console.log('peer exchange1', peer);
+            // }
+
+
+            // if (peer.remoteDescription.type == "offer")
+            console.log('createAnswer createAnswer createAnswer createAnswer createAnswer', peer.createAnswer);
+
+
+
+            if (data.sdp.type == "offer") {
+                peer.setRemoteDescription(new RTCSessionDescription(data.sdp)) //9999 Goi ham setRemoteDecription sau do goi createAnswer
+                    .then(() =>
+                        // {
+                        peer.createAnswer()
+                        //  console.log(' peer.createAnswer  peer.createAnswer  peer.createAnswer  peer.createAnswer', peer);
+                        // e.setState({ _remoteStreams: peer._remoteStreams});
+                        // var _remoteStreams = peer._remoteStreams
+                        // e.setState({
+                        //   _remoteStreams: _remoteStreams.toURL()
+                        // });
+                        // peer.addStream(_remoteStreams);
+                        // }
+                    )
+                    .then(answer => {
+                        //pc.setLocalDescription(answer)
+                        peer.setLocalDescription(answer); //10 goi setLocalDescripttion
+                        console.log('answer::::answer answer answer answer ', answer);
+                        // peer.onaddstream = (event => {
+                        //     friendsVideo.srcObject = event.stream
+                        //  });
+
+
+                        socket.emit('exchange-Answer', {
+                            //'to': fromId, 
+                            'sdp': peer.localDescription
+                        }); //10 gui lai cho thang R
+
+                        // socket.emit('exchange-Answer', {
+                        //'to': fromId, 
+                        //      'sdp': peer.localDescription
+                        //  }); //10 gui lai cho thang R
+
+                        //   socket.emit('exchange-Answer', {
+                        //'to': fromId, 
+                        //       'sdp': peer.localDescription
+                        //  }); //10 gui lai cho thang R
+
+                    })
+                    .then(() => {
+                        // console.log('stream1 stream1 stream1::::::::', stream1);
+                        // sendMessage(yourId, JSON.stringify({ 'sdp': peer.localDescription }))
+                        console.log(' JSON.stringify({ sdp: peer.localDescription })', JSON.stringify({ 'sdp': peer.localDescription }));
+
+
+
+                    });
+            } else if (data.sdp.type == "answer") {
+                console.log('(data.sdp.type == "answer") ', (data.sdp.type == "answer"))
+                peer.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            }
+
+
+
+        });
+
+    </script>
+</body>
+
+</html>

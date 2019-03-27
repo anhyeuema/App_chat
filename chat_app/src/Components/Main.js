@@ -18,6 +18,7 @@ export default class Main extends Component {
         super(props);
         this.state = {
             selectedTab: 'status1'
+          // selectedTab: 'user'
         };
     }
 

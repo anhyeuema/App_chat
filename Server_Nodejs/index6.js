@@ -461,7 +461,7 @@ app.post('/photo',urlencodedParser, (req, res) => {
 
 //upload file tu App len server nodejs va to web
 var express = require('express');
-var app2 = express();
+var app2 = express();;
 app2.listen(1400, console.log('app2-start-port 1400-upload-image-From-app-to-web'))
 
 app2.use('/', express.static(path.join(__dirname, 'public')));
@@ -780,19 +780,159 @@ var ArrMessSendServer = [];
 
 var ArrPeerId = [];
 
+function socketIdsInRoom(name) {
+    var socketIds = io.nsps['/'].adapter.rooms[name];
+    if (socketIds) {
+        var collection = [];
+        for (var key in socketIds) {
+            collection.push(key);
+        }
+        return collection;
+    } else {
+        return [];
+    }
+}
 
 
-io1.on('connect', (socket) => {
+
+///
+
+var sockets = {};
+var users = {};
+function sendTo(connection, message) {
+    connection.send(message);
+}
+///
+
+//io1.on('connect', (socket) => {
+io1.on('connection', (socket) => {
+    console.log('socket.id:::', socket.id);
+
+
+    ///
+    ///
+    /*
+    socket.on('disconnect', function () {
+        console.log("user disconnected");
+        if (socket.name) {
+            socket.broadcast.to("chatroom").emit('roommessage', { type: "disconnect", username: socket.name })
+            delete sockets[socket.name];
+            delete users[socket.name];
+        }
+
+    })
+
+    socket.on('message', function (message) {
+
+        var data = message;
+
+        switch (data.type) {
+
+            case "login":
+                console.log("User logged", data.name);
+
+                //if anyone is logged in with this username then refuse
+                if (sockets[data.name]) {
+                    sendTo(socket, {
+                        type: "login",
+                        success: false
+                    });
+                } else {
+                    //save user connection on the server
+                    var templist = users;
+                    sockets[data.name] = socket;
+                    socket.name = data.name;
+                    sendTo(socket, {
+                        type: "login",
+                        success: true,
+                        username: data.name,
+                        userlist: templist
+                    });
+                    socket.broadcast.to("chatroom").emit('roommessage', { type: "login", username: data.name })
+                    socket.join("chatroom");
+                    users[data.name] = socket.id
+                }
+
+                break;
+            default:
+                sendTo(socket, {
+                    type: "error",
+                    message: "Command not found: " + data.type
+                });
+                break;
+        }
+
+    })
+    */
+    ///
+    ///
+
+
+    /*
+    console.log('connection');
+    socket.on('disconnect', function () {
+        console.log('disconnect');
+        console.log('socket.room'.socket.room);
+        if (socket.room) {
+            var room = socket.room;
+            io1.to(room).emit('leave', socket.id);
+            console.log('leave', socket.id);
+            socket.leave(room);
+        }
+    });
+
+    socket.on('join', function (name, callback) {
+        console.log('join', name);
+        var socketIds = socketIdsInRoom(name);
+        callback(socketIds);
+        socket.join(name);
+        socket.room = name;
+    });
+
+
+    socket.on('exchange', function (data) {
+        console.log('exchange', data);
+        data.from = socket.id;
+        var to = io1.sockets.connected[data.to];
+        to.emit('exchange', data);
+        console.log('exchange', data);
+    });
+    */
+
+
+
+    socket.on('exchange', data => {
+        console.log('data exchange', data);
+        //  io1.sockets.emit('leave',socket.id);
+
+        var sdp = data.sdp;
+        var from = socket.id;
+        var videoURL = data.videoURL;
+        var x = { sdp, 'from': from, 'videoURL': videoURL };
+
+        io1.sockets.emit('exchange', x);
+        console.log('v exchange v exchange', x);
+    })
+
+    socket.on('join', data => {
+        console.log('data join', data);
+    })
+
+    socket.on('exchange-Answer', datastream=> {
+        console.log('exchange-Answer exchange-Answer exchange-Answer exchange-Answer',datastream);
+
+        io1.sockets.emit('exchange-Answer',datastream);
+    })
 
 
 
     socket.on('stream', image => {
-        // console.log('data tream :', image);
+       //  console.log('data tream :', image.length);
         io1.sockets.emit('stream', image);
     });
 
     socket.on('Reactjs-stream', dataStream1 => {
-         console.log('data dataStream1 dataStream1 :', dataStream1.UserAnswn);
+        console.log('data dataStream1 dataStream1 :', dataStream1.UserAnswn);
         console.log('ArraySocketIdUsername c', ArraySocketIdUsername);
         //guitoi socket.id cua thang UserAnswn
         //UserAnswn
@@ -812,7 +952,7 @@ io1.on('connect', (socket) => {
         console.log('ArrSocKetIdUserAnswn:::::React-stream', ArrSocKetIdUserAnswn);
         ArrSocKetIdUserAnswn.map(function (socketId, index) {
             io1.to(socketId).emit('Reactjs-stream', dataIma);
-           // io1.sockets.emit('Reactjs-stream', dataIma);
+            // io1.sockets.emit('Reactjs-stream', dataIma);
             // console.log('image socket.on 3333333dataIma', dataIma);
 
         })
@@ -1037,44 +1177,32 @@ io1.on('connect', (socket) => {
 
 
 
-
-
-
-        socket.on('disconnect', (data) => {
-            //   console.log('io1..data disconnect::::', data);
-            //  console.log('io1..socket.id data disconnect', socket.id);
-            io1.sockets.emit('socketId-da-disconnect', socket.id);
-            var socketIdDis = socket.id;
-            //  console.log('io1..disconnect:::', ArraySocketIdUsername);
-            //o day ta ca nhat lai luon socketId = Username cung duoc;
-            // ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
-            console.log('io1...socket.id disconnect', socketIdDis);
-            ArraySocketIdUsername.map(function (value, index) {
-                //neu nhu socketIdDis chuoi nay so sanh lan luot voi UserSocketId
-                //co phan tu nao trong UserSocketId nao ma giong socketIdDis thi la phan tu do can loai bo 
-                if (value.UserSocketId.indexOf(socketIdDis) > -1) {
-                    //ArraySocketIdUsername can loai bo UserSocketId thoa nam dk if
-                    //loai bo phantu thu index lan thu tu cua UserSocketId trong mang ArraySocketIdUsername
-                    ArraySocketIdUsername.splice(index, 1); // loai bo phan tu thu index trong
-                }
-            });
-
-            console.log('ArraySocketIdUsername: NEW sau khi-da-disconnect:::', ArraySocketIdUsername);
-            //ArraySocketIdUsername khong can gui client app hoac server chi bo no di vi sau khi run lai ap no se 
-            //cap nhat 1 socket.id + Username ma Ta se gui no o phan socket.on('client-send-Username', Username
-        });
-
-
-
-
-
-
-
-
-
-
     });
 
+
+    socket.on('disconnect', (data) => {
+        //   console.log('io1..data disconnect::::', data);
+        //  console.log('io1..socket.id data disconnect', socket.id);
+        io1.sockets.emit('socketId-da-disconnect', socket.id);
+        var socketIdDis = socket.id;
+        //  console.log('io1..disconnect:::', ArraySocketIdUsername);
+        //o day ta ca nhat lai luon socketId = Username cung duoc;
+        // ArraySocketIdUsername.push({ UserSocketId: socket.id + Username, Username: Username });
+        console.log('io1...socket.id disconnect', socketIdDis);
+        ArraySocketIdUsername.map(function (value, index) {
+            //neu nhu socketIdDis chuoi nay so sanh lan luot voi UserSocketId
+            //co phan tu nao trong UserSocketId nao ma giong socketIdDis thi la phan tu do can loai bo 
+            if (value.UserSocketId.indexOf(socketIdDis) > -1) {
+                //ArraySocketIdUsername can loai bo UserSocketId thoa nam dk if
+                //loai bo phantu thu index lan thu tu cua UserSocketId trong mang ArraySocketIdUsername
+                ArraySocketIdUsername.splice(index, 1); // loai bo phan tu thu index trong
+            }
+        });
+
+        console.log('ArraySocketIdUsername: NEW sau khi-da-disconnect:::', ArraySocketIdUsername);
+        //ArraySocketIdUsername khong can gui client app hoac server chi bo no di vi sau khi run lai ap no se 
+        //cap nhat 1 socket.id + Username ma Ta se gui no o phan socket.on('client-send-Username', Username
+    });
 
 
 

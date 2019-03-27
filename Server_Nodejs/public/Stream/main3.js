@@ -144,7 +144,7 @@ $('#btnCall').click(function () {
     playStream('localStream', myStream); //myStream = stream
     var call = peer.call(id, myStream);
     console.log('call: nguoi goi btnCall 0000000::::::', call);
-    console.log('call.on call.on call.on call.on 000000', call.on())
+  //  console.log('call.on call.on call.on call.on 000000', call.on())
 	//  call.answer(myStream);
 //	window.existingCall = call;
     call.on('stream', function (remoteStream) {
@@ -152,6 +152,7 @@ $('#btnCall').click(function () {
         console.log('remoteStream::nguoi goi 0000000:::', remoteStream);
         // Show stream in some <video> element.
         playStream('remoteStream', remoteStream);
+        console.log('playStream(remoteStream, remoteStream)', playStream('remoteStream', remoteStream));
 
     }); 
 

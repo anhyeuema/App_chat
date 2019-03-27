@@ -460,7 +460,7 @@ var CheckUser = React.createClass({
                     loadFail
                 )
             }
-            setInterval(function () { viewVideo(video, context) }, 5);
+            setInterval(function () { viewVideo(video, context) }, 30);
             // setInterval(function () { viewVideo(video, context) },300);
         });
 
@@ -712,415 +712,701 @@ var CheckUser = React.createClass({
 
 
 
-        socket.on('server-traVe-peer-nguoiNhan-videoCall', ArrPeerAnswn => {
-            console.log('ArrPeerAnswn::::::::', ArrPeerAnswn);
-            /*
-            ArrPeerAnswn.map((peerId, index) => {
+        const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+        const pcPeers = {};
+
+
+
+
+        /*
+        //  MediaStreamTrack.getSources(sourceInfos => {
+        //  console.log('MediaStreamTrack.getSources:::',sourceInfos);
+        console.log('mediaDevices::::::::::', mediaDevices);
+        mediaDevices.enumerateDevices().then(sourceInfos => {
+            console.log('mediaDevices.enumerateDevices:::', sourceInfos);
+
+            let videoSourceId;
+            console.log('sourceInfos.length sourceInfos.length sourceInfos.length  v v sourceInfos.length', sourceInfos.length);
+            for (let i = 0; i < sourceInfos.length; i++) {
+                console.log('sourceInfos sourceInfos 0000000000000000000', sourceInfos);
+                const sourceInfo = sourceInfos[i];
+                if (sourceInfo.kind == "video" && sourceInfo.facing == (isFront ? "front" : "back")) {
+                    videoSourceId = sourceInfo.id;
+                    console.log('videoSourceId 00000000000000000000 ', videoSourceId);
+
+                }
+            }
+            mediaDevices.getUserMedia({
+                audio: true,
+                video: {
+                    mandatory: {
+                        minWidth: '100%', // Provide your own width, height and frame rate here
+                        minHeight: 300,
+                        minFrameRate: 30
+                    },
+                    facingMode: (isFront ? "user" : "environment"),
+                    optional: (videoSourceId ? [{ sourceId: videoSourceId }] : [])
+                }
+            })
+                .then(stream => {
+                    // Got stream!
+                    console.log('stream:::::::', stream);
+                    console.log('stream.toURL() stream.toURL() stream.toURL() stream.toURL():::::::', stream.toURL());
+
+                    e.setState({
+                        videoURL: stream.toURL(),
+                    });
+
+                    peer.addStream(stream);
+
+                    peer.createOffer().then(desc => { //7 CRAETEOffer
+                        // console.log('desc:createOffer().then:::', desc)
+                        peer.setLocalDescription(desc).then(() => { //8// setLocalDescription
+                            // Send pc.localDescription to peer
+                            // console.log('setLocalDescription', peer.localDescription);
+                            //  var dataEmitStream =  {'to': fromId, 'sdp': peer.localDescription };
+                            var dataEmitStream = { 'sdp': peer.localDescription, 'videoURL': this.state.videoURL };
+                            //    console.log('dataEmitStream:::::', dataEmitStream);
+                            this.socket.emit('exchange', dataEmitStream); //GUI CHO THANG M
+                            console.log('dataEmitStream: dataEmitStream dataEmitStream::::', dataEmitStream);
+
+                        });
+                    });
+
+                    peer.onicecandidate = function (event) {
+                        // send event.candidate to peer
+                        // console.log('event:pc.onicecandidate :::::', event);
+                        console.log('onicecandidate', event.candidate);
+                        if (event.candidate) {
+                            // var dataexhange = {'to': socketId, 'candidate': event.candidate };
+                            var dataexhange = { 'candidate': event.candidate };
+                            //   this.socket.emit('exchange',dataexhange);
+                            console.log('dataexchange dataexhange dataexhange', dataexhange);
+                        }
+
+                    };
+
+                    //  console.log('peer peer peer peer::::::', peer)
+
+                    console.log(' peer.addStream(stream)  peer.addStream(stream)::::::', peer.addStream(stream))
+
+                    console.log('this.state.videoURL:::::', this.state.videoURL);
+                })
+                .catch(error => {
+                    // Log error
+                });
+            */
+
+                
+
+            // const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+            const peer = new RTCPeerConnection(configuration); //pc=peer
+
+            let { isFront } = this.state;
+            socket.on('exchange', function (data) {
+                console.log(' data::::', data);
+                console.log(' data.videoURL::::', data.sdp);
+
+                console.log(' data.videoURL::::', data.videoURL);
+
+                //   console.log('exchange exchange exchange exchange', data)
+                // exchange(data);
+                var localStream = data.videoURL;
+                const fromId = data.from;
+                let peer;
+                if (fromId in pcPeers) {
+                    //     console.log('peer exchange0000000111');
+                    peer = pcPeers[fromId];
+                    console.log('peer exchange0', peer);
+                } else {
+                    //    console.log('peer exchange111111111111');
+                    //  peer = createPC(fromId, false); //fromid la socket id do
+
+                    peer = new RTCPeerConnection(configuration);
+
+                    //    e.setState({ localStream: localStream });
+                    //   const { localStream } = this.state;
+                    //       console.log('this.state.localStream::::', this.state.localStream);
+                    //  peer.addStream(localStream);
+
+                    console.log('peer exchange0', peer);
+
+
+                    //     console.log('peer exchange1', peer);
+                }
+
+
+                // if (peer.remoteDescription.type == "offer")
+                console.log('createAnswer createAnswer createAnswer createAnswer createAnswer', peer.createAnswer);
+
+
+                /*
+                      SessionDescription sdp = new SessionDescription(
+                        SessionDescription.Type.fromCanonicalForm(payload.getString("type")),
+                        payload.getString("sdp")
+                        );
+                        peer.pc.setRemoteDescription(peer, sdp);
+                        peer.pc.createAnswer(peer, pcConstraints);
+                */
+
+
+
+                /*
+                var sd = {
+                  sdp: data.sdp,
+                  type: 'offer'
+              };
+          
+               // peer.setRemoteDescription(description, function () {
+                  peer.setRemoteDescription(new RTCSessionDescription(sd), function () {
+                  peer.createAnswer(function (desc) { 
+                     //do what you want 
+                     console.log(' sessionDescription sessionDescription sessionDescription', desc);
+                    }); 
+                  },function(e){ 
+                    //handle an error 
+                  });
+                  */
+
+
+
+                /*
+                peer.createAnswer(
+                  function (sessionDescription) {
+                    console.log(' sessionDescription sessionDescription sessionDescription', sessionDescription);
+                    peer.setLocalDescription(sessionDescription);
+                    // Send answer to peer 
+                    sendMessage(chalengo.Method.SEND_ANSWER, sessionDescription.sdp);
+                  }, function (error) {
+                    console.log("Could not create SDP answer! Reason: " + error);
+                  }, {
+                    has_audio: true,
+                    has_video: true
+                  });
+                  */
+
+
+
+                /*
+                peer.setRemoteDescription(desc).then(() => {
+                  return navigator.mediaDevices.getUserMedia(mediaConstraints);
+                }).then((stream) => {
+                  localStream = stream;
+                  document.getElementById("localVideo").srcObject = localStream;
+                  return peer.addStream(localStream);
+                }).then(() => {
+                  return peer.createAnswer(); //No error when removed this then chain
+                }).then((answer) => {
+                  return peer.setLocalDescription(answer); // No error when removed this then chain
+                }).then(() => {
+                  socket.emit('video-answer', {
+                    sdp: peer.localDescription
+                  });
+                }).catch(handleGetUserMediaError);
+                */
+
+
+                /*
+                var sd = {
+                    sdp: data.sdp,
+                    type: 'offer'
+                };
+                peer.setRemoteDescription(new RTCSessionDescription(sd), function () {
+                    peer.createAnswer(
+                        function (sessionDescription) {
+                            console.log(' sessionDescription sessionDescription sessionDescription', sessionDescription);
+                            peer.setLocalDescription(sessionDescription);
+                            // Send answer to peer 
+                            sendMessage(chalengo.Method.SEND_ANSWER, sessionDescription.sdp);
+                        }, function (error) {
+                            console.log("Could not create SDP answer! Reason: " + error);
+                        }, {
+                            has_audio: true,
+                            has_video: true
+                        });
+                }, function (e) {
+                    console.log("Could not set remote description. Reason: " + e);
+                }); */
+
+
+
+                /*
+                peer.createAnswer()
+                  .then(function (answer) {
+                    console.log('answer answer answer answer answer', answer);
+                    //  return peer.setLocalDescription(answer);
+                  })
+                  .then(function () {
+                    // Send the answer to the remote peer through the signaling server.
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  }); 
+                  */
+
+
+                peer.setRemoteDescription(new RTCSessionDescription(data.sdp)) //9999 Goi ham setRemoteDecription sau do goi createAnswer
+                    .then(() =>
+                        // {
+                        peer.createAnswer()
+                        //  console.log(' peer.createAnswer  peer.createAnswer  peer.createAnswer  peer.createAnswer', peer);
+                        // e.setState({ _remoteStreams: peer._remoteStreams});
+                        // var _remoteStreams = peer._remoteStreams
+                        // e.setState({
+                        //   _remoteStreams: _remoteStreams.toURL()
+                        // });
+
+                        // peer.addStream(_remoteStreams);
+
+                        // }
+
+                    )
+                    .then(answer => {
+                        peer.setLocalDescription(answer); //10 goi setLocalDescripttion
+                        console.log('answer::::answer answer answer answer ', answer);
+
+
+                        // peer.setLocalDescription(answer, function () {
+                        //    console.log('setLocalDescription setLocalDescription setLocalDescription setLocalDescription setLocalDescription', peer.localDescription);
+
+                        //   socket.emit('exchange-Answer', {
+                        //'to': fromId, 
+                        //     'sdp': peer.localDescription
+                        //   }); //10 gui lai cho thang R
+
+                        // }, logError => console.log(logError));
+
+
+                    })
+                    .then((stream) => {
+                        console.log('stream stream 01010101010010101010101010', stream);
+                        // sendMessage(yourId, JSON.stringify({ 'sdp': peer.localDescription }))
+                        console.log(' JSON.stringify({ sdp: peer.localDescription })', JSON.stringify({ 'sdp': peer.localDescription }));
+                        socket.emit('exchange-Answer', {
+                            //'to': fromId, 
+                            'sdp': peer.localDescription
+                        }); //10 gui lai cho thang R
+
+                        var _remoteStreams = peer._remoteStreams
+                        // e.setState({
+                        //   _remoteStreams: _remoteStreams.toURL()
+                        // });
+                        peer.addStream(_remoteStreams);
+
+                    });
+            });
+
+            socket.on('server-traVe-peer-nguoiNhan-videoCall', ArrPeerAnswn => {
+                console.log('ArrPeerAnswn::::::::', ArrPeerAnswn);
+                /*
+                ArrPeerAnswn.map((peerId, index) => {
+                    openStream()
+                        .then(stream => {
+                            console.log('stream::nguoi goi:::', stream);
+                            PlayStream('localStream', stream);
+                            var call = peer.call(peerId, stream);
+                            call.on('stream', remoteStream => {
+                                console.log('remoteStream::nguoi goi:::', remoteStream);
+                                PlayStream('remoteStream', remoteStream);
+                            })
+                        })
+                }); */
+
+                var peerId = ArrPeerAnswn[0];
+                e.setState({ peerId: peerId });
+                console.log('this.state.peerId peerId:::::', this.state.peerId);
+
+                var { peerId } = this.state;
+                PlayStream('localStream', myStream);
+                var call = peer.call(peerId, myStream);
+                console.log('call 00000000000', call);
+                call.on('stream', function (remoteStream) {
+                    PlayStream('remoteStream', remoteStream);
+                    console.log('remoteStream::nguoi goi 0000000:::', remoteStream);
+                    // Show stream in some <video> element.
+                });
+                peer.on('call', function (call) {
+                    console.log('peer.on(call 22222222', call);
+                    console.log('openStream()>>>222222::::', openStream())
+                    PlayStream('localStream', myStream);
+                    call.answer(myStream); // Answer the call with an A/V stream.
+                    call.on('stream', function (remoteStream) {
+                        // Show stream in some <video> element.
+                        console.log('remoteStream::nguoi goi::22222222:', remoteStream);
+                        PlayStream('remoteStream', remoteStream);
+                    });
+                });
+
+
+                /*
                 openStream()
                     .then(stream => {
                         console.log('stream::nguoi goi:::', stream);
                         PlayStream('localStream', stream);
+                        ////////
+                        ///////////
+                        ///////////////
+                        ////////////////////
+                        ////////////////////
+                        //
+                        // var peerNew = new Peer({ key: `${peerId}` });
+                        //  var peerNew =  Peer({ key: `${peerId}` });
+    
+                        //  var call = peerNew.call(peerId, stream);
+    
+                        console.log('this.state.peerId peerId 11111:::::', this.state.peerId);
                         var call = peer.call(peerId, stream);
+                        console.log('call:::::', call);
                         call.on('stream', remoteStream => {
                             console.log('remoteStream::nguoi goi:::', remoteStream);
                             PlayStream('remoteStream', remoteStream);
                         })
-                    })
+                    });
+    
+            })
+    
+                //NGUOI TRA MOI SE HIEN THI
+                peer.on('call', call => {
+                    console.log('call peer.on ( call::', call)
+                    openStream()
+                        .then(stream => {
+                            console.log('stream::answer goi:::', stream);
+                            call.answer(stream);
+                            PlayStream('localStream', stream);
+                            call.on('stream', remoteStream => {
+                                console.log('remoteStream::answer goi:::', remoteStream);
+                                PlayStream('remoteStream', remoteStream);
+                            })
+                        }) 
+                    })*/
+            })
+
+
+
+
+
+            socket.on('Reactjs-stream', image => {
+                var { noiVideo } = this.state;
+
+                console.log('image socket.on 3333333(::::', image);
+
+
+                /*
+                //   var imVideob64 = image.replace('data:image/png','data:video/mp4');
+                var noiVideo1 = image.replace('data:image/png;base64,', '');
+                e.setState({ noiVideo: noiVideo + noiVideo1 });
+                //  var imVideob64 = "data:video/mp4;base64," + noiVideo;
+                //  console.log('data:video/mp4;base64 imVideob64 imVideob64 imVideob64 imVideob64,::::', imVideob64);
+                //  $('#playVideo').attr("src", imVideob64);
+    
+                console.log('noiVideo:::::', noiVideo);
+                var imVideob64 = "data:video/mp4;base64," + noiVideo;
+                console.log('data:video/mp4;base64 imVideob64 imVideob64 imVideob64 imVideob64,::::', imVideob64.length);
+                $('#playVideo').attr("src", imVideob64);
+    
+                */
+
+
+
+                //   $('#playVideo').attr("src", imVideob64);
+
+                //   $("#play").attr("src", "data:image/png;base64," + (base.base64));
+                //   $("#play").attr("src",image);
+                $("#img1").attr("src", image);
+                $("#play").attr("src", `${image}`);
+                var img = document.getElementById("play");
+                img.src = image;
+                $("#logger1").text(image);
+
+
+            });
+
+
+
+            //     var UserWeb = this.state.UsernameNguoiSend;
+
+
+            /*
+            var UserWeb = User;
+            var socket = io.connect('http://localhost:2800');
+            socket.on('connect', function (data) {
+                // var Eemit = this; 
+                socket.emit('client-send-Username', UserWeb); //co ket noi cai la gui luon username
+                console.log('client-send-Username UsernameNguoiSend CheckUser ', UserWeb)
             }); */
 
-            var peerId = ArrPeerAnswn[0];
-            e.setState({ peerId: peerId });
-            console.log('this.state.peerId peerId:::::', this.state.peerId);
 
-            var { peerId } = this.state;
-            PlayStream('localStream', myStream);
-            var call = peer.call(peerId, myStream);
-            console.log('call 00000000000', call);
-            call.on('stream', function (remoteStream) {
-                PlayStream('remoteStream', remoteStream);
-                console.log('remoteStream::nguoi goi 0000000:::', remoteStream);
-                // Show stream in some <video> element.
-            });
-            peer.on('call', function (call) {
-                console.log('peer.on(call 22222222', call);
-                console.log('openStream()>>>222222::::', openStream())
-                PlayStream('localStream', myStream);
-                call.answer(myStream); // Answer the call with an A/V stream.
-                call.on('stream', function (remoteStream) {
-                    // Show stream in some <video> element.
-                    console.log('remoteStream::nguoi goi::22222222:', remoteStream);
-                    PlayStream('remoteStream', remoteStream);
-                });
-            });
-
+            //   e.setState({ UserWeb: this.state.UsernameNguoiSend });
+            //    console.log('this.state.UserWeb client-send-Username UsernameNguoiSend CheckUser ',this.state.UserWeb)
 
             /*
-            openStream()
-                .then(stream => {
-                    console.log('stream::nguoi goi:::', stream);
-                    PlayStream('localStream', stream);
-                    ////////
-                    ///////////
-                    ///////////////
-                    ////////////////////
-                    ////////////////////
-                    //
-                    // var peerNew = new Peer({ key: `${peerId}` });
-                    //  var peerNew =  Peer({ key: `${peerId}` });
+            socket.on('server-send-socket.id+Username', ArraySocketUsername => {
+                e.setState({ mang: ArraySocketUsername });
+                console.log('eeeeeeeee eee server-send-socket.id+Username:::::: cmdddd', this.state.mang)
+            }); */
 
-                    //  var call = peerNew.call(peerId, stream);
-
-                    console.log('this.state.peerId peerId 11111:::::', this.state.peerId);
-                    var call = peer.call(peerId, stream);
-                    console.log('call:::::', call);
-                    call.on('stream', remoteStream => {
-                        console.log('remoteStream::nguoi goi:::', remoteStream);
-                        PlayStream('remoteStream', remoteStream);
-                    })
+            socket.on('server-send-socket.id+Username', (ArraySocketUsername) => {
+                console.log('ArraySocketUsername REACTJS REACTJS REACTJS REACTJS:::', ArraySocketUsername);
+                e.setState({ ArraySocketUsername: ArraySocketUsername });
+                var ArrayUserSocketId1 = [];
+                var arrayUsername1 = [];
+                var ArraySocketUsername = this.state.ArraySocketUsername;
+                ArraySocketUsername.map(function (value, index) {
+                    var UserSocketId = value.UserSocketId;
+                    var Username = value.Username;
+                    /*
+                     if (Username == false) { //neu Username = null thi khong phush vao
+                        console.log('dong message nay luon luon duoc in ra, hehe');
+                    }
+                    */
+                    if (Username !== null || Username !== '' || Username !== null || Username !== 'undefined') {
+                        ArrayUserSocketId1.push(UserSocketId);
+                        arrayUsername1.push(Username);
+                    }
                 });
+                //     console.log('ArrayUserSocketId Reactjs REACTJS REACTJS REACTJS REACTJS:::', ArrayUserSocketId1);
+                //   console.log('arrayUsername1 Reactjs REACTJS REACTJS REACTJS REACTJS:::', arrayUsername1);
 
-        })
-
-            //NGUOI TRA MOI SE HIEN THI
-            peer.on('call', call => {
-                console.log('call peer.on ( call::', call)
-                openStream()
-                    .then(stream => {
-                        console.log('stream::answer goi:::', stream);
-                        call.answer(stream);
-                        PlayStream('localStream', stream);
-                        call.on('stream', remoteStream => {
-                            console.log('remoteStream::answer goi:::', remoteStream);
-                            PlayStream('remoteStream', remoteStream);
-                        })
-                    }) 
-                })*/
-        })
-
-
-
-
-
-
-
-
-
-        socket.on('Reactjs-stream', image => {
-            var { noiVideo } = this.state;
-
-            console.log('image socket.on 3333333(::::', image);
-
-
-            //   var imVideob64 = image.replace('data:image/png','data:video/mp4');
-            var noiVideo1 = image.replace('data:image/png;base64,', '');
-            e.setState({ noiVideo: noiVideo + noiVideo1 });
-            //  var imVideob64 = "data:video/mp4;base64," + noiVideo;
-            //  console.log('data:video/mp4;base64 imVideob64 imVideob64 imVideob64 imVideob64,::::', imVideob64);
-            //  $('#playVideo').attr("src", imVideob64);
-
-            console.log('noiVideo:::::', noiVideo);
-            var imVideob64 = "data:video/mp4;base64," + noiVideo;
-            console.log('data:video/mp4;base64 imVideob64 imVideob64 imVideob64 imVideob64,::::', imVideob64.length);
-            //   $('#playVideo').attr("src", imVideob64);
-
-            //   $("#play").attr("src", "data:image/png;base64," + (base.base64));
-            //   $("#play").attr("src",image);
-            $("#img1").attr("src", image);
-            $("#play").attr("src", `${image}`);
-            var img = document.getElementById("play");
-            img.src = image;
-            $("#logger1").text(image);
-
-            $('#playVideo').attr("src", imVideob64);
-
-        });
-
-
-
-        //     var UserWeb = this.state.UsernameNguoiSend;
-
-
-        /*
-        var UserWeb = User;
-        var socket = io.connect('http://localhost:2800');
-        socket.on('connect', function (data) {
-            // var Eemit = this; 
-            socket.emit('client-send-Username', UserWeb); //co ket noi cai la gui luon username
-            console.log('client-send-Username UsernameNguoiSend CheckUser ', UserWeb)
-        }); */
-
-
-        //   e.setState({ UserWeb: this.state.UsernameNguoiSend });
-        //    console.log('this.state.UserWeb client-send-Username UsernameNguoiSend CheckUser ',this.state.UserWeb)
-
-        /*
-        socket.on('server-send-socket.id+Username', ArraySocketUsername => {
-            e.setState({ mang: ArraySocketUsername });
-            console.log('eeeeeeeee eee server-send-socket.id+Username:::::: cmdddd', this.state.mang)
-        }); */
-
-        socket.on('server-send-socket.id+Username', (ArraySocketUsername) => {
-            console.log('ArraySocketUsername REACTJS REACTJS REACTJS REACTJS:::', ArraySocketUsername);
-            e.setState({ ArraySocketUsername: ArraySocketUsername });
-            var ArrayUserSocketId1 = [];
-            var arrayUsername1 = [];
-            var ArraySocketUsername = this.state.ArraySocketUsername;
-            ArraySocketUsername.map(function (value, index) {
-                var UserSocketId = value.UserSocketId;
-                var Username = value.Username;
-                /*
-                 if (Username == false) { //neu Username = null thi khong phush vao
-                    console.log('dong message nay luon luon duoc in ra, hehe');
-                }
-                */
-                if (Username !== null || Username !== '' || Username !== null || Username !== 'undefined') {
-                    ArrayUserSocketId1.push(UserSocketId);
-                    arrayUsername1.push(Username);
-                }
-            });
-            //     console.log('ArrayUserSocketId Reactjs REACTJS REACTJS REACTJS REACTJS:::', ArrayUserSocketId1);
-            //   console.log('arrayUsername1 Reactjs REACTJS REACTJS REACTJS REACTJS:::', arrayUsername1);
-
-            e.setState({
-                ArrayUserSocketId: ArrayUserSocketId1,
-                arrayUsername: arrayUsername1,
-            });
-
-            function deduplicate(arr) {
-                var isExist = (arr, x) => {
-                    for (let i = 0; i < arr.length; i++) {
-                        if (arr[i] === x) return true;
-                    }
-                    return false;
-                }
-                var ans = [];
-                arr.forEach(element => {
-                    if (!isExist(ans, element)) ans.push(element);
-                });
-                return ans;
-            }
-            var mangU1 = deduplicate(this.state.arrayUsername);
-            //    console.log('mangU1111111 REACTJS REACTJS REACTJSREACTJS', mangU1); //mang Username khong co phan tu lap
-
-            /*
-             var MangUserKey = [];
-             var m = mangU1.length;
-             for (i = 0; i < m; i++) {
-                 MangUserKey.push({ key: JSON.stringify(i), Userkey: mangU1[i] });
-                 // console.log('MangUserKey::::', MangUserKey);
-             }
-             console.log('MangUserKey REACTJS REACTJS REACTJS REACTJS REACTJS::::', MangUserKey); 
- 
-             //loai bo ky Username = [] trong danh sach caht neu co
-             var mangU2 = [];
-             for (i = 0; i < mangU1.length; i++) {
-                 var User = mangU1[i];
-                 if (User === '' || User === []) {
- 
-                 }
-                 else if (User !== '' || User !== []) {
-                     mangU2.push(User);
-                 }
-             }
-             console.log('mangU2 REACTJS REACTJS REACTJS REACTJS loai bo username rong::::', mangU2); */
-
-            //mang hung du lieu mangU1 ma tao mang moi ArrUserKey co chua key 
-            var ArrUserKey = [];
-            mangU1.map(function (value, index) { //index thay cho key
-                if (value !== null || value !== undefined || value !== []) {
-                    var UserKey = { key: JSON.stringify(index), Userkey: value };
-                    ArrUserKey.push(UserKey);
-                }
-
-            });
-            console.log('ArrUserKey1 REACTJSREACTJSREACTJSREACTJS::::', ArrUserKey);
-            e.setState({
-                mangU: ArrUserKey
-            });
-
-
-        });
-
-        socket.on('server-send-messenger', (dataMessenger) => {
-            console.log('dataMessenger REACTJS:::', dataMessenger);
-            // e.setState({ dataMess: dataMessenger });
-
-            e.setState({ p: (this.state.p + 1) });
-
-            console.log('pppppppppppppppppppppppppppppppppppppppppppppppppp', this.state.p);
-            e.setState({
-                UserWeb: dataMessenger[0].UsernameNguoiSend, //web sen toi app App la thang duoc kich chuot la Username
-                UserApp: dataMessenger[0].UsernameNguoiNhan,
-                soPage: 1, //de hien thi la ra tin nhan moc ve 1 tinh tu length max - 1.m = hien thi so phan tu tu lon nhat toi -m phan tu
-            });
-            //  console.log('this.state.UsernameNguoiNhan !== "":::', this.state.UserApp);
-            const { UserApp, Nms, Username, OnManSendMs, UserWeb, SoKey } = this.state; //UserApp = UsernameNguoiSend, 
-            console.log('this.state.UserWeb server-send-messenger CheckUser ', this.state.UserWeb)
-
-            OnManSendMs.push(UserWeb);
-            console.log('OnManSendMs::lap', OnManSendMs);
-
-            function deduplicate(arr) {
-                var isExist = (arr, x) => {
-                    for (let i = 0; i < arr.length; i++) {
-                        if (arr[i] === x) return true;
-                    }
-                    return false;
-                }
-                var ans = [];
-                arr.forEach(element => {
-                    if (!isExist(ans, element)) ans.push(element);
-                });
-                return ans;
-            }
-            var OnManSendMs_r = deduplicate(OnManSendMs);
-            var m = OnManSendMs_r.length;
-            e.setState({ OnManSendMs: OnManSendMs_r });
-            console.log('OnManSendMs: khong:ArrDoneLap', this.state.OnManSendMs.length);
-
-            console.log('Nms:socket.on(server-send-messenger:::::', Nms);
-            if (dataMessenger[0] !== null) {
-                var ArrdataMessenger = this.state.ArrUserSendKey;
-                // console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
-                var ArrMessSendServer = []; // ArrMessSendServer chi lay 1 phan tu hay vai phan tu tu tin nhan new duoc web gui toi
-                console.log('Username:WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW socket.on(server-send-messenger::', Username);
-                var { arrThemOnMes } = this.state;
-                console.log('arrThemOnMes', arrThemOnMes);
-                if (Username == '') { //chua chon ten nguoi chat nguoi nhan tin nhan
-                    dataMessenger.map(function (dataEmit, index) {
-                        //Nms la so phan tu tinnhan luu o server 
-                        arrThemOnMes.unshift(dataEmit);
-                    });
-                    console.log('arrThemOnMes sau khi unshift splice(m, 1)', arrThemOnMes);
-                    //  console.log('arrThemOnMes', arrThemOnMes);
-                    if (arrThemOnMes.length >= (m + 1)) {
-                        var ptuXoa = 1;///m- this.state.a=1; //m  = this.state.a
-                        //  console.log('ptuXoa:::::::::',m);      
-                        console.log('ptuXoa:::::::::', ptuXoa);
-                        //    console.log('so phantu khong lap :', m);
-                        //    console.log('var xoa phan tu thu 2 nao', arrThemOnMes.length + ">=" + (m));
-                        // neu m tang len 1 thi phan tu xoa cung tang 1 = m- this.state.a
-                        arrThemOnMes.splice(ptuXoa, 1); // XOA 1 PHAN TU O VI TRI THU 2, de lai vi tri thu nhat
-                        // co the dung unshift() / shift() — thêm/xóa phần tử từ vị trí đầu mảng
-                        //dao gia tri them hien thi
-                        e.setState({ arrThemOnMes: arrThemOnMes, });
-                        e.setState({ a: arrThemOnMes.length, })
-                        console.log('this.state.aaaaaaaaaaaaaaaaaa sau khi splice(m, 1)', this.state.a);
-                        console.log('arrThemOnMes sau khi splice(m, 1)', arrThemOnMes);
-                        //  e.setState({  arrThemOnMes: arrThemOnMes, });
-                        // e.setState({ arrThemOnMes: arrThemOnMes, });
-                        var arrThemOnMesKetQua = [];
-                        arrThemOnMes.map(function (dataEmit, index) {
-                            //Nms la so phan tu tinnhan luu o server 
-                            //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
-                            var UserSendKey = {
-                                // key: JSON.stringify(SoKey + ArrdataMessenger.length + index), //do index gia tri bat dau tu 0, index=0 MIN
-                                key: JSON.stringify(index), //do index gia tri bat dau tu 0, index=0 MIN
-                                UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                                messenger: dataEmit.messenger,
-                                imageBase64: dataEmit.imageBase64,
-                                pathIma: dataEmit.pathIma,
-                                UserNhan: '', //them vao de hien thi thoi
-                                messengerNhan: '',
-                            };
-                            // console.log('.UserSendKey::::', UserSendKey);
-                            arrThemOnMesKetQua.push(UserSendKey);
-                            //  ArrMessSendServer.push(UserSendKey);
-                            ArrdataMessenger = arrThemOnMesKetQua;
-                            //  ArrUserSendKey = arrThemOnMesKetQua;
-
-                        });
-
-                        //   console.log('ArrdataMessenger', ArrdataMessenger);
-
-                        console.log('ArrdataMessenger xoa phan tu thu ' + m + 'con :', ArrdataMessenger);
-                    }
-
-                } else if (Username !== '') {
-                    //khi 
-                    if (Username !== null || UserWeb !== null) { //cho cho thang duoc kich chuot hien thi tren flatlist hien tai => Username == Username gui tin nha cho o day la web
-                        dataMessenger.map(function (dataEmit, index) {
-
-                            //Nms la so phan tu tinnhan luu o server 
-                            //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
-                            var UserSendKey = {
-                                //key: JSON.stringify(Nms + index), //do index gia tri bat dau tu 0, index=0 MIN
-                                key: JSON.stringify(SoKey + ArrdataMessenger.length + index), //do index gia tri bat dau tu 0, index=0 MIN
-                                // key: JSON.stringify((Nms -ArrdataMessenger.length) + ArrdataMessenger.length + index_goc)// so lenth max mang tin nhan server - so phan tu truyen len client=sokey //SoKey = Nms - ArrdataMessenger.length // key: JSON.stringify((Nms -ArrdataMessenger.length) + ArrdataMessenger.length + index_goc), //do index gia tri bat dau tu 0, index=0 MIN
-                                UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
-                                messenger: dataEmit.messenger,
-                                imageBase64: dataEmit.imageBase64,
-                                pathIma: dataEmit.pathIma,
-                                UserNhan: '', //them vao de hien thi thoi
-                                messengerNhan: '',
-                            };
-                            // console.log('.UserSendKey::::', UserSendKey);
-                            ArrdataMessenger.push(UserSendKey);
-                            ArrMessSendServer.push(UserSendKey);
-                        });
-
-                    } else if (Username !== UserWeb) {
-                        ///truong hop la 1 cai ten nguoi tich khong phai nguoi gui tu web thi khong lam gi ca
-                        console.log('nguoi gui tin nhan khong hien thi o day vi chua kich chuot vao nguoi do');
-                    }
-                }
-
-                // console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
                 e.setState({
-                    // SaveDataMessengerApp: ArrMessSendServer,
-                    ArrUserSendKey: ArrdataMessenger,
-                    ArrControlItemMess: ArrdataMessenger,
+                    ArrayUserSocketId: ArrayUserSocketId1,
+                    arrayUsername: arrayUsername1,
                 });
-                console.log('ArrControlItemMess::::', this.state.ArrControlItemMess);
-            }
-        });
 
-    },
-    ajaxPostUpLoad() {
-        $.post('http://localhost:2800/React/upload', data => {
-            console.log(data);
-        });
-    },
-    resUpload(e1) {
-        e = this;
-        console.log(e1.target.files, "$$$$");
-        console.log(e1.target.files[0], "0000$$$$");
-        var x = e1.target.files[0];
-        // var file = e1.target.file[0];
-        e.setState({ file: x });
+                function deduplicate(arr) {
+                    var isExist = (arr, x) => {
+                        for (let i = 0; i < arr.length; i++) {
+                            if (arr[i] === x) return true;
+                        }
+                        return false;
+                    }
+                    var ans = [];
+                    arr.forEach(element => {
+                        if (!isExist(ans, element)) ans.push(element);
+                    });
+                    return ans;
+                }
+                var mangU1 = deduplicate(this.state.arrayUsername);
+                //    console.log('mangU1111111 REACTJS REACTJS REACTJSREACTJS', mangU1); //mang Username khong co phan tu lap
 
-    },
-    UpLoad(e2) {
-        e2.preventDefault();
-        //   e = this;
-        const { file } = this.state;
-        //  var file = this.state.file;
-        console.log('file::::', file);
-        var formdata = new FormData();
-        formdata.append('file', file);
-        formdata.append('filename', "avatar");
-        //    console.log('formdata::::', formdata);
-        fetch('http://localhost:2800/React/upfile', { //http://localhost:8000/upload
-            method: 'POST',
-            body: formdata,
-        })
+                /*
+                 var MangUserKey = [];
+                 var m = mangU1.length;
+                 for (i = 0; i < m; i++) {
+                     MangUserKey.push({ key: JSON.stringify(i), Userkey: mangU1[i] });
+                     // console.log('MangUserKey::::', MangUserKey);
+                 }
+                 console.log('MangUserKey REACTJS REACTJS REACTJS REACTJS REACTJS::::', MangUserKey); 
+     
+                 //loai bo ky Username = [] trong danh sach caht neu co
+                 var mangU2 = [];
+                 for (i = 0; i < mangU1.length; i++) {
+                     var User = mangU1[i];
+                     if (User === '' || User === []) {
+     
+                     }
+                     else if (User !== '' || User !== []) {
+                         mangU2.push(User);
+                     }
+                 }
+                 console.log('mangU2 REACTJS REACTJS REACTJS REACTJS loai bo username rong::::', mangU2); */
+
+                //mang hung du lieu mangU1 ma tao mang moi ArrUserKey co chua key 
+                var ArrUserKey = [];
+                mangU1.map(function (value, index) { //index thay cho key
+                    if (value !== null || value !== undefined || value !== []) {
+                        var UserKey = { key: JSON.stringify(index), Userkey: value };
+                        ArrUserKey.push(UserKey);
+                    }
+
+                });
+                console.log('ArrUserKey1 REACTJSREACTJSREACTJSREACTJS::::', ArrUserKey);
+                e.setState({
+                    mangU: ArrUserKey
+                });
+
+
+            });
+
+            socket.on('server-send-messenger', (dataMessenger) => {
+                console.log('dataMessenger REACTJS:::', dataMessenger);
+                // e.setState({ dataMess: dataMessenger });
+
+                e.setState({ p: (this.state.p + 1) });
+
+                console.log('pppppppppppppppppppppppppppppppppppppppppppppppppp', this.state.p);
+                e.setState({
+                    UserWeb: dataMessenger[0].UsernameNguoiSend, //web sen toi app App la thang duoc kich chuot la Username
+                    UserApp: dataMessenger[0].UsernameNguoiNhan,
+                    soPage: 1, //de hien thi la ra tin nhan moc ve 1 tinh tu length max - 1.m = hien thi so phan tu tu lon nhat toi -m phan tu
+                });
+                //  console.log('this.state.UsernameNguoiNhan !== "":::', this.state.UserApp);
+                const { UserApp, Nms, Username, OnManSendMs, UserWeb, SoKey } = this.state; //UserApp = UsernameNguoiSend, 
+                console.log('this.state.UserWeb server-send-messenger CheckUser ', this.state.UserWeb)
+
+                OnManSendMs.push(UserWeb);
+                console.log('OnManSendMs::lap', OnManSendMs);
+
+                function deduplicate(arr) {
+                    var isExist = (arr, x) => {
+                        for (let i = 0; i < arr.length; i++) {
+                            if (arr[i] === x) return true;
+                        }
+                        return false;
+                    }
+                    var ans = [];
+                    arr.forEach(element => {
+                        if (!isExist(ans, element)) ans.push(element);
+                    });
+                    return ans;
+                }
+                var OnManSendMs_r = deduplicate(OnManSendMs);
+                var m = OnManSendMs_r.length;
+                e.setState({ OnManSendMs: OnManSendMs_r });
+                console.log('OnManSendMs: khong:ArrDoneLap', this.state.OnManSendMs.length);
+
+                console.log('Nms:socket.on(server-send-messenger:::::', Nms);
+                if (dataMessenger[0] !== null) {
+                    var ArrdataMessenger = this.state.ArrUserSendKey;
+                    // console.log('ArrdataMessenger da JSON.parse:!==0:::', ArrdataMessenger);
+                    var ArrMessSendServer = []; // ArrMessSendServer chi lay 1 phan tu hay vai phan tu tu tin nhan new duoc web gui toi
+                    console.log('Username:WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW socket.on(server-send-messenger::', Username);
+                    var { arrThemOnMes } = this.state;
+                    console.log('arrThemOnMes', arrThemOnMes);
+                    if (Username == '') { //chua chon ten nguoi chat nguoi nhan tin nhan
+                        dataMessenger.map(function (dataEmit, index) {
+                            //Nms la so phan tu tinnhan luu o server 
+                            arrThemOnMes.unshift(dataEmit);
+                        });
+                        console.log('arrThemOnMes sau khi unshift splice(m, 1)', arrThemOnMes);
+                        //  console.log('arrThemOnMes', arrThemOnMes);
+                        if (arrThemOnMes.length >= (m + 1)) {
+                            var ptuXoa = 1;///m- this.state.a=1; //m  = this.state.a
+                            //  console.log('ptuXoa:::::::::',m);      
+                            console.log('ptuXoa:::::::::', ptuXoa);
+                            //    console.log('so phantu khong lap :', m);
+                            //    console.log('var xoa phan tu thu 2 nao', arrThemOnMes.length + ">=" + (m));
+                            // neu m tang len 1 thi phan tu xoa cung tang 1 = m- this.state.a
+                            arrThemOnMes.splice(ptuXoa, 1); // XOA 1 PHAN TU O VI TRI THU 2, de lai vi tri thu nhat
+                            // co the dung unshift() / shift() — thêm/xóa phần tử từ vị trí đầu mảng
+                            //dao gia tri them hien thi
+                            e.setState({ arrThemOnMes: arrThemOnMes, });
+                            e.setState({ a: arrThemOnMes.length, })
+                            console.log('this.state.aaaaaaaaaaaaaaaaaa sau khi splice(m, 1)', this.state.a);
+                            console.log('arrThemOnMes sau khi splice(m, 1)', arrThemOnMes);
+                            //  e.setState({  arrThemOnMes: arrThemOnMes, });
+                            // e.setState({ arrThemOnMes: arrThemOnMes, });
+                            var arrThemOnMesKetQua = [];
+                            arrThemOnMes.map(function (dataEmit, index) {
+                                //Nms la so phan tu tinnhan luu o server 
+                                //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
+                                var UserSendKey = {
+                                    // key: JSON.stringify(SoKey + ArrdataMessenger.length + index), //do index gia tri bat dau tu 0, index=0 MIN
+                                    key: JSON.stringify(index), //do index gia tri bat dau tu 0, index=0 MIN
+                                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+                                    messenger: dataEmit.messenger,
+                                    imageBase64: dataEmit.imageBase64,
+                                    pathIma: dataEmit.pathIma,
+                                    UserNhan: '', //them vao de hien thi thoi
+                                    messengerNhan: '',
+                                };
+                                // console.log('.UserSendKey::::', UserSendKey);
+                                arrThemOnMesKetQua.push(UserSendKey);
+                                //  ArrMessSendServer.push(UserSendKey);
+                                ArrdataMessenger = arrThemOnMesKetQua;
+                                //  ArrUserSendKey = arrThemOnMesKetQua;
+
+                            });
+
+                            //   console.log('ArrdataMessenger', ArrdataMessenger);
+
+                            console.log('ArrdataMessenger xoa phan tu thu ' + m + 'con :', ArrdataMessenger);
+                        }
+
+                    } else if (Username !== '') {
+                        //khi 
+                        if (Username !== null || UserWeb !== null) { //cho cho thang duoc kich chuot hien thi tren flatlist hien tai => Username == Username gui tin nha cho o day la web
+                            dataMessenger.map(function (dataEmit, index) {
+
+                                //Nms la so phan tu tinnhan luu o server 
+                                //  var index_goc = Nms + index; //gia tri goc tinh tu cai nhan duoc server gui len
+                                var UserSendKey = {
+                                    //key: JSON.stringify(Nms + index), //do index gia tri bat dau tu 0, index=0 MIN
+                                    key: JSON.stringify(SoKey + ArrdataMessenger.length + index), //do index gia tri bat dau tu 0, index=0 MIN
+                                    // key: JSON.stringify((Nms -ArrdataMessenger.length) + ArrdataMessenger.length + index_goc)// so lenth max mang tin nhan server - so phan tu truyen len client=sokey //SoKey = Nms - ArrdataMessenger.length // key: JSON.stringify((Nms -ArrdataMessenger.length) + ArrdataMessenger.length + index_goc), //do index gia tri bat dau tu 0, index=0 MIN
+                                    UserSend: dataEmit.UsernameNguoiSend, //thang send cho Userapp, va app dang la thang nhan nhung lai dat o this.state( la UsernameNguoiSend )
+                                    messenger: dataEmit.messenger,
+                                    imageBase64: dataEmit.imageBase64,
+                                    pathIma: dataEmit.pathIma,
+                                    UserNhan: '', //them vao de hien thi thoi
+                                    messengerNhan: '',
+                                };
+                                // console.log('.UserSendKey::::', UserSendKey);
+                                ArrdataMessenger.push(UserSendKey);
+                                ArrMessSendServer.push(UserSendKey);
+                            });
+
+                        } else if (Username !== UserWeb) {
+                            ///truong hop la 1 cai ten nguoi tich khong phai nguoi gui tu web thi khong lam gi ca
+                            console.log('nguoi gui tin nhan khong hien thi o day vi chua kich chuot vao nguoi do');
+                        }
+                    }
+
+                    // console.log('var ArrdataMessenger =  this.state.SaveDataMessengerApp::::', ArrdataMessenger);
+                    e.setState({
+                        // SaveDataMessengerApp: ArrMessSendServer,
+                        ArrUserSendKey: ArrdataMessenger,
+                        ArrControlItemMess: ArrdataMessenger,
+                    });
+                    console.log('ArrControlItemMess::::', this.state.ArrControlItemMess);
+                }
+            });
+
+        },
+            ajaxPostUpLoad() {
+                $.post('http://localhost:2800/React/upload', data => {
+                    console.log(data);
+                });
+            },
+            resUpload(e1) {
+                e = this;
+                console.log(e1.target.files, "$$$$");
+                console.log(e1.target.files[0], "0000$$$$");
+                var x = e1.target.files[0];
+                // var file = e1.target.file[0];
+                e.setState({ file: x });
+
+            },
+            UpLoad(e2) {
+                e2.preventDefault();
+                //   e = this;
+                const { file } = this.state;
+                //  var file = this.state.file;
+                console.log('file::::', file);
+                var formdata = new FormData();
+                formdata.append('file', file);
+                formdata.append('filename', "avatar");
+                //    console.log('formdata::::', formdata);
+                fetch('http://localhost:2800/React/upfile', { //http://localhost:8000/upload
+                    method: 'POST',
+                    body: formdata,
+                })
             .then((response) => {
-                console.log('response::::::::_____________________:', response);
-                // console.log('responseresponse.json():::',response.json())
-                response.json().then((body) => {
-                    console.log('responseresponse.json():::', body)
-                    console.log('body.file::::', body.file);
-                    this.setState({ pathIma: `http://localhost:2800/${body.file}` });
-                    console.log('pathIma::::UpLoad;;; ', 'http://localhost:2800/' + body.file);
-                }).catch(e => {
-                    console.log('err upload file to server nodejs khogn the json()');
+                    console.log('response::::::::_____________________:', response);
+                    // console.log('responseresponse.json():::',response.json())
+                    response.json().then((body) => {
+                        console.log('responseresponse.json():::', body)
+                        console.log('body.file::::', body.file);
+                        this.setState({ pathIma: `http://localhost:2800/${body.file}` });
+                        console.log('pathIma::::UpLoad;;; ', 'http://localhost:2800/' + body.file);
+                    }).catch(e => {
+                        console.log('err upload file to server nodejs khogn the json()');
+                        this.setState({ pathIma: '' });
+                    })
+                })
+                .catch(e => {
+                    console.log('err upload file to server nodejs');
                     this.setState({ pathIma: '' });
                 })
-            })
-            .catch(e => {
-                console.log('err upload file to server nodejs');
-                this.setState({ pathIma: '' });
-            })
 
         /*
         axios({

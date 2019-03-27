@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://localhost:2800/jquery.js"></script>
+    <script src="http://localhost:2800/socket.io/socket.io.js"></script>
+    <script src="http://localhost:2800/simple-peer/simple-peer.js"></script>
+    <script src="http://localhost:2800/app.js"></script>
+    <script>
+        var socket = io('http://localhost:2800');
+
+           var Peer = require('simple-peer')
+           var p = new Peer({ initiator: location.hash === '#1', trickle: false })
+           console.log(p)
+
+        $(document).ready(() => {
+            // alert(1);
+
+            // $('#txtMysignal').val(JSON.stringify(data));
+            $('#btnConnect').click(() => {
+                var friendSignal = JSON.parse($('#txtFriendSignal').val());
+
+                // p.signal(friendSignal); //de thuc hien ket noi buoc cuoi
+
+            })
+        });
+
+        /*
+                p.on('connect', ()=> {
+                    setInterval(()=> { 
+                        p.send(Math.random())
+                    }, 2000);
+                });
+        
+        
+        
+                p.on('data', (data)=> {
+                    console.log(data);
+                })
+        */
+
+        const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+
+        navigator.getUserMedia = navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia;
+
+        if (navigator.getUserMedia) {
+            navigator.getUserMedia({ audio: true, video: { width: 400, height: 500 } },
+                function (stream) {
+                    var video = document.getElementById('localStream');
+                    video.srcObject = stream;
+                    video.onloadedmetadata = function (e) {
+                        video.play();
+                    };
+
+
+
+                    socket.on('exchange', function (data) {
+                        console.log(' data::::', data);
+                        console.log(' data.videoURL::::', data.sdp);
+
+                        $(document).ready(() => {
+                            alert(1);
+                            $('#txtMysignal').val(JSON.stringify(data));
+                        });
+
+
+                        var localStream = data.videoURL;
+                        const fromId = data.from;
+                        let peer;
+                        //  if (fromId in pcPeers) {
+                        //     console.log('peer exchange0000000111');
+                        //      peer = pcPeers[fromId];
+                        //      console.log('peer exchange0', peer);
+                        //  } else {
+                        //    console.log('peer exchange111111111111');
+                        //  peer = createPC(fromId, false); //fromid la socket id do
+
+                        peer = new RTCPeerConnection(configuration);
+
+                        //    e.setState({ localStream: localStream });
+                        //   const { localStream } = this.state;
+                        //       console.log('this.state.localStream::::', this.state.localStream);
+                        //  peer.addStream(localStream);
+
+                        console.log('peer exchange0', peer);
+
+
+                        //     console.log('peer exchange1', peer);
+                        //  }
+
+
+                        // if (peer.remoteDescription.type == "offer")
+                        console.log('createAnswer createAnswer createAnswer createAnswer createAnswer', peer.createAnswer);
+
+                        peer.setRemoteDescription(new RTCSessionDescription(data.sdp)) //9999 Goi ham setRemoteDecription sau do goi createAnswer
+                            .then(() =>
+                                // {
+                                peer.createAnswer()
+                                //  console.log(' peer.createAnswer  peer.createAnswer  peer.createAnswer  peer.createAnswer', peer);
+                                // e.setState({ _remoteStreams: peer._remoteStreams});
+                                // var _remoteStreams = peer._remoteStreams
+                                // e.setState({
+                                //   _remoteStreams: _remoteStreams.toURL()
+                                // });
+
+                                // peer.addStream(_remoteStreams);
+
+                                // }
+
+                            )
+                            .then(answer => {
+                                peer.setLocalDescription(answer); //10 goi setLocalDescripttion
+                                console.log('answer::::answer answer answer answer ', answer);
+
+                                $('#txtAnswer').val(JSON.stringify(answer));
+
+                                // peer.setLocalDescription(answer, function () {
+                                //    console.log('setLocalDescription setLocalDescription setLocalDescription setLocalDescription setLocalDescription', peer.localDescription);
+
+                                //   socket.emit('exchange-Answer', {
+                                //'to': fromId, 
+                                //     'sdp': peer.localDescription
+                                //   }); //10 gui lai cho thang R
+
+                                // }, logError => console.log(logError));
+
+
+
+
+
+
+                            })
+                            .then((stream) => {
+                                console.log('stream stream 01010101010010101010101010', stream);
+                                // sendMessage(yourId, JSON.stringify({ 'sdp': peer.localDescription }))
+                                console.log(' JSON.stringify({ sdp: peer.localDescription })', JSON.stringify({ 'sdp': peer.localDescription }));
+                                socket.emit('exchange-Answer', {
+                                    //'to': fromId, 
+                                    'sdp': peer.localDescription
+                                }); //10 gui lai cho thang R
+
+                                var _remoteStreams = peer._remoteStreams
+                                // e.setState({
+                                //   _remoteStreams: _remoteStreams.toURL()
+                                // });
+                                peer.addStream(_remoteStreams);
+
+                            });
+
+                    });
+
+                    peer.on('stream', answerstream => {
+                        navigator.getUserMedia = navigator.getUserMedia ||
+                            navigator.webkitGetUserMedia ||
+                            navigator.mozGetUserMedia;
+
+                        if (navigator.getUserMedia) {
+                            navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+                                function (stream) {
+                                    var video = document.querySelector('answerstream');
+                                    video.srcObject = stream;
+                                    video.onloadedmetadata = function (e) {
+                                        video.play();
+                                    };
+                                },
+                                function (err) {
+                                    console.log("The following error occurred: " + err.name);
+                                }
+                            );
+                        } else {
+                            console.log("getUserMedia not supported");
+                        }
+                    })
+
+
+
+
+
+                },
+                function (err) {
+                    console.log("The following error occurred: " + err.name);
+                }
+            );
+        } else {
+            console.log("getUserMedia not supported");
+        }
+
+
+    </script>
+
+</head>
+
+<body>
+    <video id="localStream" width="300" controls></video>
+    <video id="answerstream" width="300" controls></video>
+    <br /><br />
+    <label>My Connection peer</label>
+    <textarea rows="3" cols="100" id="txtMysignal"></textarea>
+    <br /><br />
+    <input type="text" placeholder=" your frienr signal " id="txtFriendSignal">
+    <br /><br />
+    <button id="btnConnect">Connection</button>
+    <br /><br />
+    <label>My Connection Answer</label>
+    <textarea rows="3" cols="100" id="txtAnswer"></textarea>
+    <br /><br />
+
+</body>
+
+</html>
